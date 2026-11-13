@@ -1,7 +1,7 @@
 "use client";
-import { lire, ecrire } from "./stockage";
+import { signalerMaj } from "./stockage";
 import { popup } from "./popup";
-import { Role, User } from "./auth";
+import { Role } from "./auth";
 
 export type PlanId = "gratuit" | "pro" | "promoteur" | "essentiel" | "pro_notaire";
 
@@ -51,8 +51,7 @@ export type Utilisateur = {
   derniereConnexion?: string;
 };
 
-const CLE = "keurbi_utilisateurs";
-
+// Comptes d'exemple chargés dans la base par `npm run db:seed`.
 export const COMPTES_DEMO: Utilisateur[] = [
   { email: "d.badiane@exemple.sn", nom: "Daniel Badiane", role: "acheteur", telephone: "+221 77 123 45 67", ville: "Dakar", statutKYC: "verifie", inscritLe: "2026-09-05T10:00:00.000Z" },
   { email: "m.sarr@exemple.sn", nom: "Moussa Sarr", role: "agence", telephone: "+221 77 987 65 43", ville: "Thiès", statutKYC: "verifie", inscritLe: "2026-10-02T10:00:00.000Z" },
@@ -65,55 +64,71 @@ export const COMPTES_DEMO: Utilisateur[] = [
   { email: "i.fall@exemple.sn", nom: "Ibrahima Fall", role: "agence", suspendu: true, statutKYC: "non_soumis", inscritLe: "2026-09-01T10:00:00.000Z" },
 ];
 
-export function lireUtilisateurs(): Utilisateur[] {
-  return lire<Utilisateur[]>(CLE, COMPTES_DEMO);
-}
+/* ── Comptes ──
+   Ils vivent dans la base. Le serveur n'envoie que ce que la personne connectée a le droit de voir :
+   sa propre fiche, tous les comptes pour l'administration, les acheteurs pour le notariat.
+   Cette copie en mémoire permet aux pages de les lire sans attendre ; chaque modification part au serveur. */
+let comptes: Utilisateur[] = [];
 
-function sauvegarder(u: Utilisateur[]) {
-  ecrire(CLE, u);
+export function lireUtilisateurs(): Utilisateur[] {
+  return comptes;
 }
 
 export function trouverUtilisateur(email: string): Utilisateur | undefined {
-  return lireUtilisateurs().find((u) => u.email === email);
+  return comptes.find((u) => u.email === email);
 }
 
-export function enregistrerConnexion(user: User, telephone?: string) {
-  const tous = lireUtilisateurs();
-  const maintenant = new Date().toISOString();
-  if (tous.some((u) => u.email === user.email)) {
-    sauvegarder(tous.map((u) => (u.email === user.email ? { ...u, role: user.role, derniereConnexion: maintenant } : u)));
-  } else {
-    sauvegarder([
-      { email: user.email, nom: user.nom, role: user.role, telephone, statutKYC: "non_soumis", inscritLe: maintenant, derniereConnexion: maintenant },
-      ...tous,
-    ]);
+export async function chargerUtilisateurs(): Promise<void> {
+  try {
+    const r = await fetch("/api/utilisateurs", { cache: "no-store" });
+    comptes = r.ok ? ((await r.json()) as { utilisateurs: Utilisateur[] }).utilisateurs : [];
+  } catch {
+    comptes = [];
+  }
+  signalerMaj();
+}
+
+export function viderUtilisateurs() {
+  comptes = [];
+  signalerMaj();
+}
+
+async function envoyer(methode: "PATCH" | "POST", corps: unknown): Promise<{ ok: boolean; donnees: { utilisateur?: Utilisateur; motDePasseProvisoire?: string; erreur?: string } }> {
+  try {
+    const r = await fetch("/api/utilisateurs", { method: methode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(corps) });
+    return { ok: r.ok, donnees: await r.json().catch(() => ({})) };
+  } catch {
+    return { ok: false, donnees: { erreur: "Connexion au serveur impossible." } };
   }
 }
 
-// Une session ouverte avant la création de l'annuaire doit y figurer, sinon ses mises à jour se perdent.
-export function assurerUtilisateur(user: User) {
-  if (!trouverUtilisateur(user.email)) enregistrerConnexion(user);
-}
-
+// La modification s'affiche tout de suite, puis le serveur la confirme. S'il la refuse, l'affichage revient à l'état réel.
 export function majUtilisateur(email: string, patch: Partial<Utilisateur>) {
-  sauvegarder(lireUtilisateurs().map((u) => (u.email === email ? { ...u, ...patch } : u)));
+  comptes = comptes.map((u) => (u.email === email ? { ...u, ...patch } : u));
+  signalerMaj();
+  envoyer("PATCH", { email, patch }).then(({ ok, donnees }) => {
+    if (ok && donnees.utilisateur) {
+      const confirme = donnees.utilisateur;
+      comptes = comptes.map((u) => (u.email === email ? confirme : u));
+      signalerMaj();
+    } else {
+      popup.erreur("Modification non enregistrée", donnees.erreur ?? "Le serveur a refusé la demande.");
+      chargerUtilisateurs();
+    }
+  });
 }
 
-export function ajouterUtilisateur(u: Utilisateur) {
-  popup.succes("Utilisateur créé", u.nom);
-  sauvegarder([u, ...lireUtilisateurs().filter((x) => x.email !== u.email)]);
-}
-
-// Répercute sur le serveur une décision d'administration (suspension, rôle), pour qu'elle s'applique à la vraie connexion.
-// Un compte qui n'existe que dans l'annuaire de démonstration du navigateur est simplement ignoré (404).
-export function majCompteServeur(email: string, patch: { suspendu?: boolean; role?: Role }) {
-  fetch("/api/admin/utilisateurs", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, ...patch }) })
-    .then(async (r) => {
-      if (r.ok || r.status === 404) return;
-      const d = await r.json().catch(() => ({}));
-      popup.erreur("Modification non appliquée au compte", d.erreur ?? "Le serveur a refusé la demande.");
-    })
-    .catch(() => popup.erreur("Modification non appliquée au compte", "Connexion au serveur impossible."));
+// Création d'un compte par un administrateur. Le mot de passe provisoire n'est affiché qu'une fois.
+export async function ajouterUtilisateur(u: Pick<Utilisateur, "email" | "nom" | "role" | "telephone" | "statutKYC" | "suspendu">): Promise<boolean> {
+  const { ok, donnees } = await envoyer("POST", u);
+  if (!ok || !donnees.utilisateur) {
+    popup.erreur("Compte non créé", donnees.erreur ?? "Le serveur a refusé la demande.");
+    return false;
+  }
+  comptes = [donnees.utilisateur, ...comptes.filter((x) => x.email !== u.email)];
+  signalerMaj();
+  popup.succes("Utilisateur créé", `${u.nom} · mot de passe provisoire : ${donnees.motDePasseProvisoire}. Notez-le et transmettez-le : il ne sera plus affiché.`);
+  return true;
 }
 
 export function soumettreKYC(email: string, kyc: DossierKYC) {

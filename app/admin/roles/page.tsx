@@ -35,12 +35,13 @@ export default function RolesPage() {
     setMatrice((m) => ({ ...m, [id]: m[id].includes(r) ? m[id].filter((x) => x !== r) : [...m[id], r] }));
   }
 
-  function creer(e: React.FormEvent) {
+  async function creer(e: React.FormEvent) {
     e.preventDefault();
     const adresse = email.trim();
     if (trouverUtilisateur(adresse)) return setErreur("Un compte existe déjà avec cet email.");
     const kyc: StatutKYC = statut === "attente" ? "en_attente" : "non_soumis";
-    ajouterUtilisateur({ email: adresse, nom: nom.trim(), role, telephone: telephone.trim() || undefined, statutKYC: kyc, suspendu: statut === "suspendu", inscritLe: new Date().toISOString() });
+    const cree = await ajouterUtilisateur({ email: adresse, nom: nom.trim(), role, telephone: telephone.trim() || undefined, statutKYC: kyc, suspendu: statut === "suspendu" });
+    if (!cree) return;
     journaliser("compte", `Compte créé : ${nom.trim()} (${ROLE_LABELS[role]})`, "/admin/utilisateurs");
     setErreur("");
     setNom("");

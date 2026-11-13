@@ -7,7 +7,7 @@ import { useBiens } from "@/lib/annonces";
 import { LABELS_ETAPE, lireDossiers, prixRetenu } from "@/lib/dossiers";
 import { formatFCFA } from "@/lib/mock-data";
 import { useStocke } from "@/lib/stockage";
-import { detailScore, LABELS_KYC, majUtilisateur, scoreConfiance, trouverUtilisateur } from "@/lib/utilisateurs";
+import { chargerUtilisateurs, detailScore, LABELS_KYC, majUtilisateur, scoreConfiance, trouverUtilisateur } from "@/lib/utilisateurs";
 import Protege from "@/components/Protege";
 import Rattachement from "@/components/Rattachement";
 
@@ -37,7 +37,7 @@ function Contenu({ user }: { user: User }) {
     e.preventDefault();
     const resultat = await majProfil({ nom: nom.trim(), telephone: telephone.trim(), ville: ville.trim() });
     if (!resultat.ok) return popup.erreur("Profil non enregistré", resultat.erreur);
-    majUtilisateur(user.email, { nom: nom.trim(), telephone: telephone.trim(), ville: ville.trim() });
+    chargerUtilisateurs();
     popup.succes("Profil enregistré");
     setOk(true);
   }

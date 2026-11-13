@@ -5,7 +5,7 @@ import { lireDossiers } from "@/lib/dossiers";
 import { journaliser } from "@/lib/journal";
 import { usePeut } from "@/lib/permissions";
 import { useStocke } from "@/lib/stockage";
-import { deciderKYC, LABELS_KYC, lireUtilisateurs, majCompteServeur, majUtilisateur, scoreConfiance, StatutKYC, Utilisateur } from "@/lib/utilisateurs";
+import { deciderKYC, LABELS_KYC, lireUtilisateurs, majUtilisateur, scoreConfiance, StatutKYC, Utilisateur } from "@/lib/utilisateurs";
 
 const select = "border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy bg-white";
 
@@ -101,7 +101,6 @@ export default function UtilisateursPage() {
                   onChange={(e) => {
                     const nouveau = e.target.value as Role;
                     majUtilisateur(actif.email, { role: nouveau });
-                    majCompteServeur(actif.email, { role: nouveau });
                     journaliser("compte", `Rôle de ${actif.nom} : ${ROLE_LABELS[actif.role]} → ${ROLE_LABELS[nouveau]}`, "/admin/utilisateurs");
                   }}
                   className={`${select} w-full font-normal mt-1`}
@@ -118,7 +117,6 @@ export default function UtilisateursPage() {
                 disabled={!peutGerer || actif.email === user?.email}
                 onClick={() => {
                   majUtilisateur(actif.email, { suspendu: !actif.suspendu });
-                  majCompteServeur(actif.email, { suspendu: !actif.suspendu });
                   journaliser("compte", `Compte ${actif.suspendu ? "réactivé" : "suspendu"} : ${actif.nom}`, "/admin/utilisateurs");
                 }}
                 className="text-sm font-semibold px-4 py-2 rounded-lg border border-red/30 text-red hover:bg-red/5 disabled:opacity-50 w-full"

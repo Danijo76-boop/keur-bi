@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { assurerUtilisateur, enregistrerConnexion } from "./utilisateurs";
+import { chargerUtilisateurs, viderUtilisateurs } from "./utilisateurs";
 
 export type Role = "acheteur" | "vendeur" | "agence" | "agent" | "notaire" | "clerc" | "moderateur" | "admin";
 export type User = { nom: string; email: string; role: Role };
@@ -95,29 +95,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       /* stockage indisponible : sans conséquence sur la session */
     }
     setUser(u ? { nom: u.nom, email: u.email, role: u.role } : null);
+    if (u) chargerUtilisateurs();
+    else viderUtilisateurs();
   }
 
   useEffect(() => {
     fetch("/api/auth/moi", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : { utilisateur: null }))
-      .then((d: { utilisateur: User | null }) => {
-        if (d.utilisateur) assurerUtilisateur(d.utilisateur);
-        appliquer(d.utilisateur);
-      })
+      .then((d: { utilisateur: User | null }) => appliquer(d.utilisateur))
       .catch(() => appliquer(null))
       .finally(() => setPret(true));
   }, []);
 
-  async function ouvrir(url: string, corps: unknown, telephone?: string): Promise<ResultatAuth> {
+  async function ouvrir(url: string, corps: unknown): Promise<ResultatAuth> {
     const { ok, donnees } = await appeler(url, "POST", corps);
     if (!ok || !donnees.utilisateur) return { ok: false, erreur: donnees.erreur ?? "Une erreur est survenue. Réessayez." };
-    enregistrerConnexion(donnees.utilisateur, telephone);
     appliquer(donnees.utilisateur);
     return { ok: true };
   }
 
   const connexion = (email: string, motDePasse: string) => ouvrir("/api/auth/connexion", { email, motDePasse });
-  const inscription = (d: DonneesInscription) => ouvrir("/api/auth/inscription", d, d.telephone);
+  const inscription = (d: DonneesInscription) => ouvrir("/api/auth/inscription", d);
 
   async function majProfil(patch: { nom?: string; telephone?: string; ville?: string }): Promise<ResultatAuth> {
     const { ok, donnees } = await appeler("/api/auth/moi", "PATCH", patch);
