@@ -15,7 +15,8 @@ import { User } from "@/lib/auth";
 import TFBadge from "@/components/TFBadge";
 
 export default function TableauAgence({ user }: { user: User }) {
-  const biens = useBiens(true);
+  // Chaque vendeur gère les annonces qu'il a publiées.
+  const biens = useBiens(true).filter((b) => b.auteurEmail === user.email);
   const p = useParametres();
   const messages = useStocke(lireMessages, []);
   const dossiers = useStocke(lireDossiers, []);

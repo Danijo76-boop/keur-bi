@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import ChargeurAnnonces from "@/components/ChargeurAnnonces";
 import MaintenanceGate from "@/components/MaintenanceGate";
+import GardeVisiteur from "@/components/GardeVisiteur";
 import PopupHost from "@/components/PopupHost";
 import Newsletter from "@/components/Newsletter";
 import { SCRIPT_THEME } from "@/lib/theme";
@@ -28,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <ChargeurAnnonces />
           <Navbar />
-          <main><MaintenanceGate>{children}</MaintenanceGate></main>
+          <main><MaintenanceGate><GardeVisiteur>{children}</GardeVisiteur></MaintenanceGate></main>
           <PopupHost />
           <footer className="relative bg-navy-dark text-white/60 text-sm pt-12 pb-8 mt-20 print:hidden">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-gold via-gold-light to-blue" />

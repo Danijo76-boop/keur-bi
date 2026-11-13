@@ -69,6 +69,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
     .slice(0, 3);
   const notaire = notaireSuggere(bien.region);
   const vendeur = estCoteVendeur(user?.role) || estPlateforme(user?.role) || (!!user && user.email === bien.auteurEmail);
+  const peutGerer = !!user && (user.email === bien.auteurEmail || user.role === "admin");
 
   // Une annonce retirée reste visible par son vendeur, sa modération et les parties d'un dossier ouvert.
   if (pret && metas[bien.id]?.depublie && !vendeur && !monDossier) {
@@ -96,7 +97,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
         <div className="flex-1 min-w-0">
           {/* Photo principale */}
           <div className="relative h-72 md:h-96 rounded-xl overflow-hidden bg-gray-200 mb-3">
-            <Image src={photoAffichee} alt={bien.titre} fill className="object-cover" unoptimized={photoAffichee.startsWith("data:")} />
+            <Image src={photoAffichee} alt={bien.titre} fill className="object-cover" unoptimized={!photoAffichee.startsWith("http")} />
             <div className="absolute top-3 left-3 flex gap-2">
               <TFBadge
                 bien={bien}
@@ -240,7 +241,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
                   </a>
                 </div>
               )}
-              {vendeur && (
+              {peutGerer && (
                 <Link
                   href={`/mes-annonces/${bien.id}`}
                   className="flex items-center justify-center gap-2 w-full border border-gray-200 text-gray-700 font-semibold px-5 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"

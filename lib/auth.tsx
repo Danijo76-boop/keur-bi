@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { chargerUtilisateurs, viderUtilisateurs } from "./utilisateurs";
+import { chargerBiensBase } from "./annonces";
 
 export type Role = "acheteur" | "vendeur" | "agence" | "agent" | "notaire" | "clerc" | "moderateur" | "admin";
 export type User = { nom: string; email: string; role: Role };
@@ -97,6 +98,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(u ? { nom: u.nom, email: u.email, role: u.role } : null);
     if (u) chargerUtilisateurs();
     else viderUtilisateurs();
+    // Un vendeur voit en plus ses annonces retirées, la modération les voit toutes.
+    chargerBiensBase(true);
   }
 
   useEffect(() => {

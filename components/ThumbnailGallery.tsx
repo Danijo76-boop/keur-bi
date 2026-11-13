@@ -25,7 +25,7 @@ export default function ThumbnailGallery({
           aria-label={`Photo ${i + 1}`}
           aria-current={i === actif}
         >
-          <Image src={src} alt="" fill className="object-cover" unoptimized={src.startsWith("data:")} />
+          <Image src={src} alt="" fill className="object-cover" unoptimized={!src.startsWith("http")} />
         </button>
       ))}
     </div>

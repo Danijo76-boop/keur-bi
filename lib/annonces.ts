@@ -1,16 +1,11 @@
 "use client";
 import { BIENS, Bien, COORDONNEES, CENTRES_REGIONS } from "./mock-data";
-import { lire, ecrire, nouvelId, signalerMaj, useStocke } from "./stockage";
+import { nouvelId, signalerMaj, useStocke } from "./stockage";
 import { popup } from "./popup";
 
-const CLE_ANNONCES = "keurbi_annonces";
-const CLE_META = "keurbi_annonces_meta";
-
+// État de gestion d'une annonce, visible de son auteur et de la modération.
 export type MetaAnnonce = {
   depublie?: boolean;
-  prix?: number;
-  titre?: string;
-  description?: string;
   boostJusquau?: string;
   historiquePrix?: { date: string; prix: number }[];
 };
@@ -19,14 +14,15 @@ export type NouvelleAnnonce = Pick<
   Bien,
   "titre" | "type" | "superficie" | "prix" | "region" | "ville" | "quartier" | "description" | "agence" | "telephone"
 > & {
+  // Photos choisies dans le formulaire : images encodées à envoyer, ou adresses déjà hébergées.
   photos: string[];
-  auteurEmail: string;
   proprietaire: string;
   tf: Bien["tf"];
 };
 
 /* ── Annonces de la base de données ──
-   Le serveur les fournit via /api/annonces. En attendant sa réponse (ou s'il ne répond pas),
+   Le serveur les fournit via /api/annonces : les annonces publiées pour tout le monde, plus les annonces
+   retirées pour leur auteur et la modération. En attendant sa réponse (ou s'il ne répond pas),
    les annonces d'exemple embarquées servent d'affichage provisoire. */
 let biensBase: Bien[] = BIENS;
 let chargement: Promise<void> | undefined;
@@ -46,105 +42,88 @@ export function chargerBiensBase(forcer = false): Promise<void> {
   return chargement;
 }
 
-function lireAnnoncesLocales(): Bien[] {
-  return lire<Bien[]>(CLE_ANNONCES, []);
-}
-
-function lireMeta(): Record<string, MetaAnnonce> {
-  return lire<Record<string, MetaAnnonce>>(CLE_META, {});
+// Remplace (ou ajoute en tête) une annonce renvoyée par le serveur, sans recharger toute la liste.
+function integrer(bien: Bien) {
+  biensBase = biensBase.some((b) => b.id === bien.id) ? biensBase.map((b) => (b.id === bien.id ? bien : b)) : [bien, ...biensBase];
+  signalerMaj();
 }
 
 export function boostActif(meta?: MetaAnnonce): boolean {
   return !!meta?.boostJusquau && new Date(meta.boostJusquau).getTime() > Date.now();
 }
 
-function appliquerMeta(bien: Bien, meta?: MetaAnnonce): Bien {
-  if (!meta) return bien;
-  const baisse = meta.prix !== undefined && meta.prix < bien.prix;
-  return {
-    ...bien,
-    titre: meta.titre ?? bien.titre,
-    description: meta.description ?? bien.description,
-    prix: meta.prix ?? bien.prix,
-    prix_baisser: baisse || bien.prix_baisser,
-    ancien_prix: baisse ? bien.prix : bien.ancien_prix,
-    is_featured: bien.is_featured || boostActif(meta),
-  };
-}
-
 export function tousLesBiens(inclureDepublies = false): Bien[] {
-  const meta = lireMeta();
-  return [...lireAnnoncesLocales(), ...biensBase]
-    .filter((b) => inclureDepublies || !meta[b.id]?.depublie)
-    .map((b) => appliquerMeta(b, meta[b.id]));
+  return biensBase.filter((b) => inclureDepublies || !b.depublie);
 }
 
 export function useBiens(inclureDepublies = false): Bien[] {
-  return useStocke(() => tousLesBiens(inclureDepublies), biensBase, [inclureDepublies]);
+  return useStocke(() => tousLesBiens(inclureDepublies), tousLesBiens(inclureDepublies), [inclureDepublies]);
 }
+
+const metaDe = (b?: Bien): MetaAnnonce => (b ? { depublie: b.depublie, boostJusquau: b.boostJusquau, historiquePrix: b.historiquePrix } : {});
 
 export function useMetaAnnonce(id: string): MetaAnnonce {
-  return useStocke(() => lireMeta()[id] ?? {}, {}, [id]);
-}
-
-function majMeta(id: string, maj: (m: MetaAnnonce) => MetaAnnonce) {
-  const meta = lireMeta();
-  ecrire(CLE_META, { ...meta, [id]: maj(meta[id] ?? {}) });
-}
-
-export function publierAnnonce(a: NouvelleAnnonce): Bien {
-  popup.succes("Annonce publiée", a.titre);
-  const existantes = lireAnnoncesLocales();
-  const id = `local-${nouvelId()}`;
-  const centre = CENTRES_REGIONS[a.region] ?? CENTRES_REGIONS.Dakar;
-  // Léger décalage pour éviter que les annonces d'une même région se superposent sur la carte.
-  const decalage = () => (Math.random() - 0.5) * 0.04;
-  const nouvelle: Bien = {
-    ...a,
-    id,
-    reference: `KB-2026-${String(biensBase.length + existantes.length + 1).padStart(4, "0")}`,
-    photo: a.photos[0],
-    is_verified_tf: false,
-    is_featured: false,
-    prix_baisser: false,
-    nb_vues: 0,
-    agence_slug: "",
-    lat: centre[0] + decalage(),
-    lng: centre[1] + decalage(),
-    publieLe: new Date().toISOString(),
-  };
-  ecrire(CLE_ANNONCES, [nouvelle, ...existantes]);
-  return nouvelle;
-}
-
-export function modifierPrix(bien: Bien, prix: number) {
-  popup.succes("Prix mis à jour", `${prix.toLocaleString("fr-FR")} FCFA`);
-  majMeta(bien.id, (m) => ({
-    ...m,
-    prix,
-    historiquePrix: [...(m.historiquePrix ?? []), { date: new Date().toISOString(), prix }],
-  }));
-}
-
-export function modifierTexte(id: string, titre: string, description: string) {
-  popup.succes("Annonce mise à jour");
-  majMeta(id, (m) => ({ ...m, titre, description }));
+  return useStocke(() => metaDe(biensBase.find((b) => b.id === id)), {}, [id]);
 }
 
 export function useMetasAnnonces(): Record<string, MetaAnnonce> {
-  return useStocke(lireMeta, {});
+  return useStocke(() => Object.fromEntries(biensBase.map((b) => [b.id, metaDe(b)])), {});
+}
+
+/* ── Écritures : tout passe par le serveur, qui vérifie les droits et les quotas ── */
+
+type Reponse = { ok: boolean; donnees: { annonce?: Bien; url?: string; erreur?: string } };
+
+async function appeler(url: string, methode: "POST" | "PATCH", corps: unknown): Promise<Reponse> {
+  try {
+    const r = await fetch(url, { method: methode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(corps) });
+    return { ok: r.ok, donnees: await r.json().catch(() => ({})) };
+  } catch {
+    return { ok: false, donnees: { erreur: "Connexion au serveur impossible." } };
+  }
+}
+
+// Envoie les photos une par une, puis l'annonce. Lève une erreur explicite si une étape échoue.
+export async function publierAnnonce(a: NouvelleAnnonce): Promise<Bien> {
+  const photos: string[] = [];
+  for (const [i, photo] of a.photos.entries()) {
+    if (!photo.startsWith("data:")) {
+      photos.push(photo);
+      continue;
+    }
+    const { ok, donnees } = await appeler("/api/fichiers", "POST", { dataUrl: photo });
+    if (!ok || !donnees.url) throw new Error(`Photo ${i + 1} : ${donnees.erreur ?? "envoi impossible."}`);
+    photos.push(donnees.url);
+  }
+  const { ok, donnees } = await appeler("/api/annonces", "POST", { ...a, photos });
+  if (!ok || !donnees.annonce) throw new Error(donnees.erreur ?? "La publication n'a pas abouti.");
+  integrer(donnees.annonce);
+  popup.succes("Annonce publiée", a.titre);
+  return donnees.annonce;
+}
+
+async function modifier(id: string, patch: Record<string, unknown>, succes: (b: Bien) => [string, string?]) {
+  const { ok, donnees } = await appeler(`/api/annonces/${id}`, "PATCH", patch);
+  if (!ok || !donnees.annonce) return popup.erreur("Modification non enregistrée", donnees.erreur ?? "Le serveur a refusé la demande.");
+  integrer(donnees.annonce);
+  popup.succes(...succes(donnees.annonce));
+}
+
+export function modifierPrix(bien: Bien, prix: number) {
+  modifier(bien.id, { prix }, () => ["Prix mis à jour", `${prix.toLocaleString("fr-FR")} FCFA`]);
+}
+
+export function modifierTexte(id: string, titre: string, description: string) {
+  modifier(id, { titre, description }, () => ["Annonce mise à jour"]);
 }
 
 export function basculerPublication(id: string) {
-  popup.succes(lireMeta()[id]?.depublie ? "Annonce republiée" : "Annonce retirée de la publication");
-  majMeta(id, (m) => ({ ...m, depublie: !m.depublie }));
+  const depublie = !biensBase.find((b) => b.id === id)?.depublie;
+  modifier(id, { depublie }, (b) => [b.depublie ? "Annonce retirée de la publication" : "Annonce republiée"]);
 }
 
 export function booster(id: string, jours = 30) {
-  popup.succes("Annonce boostée", `Mise en avant pendant ${jours} jours.`);
-  const fin = new Date();
-  fin.setDate(fin.getDate() + jours);
-  majMeta(id, (m) => ({ ...m, boostJusquau: fin.toISOString() }));
+  modifier(id, { boost: true }, () => ["Annonce boostée", `Mise en avant pendant ${jours} jours.`]);
 }
 
 export function coordonnees(b: Bien): [number, number] {

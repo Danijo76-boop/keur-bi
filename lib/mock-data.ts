@@ -30,6 +30,10 @@ export type Bien = {
   auteurEmail?: string;
   proprietaire?: string;
   publieLe?: string;
+  // État de gestion, renseigné par le serveur : seuls l'auteur et la modération reçoivent les annonces retirées.
+  depublie?: boolean;
+  boostJusquau?: string;
+  historiquePrix?: { date: string; prix: number }[];
 };
 
 export const COORDONNEES: Record<string, [number, number]> = {

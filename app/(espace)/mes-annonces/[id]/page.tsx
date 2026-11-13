@@ -183,7 +183,6 @@ function Gestion({ bien, user }: { bien: Bien; user: User }) {
           )}
         </aside>
       </div>
-      <div className="mt-6"><BandeauDemo>Démo : toutes les annonces restent gérables par un compte Agence, faute de vrais comptes.</BandeauDemo></div>
     </div>
   );
 }
@@ -194,7 +193,15 @@ export default function MesAnnoncesPage() {
   const bien = biens.find((b) => b.id === id);
   return (
     <Protege roles={["vendeur", "agence", "agent", "admin"]}>
-      {(user) => (bien ? <Gestion bien={bien} user={user} /> : <div className="py-16 text-center text-gray-400">Annonce introuvable.</div>)}
+      {(user) =>
+        !bien ? (
+          <div className="py-16 text-center text-gray-400">Annonce introuvable.</div>
+        ) : bien.auteurEmail !== user.email && user.role !== "admin" ? (
+          <div className="py-16 text-center text-gray-400">Cette annonce est gérée par un autre compte.</div>
+        ) : (
+          <Gestion bien={bien} user={user} />
+        )
+      }
     </Protege>
   );
 }

@@ -20,7 +20,7 @@ export default function PropertyCard({ bien, className }: { bien: Bien; classNam
             alt={bien.titre}
             fill
             sizes="(min-width: 1280px) 400px, (min-width: 640px) 50vw, 100vw"
-            unoptimized={bien.photo.startsWith("data:")}
+            unoptimized={!bien.photo.startsWith("http")}
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/45 to-transparent pointer-events-none" />

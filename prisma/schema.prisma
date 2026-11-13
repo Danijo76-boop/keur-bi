@@ -105,6 +105,19 @@ model DossierKYC {
   motifRejet     String?
 }
 
+// Fichiers envoyés par les utilisateurs (photos des annonces). Gardés dans la base en attendant un stockage dédié ;
+// le code passe par lib/serveur/fichiers.ts, seul endroit à changer le jour où ils déménagent.
+model Fichier {
+  id       String   @id @default(cuid())
+  type     String
+  taille   Int
+  donnees  Bytes
+  auteurId String?
+  creeLe   DateTime @default(now())
+
+  @@index([auteurId])
+}
+
 // ───────────── Annuaire ─────────────
 
 model Agence {

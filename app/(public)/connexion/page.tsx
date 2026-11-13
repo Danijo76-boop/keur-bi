@@ -1,7 +1,8 @@
 "use client";
 import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Mail, Lock, User as UserIcon, Phone } from "lucide-react";
+import { suiteSure } from "@/lib/acces";
 import { useAuth, ROLE_LABELS, Role, ROLES_INSCRIPTION, ROLE_DESCRIPTIONS, LONGUEUR_MIN_MOT_DE_PASSE } from "@/lib/auth";
 
 
@@ -15,7 +16,6 @@ export default function ConnexionPage() {
 
 function Formulaire() {
   const params = useSearchParams();
-  const router = useRouter();
   const { connexion, inscription } = useAuth();
   const [mode, setMode] = useState<"connexion" | "inscription">(params.get("mode") === "inscription" ? "inscription" : "connexion");
   const [nom, setNom] = useState("");
@@ -23,6 +23,7 @@ function Formulaire() {
   const [telephone, setTelephone] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
   const [role, setRole] = useState<Role>(() => ROLES_INSCRIPTION.find((r) => r === params.get("role")) ?? "acheteur");
+  const suite = suiteSure(params.get("suite"));
   const [erreur, setErreur] = useState("");
   const [envoi, setEnvoi] = useState(false);
 
@@ -48,7 +49,10 @@ function Formulaire() {
       setErreur(resultat.erreur);
       return;
     }
-    router.push(mode === "inscription" ? "/kyc" : "/tableau-de-bord");
+    // Retour à la page demandée avant la connexion ; sinon vérification d'identité (nouveau compte) ou tableau de bord.
+    // Chargement complet plutôt que navigation interne : le navigateur garde en mémoire le renvoi vers la connexion
+    // reçu avant d'être identifié, et y retomberait.
+    window.location.assign(suite ?? (mode === "inscription" ? "/kyc" : "/tableau-de-bord"));
   }
 
   return (
@@ -60,6 +64,12 @@ function Formulaire() {
         <p className="text-gray-500 text-sm text-center mb-6">
           {mode === "connexion" ? "Accédez à votre espace KEUR BI" : "Rejoignez KEUR BI en quelques secondes"}
         </p>
+
+        {suite && (
+          <p className="text-sm bg-gold/10 border border-gold/30 text-navy-dark rounded-lg px-3 py-2.5 mb-5 text-center">
+            Cette page est réservée aux membres. Connectez-vous ou créez un compte gratuit pour y accéder.
+          </p>
+        )}
 
         <form onSubmit={soumettre} className="flex flex-col gap-3">
           {mode === "inscription" && (

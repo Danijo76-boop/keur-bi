@@ -41,7 +41,8 @@ Regroupées dans `lib/revenus.ts` et `lib/publicite.ts`, visibles dans Administr
 La base est en PostgreSQL, décrite dans `prisma/schema.prisma` et pilotée par Prisma.
 Les annonces affichées sur le site (accueil, liste, fiche, carte, statistiques) sont lues dans la base, via `/api/annonces`. Si la base ne répond pas, le site affiche les annonces d'exemple embarquées.
 La connexion est réelle : inscription, mot de passe et session sont gérés par le serveur (voir « Comptes et connexion »).
-Le reste (publication, dossiers, messagerie, pièces KYC, liste des comptes en administration) utilise encore les données du navigateur et basculera domaine par domaine.
+Les comptes (profil, dossier d'identité, abonnement, gestion par l'administration) et les annonces (publication, modification, retrait, mise en avant) sont eux aussi dans la base.
+Le reste (dossiers de vente, offres, messagerie, visites, favoris, réglages de la plateforme) utilise encore les données du navigateur et basculera domaine par domaine.
 
 | Commande | Effet |
 |---|---|
@@ -71,3 +72,19 @@ Comptes de développement, créés par `npm run db:seed` à partir du fichier `.
 En ligne, ne définissez pas `MOT_DE_PASSE_DEMO` et choisissez un vrai mot de passe administrateur.
 
 Le code se trouve dans `lib/serveur/auth.ts` et `app/api/auth/`.
+
+## Accès des visiteurs
+
+Sans compte, on ne voit que la présentation du site : accueil, bienvenue, tarifs, guides, FAQ, contact, diaspora, annonceurs et pages légales.
+Toute autre page (annonces, carte, outils, services, annuaires, espace personnel) renvoie vers la connexion, puis ramène la personne à la page demandée.
+La liste des pages ouvertes est dans `lib/acces.ts` ; elle est appliquée par `middleware.ts` (serveur) et `components/GardeVisiteur.tsx` (navigateur).
+
+## Annonces
+
+- Publier : vendeur particulier (2 annonces actives), agence (1, 5 ou illimité selon l'abonnement), agent, administrateur.
+- Modifier le titre, la description ou le prix : l'auteur de l'annonce ou un administrateur.
+- Retirer ou remettre en ligne : l'auteur, un administrateur ou un modérateur. La remise en ligne compte dans le quota.
+- Une annonce retirée n'est visible que de son auteur et de la modération.
+- Les photos sont envoyées au serveur une par une (JPEG, PNG ou WebP, 2 Mo au maximum) et servies par `/api/fichiers/<id>`. Elles sont stockées dans la base pour l'instant ; `lib/serveur/fichiers.ts` est le seul fichier à changer pour les déplacer vers un stockage dédié.
+
+Les règles sont dans `lib/serveur/annonces.ts`.

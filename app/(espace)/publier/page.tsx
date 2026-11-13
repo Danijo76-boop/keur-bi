@@ -38,7 +38,7 @@ function lireFichier(f: File): Promise<string> {
   });
 }
 
-// Redimensionne pour ne pas saturer le localStorage.
+// Redimensionne avant l'envoi : des photos légères se chargent vite et restent sous la limite du serveur.
 async function reduirePhoto(f: File): Promise<string> {
   const source = await lireFichier(f);
   const img = document.createElement("img");
@@ -60,12 +60,14 @@ function Assistant({ user }: { user: User }) {
   const p = useParametres();
   const profil = useStocke(() => trouverUtilisateur(user.email), undefined, [user.email]);
 
-  const nbPubliees = useStocke(() => tousLesBiens(true).filter((b) => b.auteurEmail === user.email).length, 0, [user.email]);
+  // Le quota porte sur les annonces en ligne ; le serveur le revérifie à la publication.
+  const nbPubliees = useStocke(() => tousLesBiens(true).filter((b) => b.auteurEmail === user.email && !b.depublie).length, 0, [user.email]);
   const plan = profil?.plan ?? "gratuit";
   // Particulier : quota fixe. Agence : selon son abonnement. Agent : pas de limite propre, c'est l'agence qui paie.
   const quota = user.role === "vendeur" ? QUOTA_PARTICULIER : user.role === "agent" ? Infinity : QUOTA_ANNONCES[plan] ?? 1;
 
   const [etape, setEtape] = useState(0);
+  const [envoi, setEnvoi] = useState(false);
   const [titre, setTitre] = useState("");
   const [type, setType] = useState<Bien["type"]>("terrain");
   const [region, setRegion] = useState("Dakar");
@@ -113,9 +115,12 @@ function Assistant({ user }: { user: User }) {
     }
   }
 
-  function publier() {
+  async function publier() {
+    if (envoi) return;
+    setErreur("");
+    setEnvoi(true);
     try {
-      const annonce = publierAnnonce({
+      const annonce = await publierAnnonce({
         titre: titre.trim(),
         type,
         superficie: Number(superficie),
@@ -127,7 +132,6 @@ function Assistant({ user }: { user: User }) {
         agence: user.nom,
         telephone: telephone.trim() || profil?.telephone || "",
         photos,
-        auteurEmail: user.email,
         proprietaire: proprietaire.trim(),
         tf: { numero: numeroTF.trim(), conservation, date_etablissement: dateTF || null, superficie_cadastrale: Number(superficieTF) },
       });
@@ -142,8 +146,10 @@ function Assistant({ user }: { user: User }) {
         demandeur: user.nom,
       });
       setPubliee(annonce);
-    } catch {
-      setErreur("Stockage du navigateur plein : retirez des photos et réessayez.");
+    } catch (e) {
+      setErreur(e instanceof Error ? e.message : "La publication n'a pas abouti.");
+    } finally {
+      setEnvoi(false);
     }
   }
 
@@ -171,7 +177,7 @@ function Assistant({ user }: { user: User }) {
       <div className="max-w-xl mx-auto px-4 py-16">
         <div className="card p-8 text-center">
           <p className="text-green font-semibold text-lg mb-1">✅ Annonce enregistrée</p>
-          <p className="text-sm text-gray-500 mb-5">Référence {publiee.reference}. Elle affiche le badge « En vérification » jusqu&apos;à la décision du notaire.</p>
+          <p className="text-sm text-gray-500 mb-5">Référence {publiee.reference}. {p.flags.cadastre ? "Elle affiche le badge « En vérification » jusqu'à la décision du notaire." : "Elle est en ligne et visible des membres."}</p>
           <div className="flex gap-2 justify-center flex-wrap">
             <Link href={`/mes-annonces/${publiee.id}`} className="btn-navy text-sm">Gérer l&apos;annonce</Link>
             <Link href={`/annonces/${publiee.id}`} className="border border-gray-200 rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-gray-50">Voir l&apos;annonce</Link>
@@ -319,7 +325,7 @@ function Assistant({ user }: { user: User }) {
         <aside className="flex flex-col gap-4">
           <div className="card">
             <div className="relative h-36 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
-              {photos[0] ? <Image src={photos[0]} alt="Aperçu" fill className="object-cover" unoptimized={photos[0].startsWith("data:")} /> : "Photos à ajouter"}
+              {photos[0] ? <Image src={photos[0]} alt="Aperçu" fill className="object-cover" unoptimized={!photos[0].startsWith("http")} /> : "Photos à ajouter"}
               <span className="absolute top-2 left-2 bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">⏳ En vérif.</span>
             </div>
             <div className="p-4">

@@ -53,6 +53,9 @@ async function main() {
   }
 
   const agences = new Map((await prisma.agence.findMany()).map((a) => [a.slug, a.id]));
+  // Comptes d'exemple qui gèrent les annonces de chaque agence. SénéImmo n'a pas de compte : ses annonces relèvent de l'administration.
+  const GESTIONNAIRES: Record<string, string> = { "foncier-plus": "c.gueye@exemple.sn", "immo-senegal": "m.sarr@exemple.sn" };
+  const comptes = new Map((await prisma.utilisateur.findMany({ select: { id: true, email: true } })).map((u) => [u.email, u.id]));
   for (const b of BIENS) {
     const [lat, lng] = COORDONNEES[b.id] ?? [b.lat ?? null, b.lng ?? null];
     const donnees = {
@@ -71,6 +74,7 @@ async function main() {
       lng,
       agenceNom: b.agence,
       agenceId: agences.get(b.agence_slug) ?? null,
+      auteurId: comptes.get(GESTIONNAIRES[b.agence_slug] ?? "") ?? null,
       proprietaire: b.proprietaire ?? null,
       tfVerifie: b.is_verified_tf,
       tfNumero: b.tf.numero,

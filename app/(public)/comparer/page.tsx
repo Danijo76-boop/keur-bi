@@ -93,7 +93,7 @@ export default function ComparerPage() {
                 {compares.map((b) => (
                   <th scope="col" key={b.id} className="p-4 text-left font-normal">
                     <div className="relative h-28 rounded-lg overflow-hidden bg-gray-200 mb-2">
-                      <Image src={b.photo} alt={b.titre} fill className="object-cover" unoptimized={b.photo.startsWith("data:")} />
+                      <Image src={b.photo} alt={b.titre} fill className="object-cover" unoptimized={!b.photo.startsWith("http")} />
                     </div>
                     <div className="font-bold text-gray-900">{b.titre}</div>
                     <div className="text-navy font-bold">{formatFCFA(b.prix)}</div>
