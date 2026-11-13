@@ -34,3 +34,4 @@ Les modules se coupent et se rallument dans Administration → Paramètres → F
 ## Sources de revenus
 
 Regroupées dans `lib/revenus.ts` et `lib/publicite.ts`, visibles dans Administration → Revenus : commission sur vente, abonnements, boosts, services à la carte, mises en relation bancaires, publicité partenaires. Les prix sont des hypothèses à valider.
+
