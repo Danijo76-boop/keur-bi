@@ -21,3 +21,6 @@ Thumbs.db
 .vercel
 .netlify
 .claude/
+
+# Base de données locale de développement
+.pgdata/

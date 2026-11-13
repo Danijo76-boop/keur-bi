@@ -1,0 +1,83 @@
+// Charge les données d'exemple dans la base : agences, notaires, comptes de démonstration, annonces.
+// Peut être relancé sans risque : chaque ligne est créée ou mise à jour, jamais dupliquée.
+import { PrismaClient } from "@prisma/client";
+import { AGENCES } from "../lib/agences";
+import { NOTAIRES } from "../lib/notaires";
+import { BIENS, COORDONNEES } from "../lib/mock-data";
+import { COMPTES_DEMO } from "../lib/utilisateurs";
+import { PARAMETRES_DEFAUT } from "../lib/parametres";
+
+const prisma = new PrismaClient();
+const date = (s?: string | null) => (s ? new Date(s) : null);
+
+async function main() {
+  for (const a of AGENCES) {
+    const { agents, avis, slug, ...champs } = a;
+    const donnees = { ...champs, avisInitiaux: avis };
+    const agence = await prisma.agence.upsert({ where: { slug }, update: donnees, create: { slug, ...donnees } });
+    await prisma.agentAgence.deleteMany({ where: { agenceId: agence.id } });
+    await prisma.agentAgence.createMany({ data: agents.map((x) => ({ ...x, agenceId: agence.id })) });
+  }
+
+  for (const n of NOTAIRES) {
+    const { avis, slug, ...champs } = n;
+    const donnees = { ...champs, avisInitiaux: avis };
+    await prisma.notaire.upsert({ where: { slug }, update: donnees, create: { slug, ...donnees } });
+  }
+
+  for (const u of COMPTES_DEMO) {
+    const { kyc, email, inscritLe, derniereConnexion, ...champs } = u;
+    const donnees = { ...champs, inscritLe: new Date(inscritLe), derniereConnexion: date(derniereConnexion) };
+    const compte = await prisma.utilisateur.upsert({ where: { email }, update: donnees, create: { email, ...donnees } });
+    if (kyc) {
+      const dossier = { ...kyc, dateNaissance: date(kyc.dateNaissance), soumisLe: date(kyc.soumisLe) };
+      await prisma.dossierKYC.upsert({ where: { utilisateurId: compte.id }, update: dossier, create: { utilisateurId: compte.id, ...dossier } });
+    }
+  }
+
+  const agences = new Map((await prisma.agence.findMany()).map((a) => [a.slug, a.id]));
+  for (const b of BIENS) {
+    const [lat, lng] = COORDONNEES[b.id] ?? [b.lat ?? null, b.lng ?? null];
+    const donnees = {
+      titre: b.titre,
+      type: b.type,
+      superficie: b.superficie,
+      prix: BigInt(b.prix),
+      region: b.region,
+      ville: b.ville,
+      quartier: b.quartier,
+      description: b.description,
+      photo: b.photo,
+      photos: b.photos ?? [],
+      telephone: b.telephone,
+      lat,
+      lng,
+      agenceNom: b.agence,
+      agenceId: agences.get(b.agence_slug) ?? null,
+      proprietaire: b.proprietaire ?? null,
+      tfVerifie: b.is_verified_tf,
+      tfNumero: b.tf.numero,
+      tfConservation: b.tf.conservation,
+      tfDateEtablissement: date(b.tf.date_etablissement),
+      tfSuperficieCadastrale: b.tf.superficie_cadastrale,
+      vedette: b.is_featured,
+      prixEnBaisse: b.prix_baisser,
+      ancienPrix: b.ancien_prix ? BigInt(b.ancien_prix) : null,
+      nbVues: b.nb_vues,
+    };
+    // L'identifiant d'origine est conservé pour que les adresses /annonces/1, /annonces/2… restent valables.
+    await prisma.bien.upsert({ where: { reference: b.reference }, update: donnees, create: { id: b.id, reference: b.reference, ...donnees } });
+  }
+
+  await prisma.reglage.upsert({ where: { cle: "parametres" }, update: {}, create: { cle: "parametres", valeur: PARAMETRES_DEFAUT } });
+
+  const [nbAgences, nbNotaires, nbComptes, nbBiens] = await Promise.all([prisma.agence.count(), prisma.notaire.count(), prisma.utilisateur.count(), prisma.bien.count()]);
+  console.log(`Base chargée : ${nbAgences} agences, ${nbNotaires} notaires, ${nbComptes} comptes, ${nbBiens} annonces.`);
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  })
+  .finally(() => prisma.$disconnect());

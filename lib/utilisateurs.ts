@@ -53,7 +53,7 @@ export type Utilisateur = {
 
 const CLE = "keurbi_utilisateurs";
 
-const COMPTES_DEMO: Utilisateur[] = [
+export const COMPTES_DEMO: Utilisateur[] = [
   { email: "d.badiane@exemple.sn", nom: "Daniel Badiane", role: "acheteur", telephone: "+221 77 123 45 67", ville: "Dakar", statutKYC: "verifie", inscritLe: "2026-09-05T10:00:00.000Z" },
   { email: "m.sarr@exemple.sn", nom: "Moussa Sarr", role: "agence", telephone: "+221 77 987 65 43", ville: "Thiès", statutKYC: "verifie", inscritLe: "2026-10-02T10:00:00.000Z" },
   { email: "a.diallo@exemple.sn", nom: "Me. Amadou Diallo", role: "notaire", ville: "Dakar", statutKYC: "verifie", inscritLe: "2026-08-15T10:00:00.000Z" },
