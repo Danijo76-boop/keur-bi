@@ -34,7 +34,7 @@ export default function TableauAgence({ user }: { user: User }) {
     { label: "Annonces actives", val: biens.length - nbArchivees },
     { label: "Offres en attente", val: offresAttente.length },
     { label: "Dossiers en cours", val: dossiers.length },
-    { label: "Vues cumulées", val: biens.reduce((s, b) => s + b.nb_vues, 0).toLocaleString() },
+    { label: "Vues cumulées", val: biens.reduce((s, b) => s + b.nb_vues, 0).toLocaleString("fr-FR") },
     { label: "Ventes conclues", val: dossiers.filter((d) => d.statut === "enregistre" || d.statut === "mute").length },
   ];
 

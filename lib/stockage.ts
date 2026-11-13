@@ -18,6 +18,11 @@ export function ecrire<T>(cle: string, valeur: T) {
   window.dispatchEvent(new CustomEvent(EVENEMENT));
 }
 
+// Prévient les composants qu'une donnée a changé ailleurs que dans le stockage local (par exemple après une lecture du serveur).
+export function signalerMaj() {
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent(EVENEMENT));
+}
+
 export function nouvelId(): string {
   return typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
 }

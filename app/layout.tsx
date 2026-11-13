@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import ChargeurAnnonces from "@/components/ChargeurAnnonces";
 import MaintenanceGate from "@/components/MaintenanceGate";
 import PopupHost from "@/components/PopupHost";
 import Newsletter from "@/components/Newsletter";
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <AuthProvider>
+          <ChargeurAnnonces />
           <Navbar />
           <main><MaintenanceGate>{children}</MaintenanceGate></main>
           <PopupHost />

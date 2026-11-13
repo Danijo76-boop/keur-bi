@@ -167,7 +167,7 @@ export function ajouterOffre(dossierId: string, offre: Omit<Offre, "id" | "date"
     offres: [...d.offres, { ...offre, id: nouvelId(), date: new Date().toISOString() }],
     evenements: [
       ...d.evenements,
-      evenement(`${offre.auteur === "acheteur" ? "Offre" : "Contre-offre"} de ${offre.montant.toLocaleString()} FCFA`),
+      evenement(`${offre.auteur === "acheteur" ? "Offre" : "Contre-offre"} de ${offre.montant.toLocaleString("fr-FR")} FCFA`),
     ],
   }));
 }
@@ -225,7 +225,7 @@ export function declarerPaiement(dossierId: string, p: Omit<Paiement, "id" | "da
   return majDossier(dossierId, (d) => ({
     ...d,
     paiements: [...(d.paiements ?? []), { ...p, id: nouvelId(), date: new Date().toISOString(), statut: "declare" }],
-    evenements: [...d.evenements, evenement(`Versement déclaré : ${p.montant.toLocaleString()} FCFA (${LABELS_MOYEN[p.moyen]})`)],
+    evenements: [...d.evenements, evenement(`Versement déclaré : ${p.montant.toLocaleString("fr-FR")} FCFA (${LABELS_MOYEN[p.moyen]})`)],
   }));
 }
 

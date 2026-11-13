@@ -69,7 +69,7 @@ export default function StatistiquesPage() {
     { val: biens.length, label: "Annonces actives" },
     { val: formatPrix(mediane(biens.map((b) => b.prix))), label: "Prix médian" },
     { val: nbVerifies, label: `TF vérifiés (${biens.length ? Math.round((nbVerifies / biens.length) * 100) : 0}%)` },
-    { val: biens.reduce((s, b) => s + b.nb_vues, 0).toLocaleString(), label: "Vues cumulées" },
+    { val: biens.reduce((s, b) => s + b.nb_vues, 0).toLocaleString("fr-FR"), label: "Vues cumulées" },
   ];
 
   return (
@@ -138,7 +138,7 @@ export default function StatistiquesPage() {
                   <td className="py-2 pr-2"><Link href={`/annonces/${b.id}`} className="text-gray-800 hover:text-navy font-medium">{b.titre}</Link></td>
                   <td className="py-2 pr-2 text-gray-500">{b.region}</td>
                   <td className="py-2 pr-2 text-right whitespace-nowrap">{formatPrix(b.prix)}</td>
-                  <td className="py-2 text-right tabular-nums">{b.nb_vues.toLocaleString()}</td>
+                  <td className="py-2 text-right tabular-nums">{b.nb_vues.toLocaleString("fr-FR")}</td>
                 </tr>
               ))}
             </tbody>

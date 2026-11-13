@@ -51,7 +51,7 @@ function Gestion({ bien, user }: { bien: Bien; user: User }) {
       <div className="card p-5 mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-xl font-bold text-gray-900">{bien.titre}</h1>
-          <p className="text-sm text-gray-400 mb-2">{bien.superficie.toLocaleString()} m² · {bien.ville} · Réf {bien.reference}</p>
+          <p className="text-sm text-gray-400 mb-2">{bien.superficie.toLocaleString("fr-FR")} m² · {bien.ville} · Réf {bien.reference}</p>
           <div className="flex items-center gap-2 flex-wrap">
             <TFBadge bien={bien} />
             {meta.depublie && <span className="bg-gray-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Dépubliée</span>}

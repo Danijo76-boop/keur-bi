@@ -1,6 +1,6 @@
 "use client";
 import { BIENS, Bien, COORDONNEES, CENTRES_REGIONS } from "./mock-data";
-import { lire, ecrire, nouvelId, useStocke } from "./stockage";
+import { lire, ecrire, nouvelId, signalerMaj, useStocke } from "./stockage";
 import { popup } from "./popup";
 
 const CLE_ANNONCES = "keurbi_annonces";
@@ -24,6 +24,27 @@ export type NouvelleAnnonce = Pick<
   proprietaire: string;
   tf: Bien["tf"];
 };
+
+/* ── Annonces de la base de données ──
+   Le serveur les fournit via /api/annonces. En attendant sa réponse (ou s'il ne répond pas),
+   les annonces d'exemple embarquées servent d'affichage provisoire. */
+let biensBase: Bien[] = BIENS;
+let chargement: Promise<void> | undefined;
+
+export function chargerBiensBase(forcer = false): Promise<void> {
+  if (chargement && !forcer) return chargement;
+  chargement = fetch("/api/annonces", { cache: "no-store" })
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+    .then((d: { annonces: Bien[] }) => {
+      biensBase = d.annonces;
+      signalerMaj();
+    })
+    .catch((e) => {
+      chargement = undefined;
+      console.warn("Annonces : base de données injoignable, affichage des données d'exemple.", e);
+    });
+  return chargement;
+}
 
 function lireAnnoncesLocales(): Bien[] {
   return lire<Bien[]>(CLE_ANNONCES, []);
@@ -53,13 +74,13 @@ function appliquerMeta(bien: Bien, meta?: MetaAnnonce): Bien {
 
 export function tousLesBiens(inclureDepublies = false): Bien[] {
   const meta = lireMeta();
-  return [...lireAnnoncesLocales(), ...BIENS]
+  return [...lireAnnoncesLocales(), ...biensBase]
     .filter((b) => inclureDepublies || !meta[b.id]?.depublie)
     .map((b) => appliquerMeta(b, meta[b.id]));
 }
 
 export function useBiens(inclureDepublies = false): Bien[] {
-  return useStocke(() => tousLesBiens(inclureDepublies), BIENS, [inclureDepublies]);
+  return useStocke(() => tousLesBiens(inclureDepublies), biensBase, [inclureDepublies]);
 }
 
 export function useMetaAnnonce(id: string): MetaAnnonce {
@@ -81,7 +102,7 @@ export function publierAnnonce(a: NouvelleAnnonce): Bien {
   const nouvelle: Bien = {
     ...a,
     id,
-    reference: `KB-2026-${String(BIENS.length + existantes.length + 1).padStart(4, "0")}`,
+    reference: `KB-2026-${String(biensBase.length + existantes.length + 1).padStart(4, "0")}`,
     photo: a.photos[0],
     is_verified_tf: false,
     is_featured: false,

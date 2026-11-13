@@ -288,7 +288,7 @@ function Assistant({ user }: { user: User }) {
               <dl className="text-sm grid sm:grid-cols-2 gap-3">
                 <div><dt className="text-xs text-gray-400">Bien</dt><dd className="font-semibold">{titre}</dd></div>
                 <div><dt className="text-xs text-gray-400">Zone</dt><dd className="font-semibold">{quartier}, {ville}</dd></div>
-                <div><dt className="text-xs text-gray-400">Surface</dt><dd className="font-semibold">{surface.toLocaleString()} m²</dd></div>
+                <div><dt className="text-xs text-gray-400">Surface</dt><dd className="font-semibold">{surface.toLocaleString("fr-FR")} m²</dd></div>
                 <div><dt className="text-xs text-gray-400">Prix</dt><dd className="font-semibold">{formatFCFA(prixNombre)}</dd></div>
                 <div><dt className="text-xs text-gray-400">TF</dt><dd className="font-semibold">{numeroTF} · {conservation}</dd></div>
                 <div><dt className="text-xs text-gray-400">Photos</dt><dd className="font-semibold">{photos.length}</dd></div>
@@ -324,7 +324,7 @@ function Assistant({ user }: { user: User }) {
             </div>
             <div className="p-4">
               <div className="font-semibold text-sm text-gray-900">{titre || "Titre de l'annonce"}</div>
-              <div className="text-xs text-gray-400 mb-2">{quartier || "Quartier"}, {ville || "Ville"} · {surface.toLocaleString()} m²</div>
+              <div className="text-xs text-gray-400 mb-2">{quartier || "Quartier"}, {ville || "Ville"} · {surface.toLocaleString("fr-FR")} m²</div>
               <div className="font-bold text-navy">{formatFCFA(prixNombre)}</div>
               {surface > 0 && prixNombre > 0 && <div className="text-xs text-gray-400">{formatFCFA(prixNombre / surface)} / m²</div>}
             </div>

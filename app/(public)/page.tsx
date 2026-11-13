@@ -4,11 +4,19 @@ import { Shield, FileCheck, TrendingUp, ArrowRight, CheckCircle, Star, MapPin, H
 import { BIENS, REGIONS, formatPrix } from "@/lib/mock-data";
 import { ChiffresCles, NbAnnoncesRegion } from "@/components/ChiffresAccueil";
 import PropertyCard from "@/components/PropertyCard";
+import { listerAnnonces } from "@/lib/serveur/annonces";
 import HeroSearch from "@/components/HeroSearch";
 import SectionPersonnalisee from "@/components/SectionPersonnalisee";
 
-export default function HomePage() {
-  const featured = BIENS.filter(b => b.is_featured).slice(0, 3);
+// L'accueil lit les annonces en vedette dans la base à chaque visite.
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const biens = await listerAnnonces().catch((e) => {
+    console.error("Accueil : base de données injoignable", e);
+    return BIENS;
+  });
+  const featured = biens.filter(b => b.is_featured).slice(0, 3);
   const vedette = featured.find((b) => b.type === "villa") ?? featured[0];
 
   return (

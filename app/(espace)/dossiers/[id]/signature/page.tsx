@@ -135,7 +135,7 @@ function Formulaire({ id, bien, user }: { id: string; bien: Bien; user: User }) 
           <dl className="flex flex-col gap-3 mb-6">
             <div><dt className="font-semibold text-gray-900">Vendeur</dt><dd>{nomPartie.vendeur}</dd></div>
             <div><dt className="font-semibold text-gray-900">Acheteur</dt><dd>{nomPartie.acheteur}</dd></div>
-            <div><dt className="font-semibold text-gray-900">Bien immobilier</dt><dd>{bien.titre} · {bien.superficie.toLocaleString()} m² · {bien.quartier}, {bien.ville}</dd></div>
+            <div><dt className="font-semibold text-gray-900">Bien immobilier</dt><dd>{bien.titre} · {bien.superficie.toLocaleString("fr-FR")} m² · {bien.quartier}, {bien.ville}</dd></div>
             <div><dt className="font-semibold text-gray-900">Titre Foncier</dt><dd>N° {bien.tf.numero ?? "en attente"} · Conservation {bien.tf.conservation ?? "—"}</dd></div>
             <div><dt className="font-semibold text-gray-900">Prix de vente convenu</dt><dd className="font-bold text-navy">{formatFCFA(prix)}</dd></div>
           </dl>

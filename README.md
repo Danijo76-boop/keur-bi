@@ -39,7 +39,8 @@ Regroupées dans `lib/revenus.ts` et `lib/publicite.ts`, visibles dans Administr
 ## Base de données
 
 La base est en PostgreSQL, décrite dans `prisma/schema.prisma` et pilotée par Prisma.
-Pour l'instant, seules les routes `/api/annonces` et `/api/annonces/[id]` la lisent : les pages utilisent encore les données du navigateur et basculeront domaine par domaine.
+Les annonces affichées sur le site (accueil, liste, fiche, carte, statistiques) sont lues dans la base, via `/api/annonces`. Si la base ne répond pas, le site affiche les annonces d'exemple embarquées.
+Le reste (comptes, publication, dossiers, messagerie) utilise encore les données du navigateur et basculera domaine par domaine.
 
 | Commande | Effet |
 |---|---|

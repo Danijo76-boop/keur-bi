@@ -15,7 +15,7 @@ export default function BarresHorizontales({
 }) {
   const [survol, setSurvol] = useState<string | null>(null);
   const max = Math.max(...donnees.map((d) => d.valeur), 1);
-  const texte = (v: number) => (format ? format(v) : `${v.toLocaleString()}${unite ? ` ${unite}` : ""}`);
+  const texte = (v: number) => (format ? format(v) : `${v.toLocaleString("fr-FR")}${unite ? ` ${unite}` : ""}`);
 
   return (
     <div className="flex flex-col gap-1">

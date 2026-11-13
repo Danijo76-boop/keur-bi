@@ -75,7 +75,7 @@ export default function CartePage() {
                 >
                   <div className="text-xs text-gray-500 mb-1">{ICONES_TF[s]} {LABELS_TF[s]}</div>
                   <div className="font-semibold text-sm text-gray-900">{b.titre}</div>
-                  <div className="text-xs text-gray-400">{b.ville} · {b.superficie.toLocaleString()} m²</div>
+                  <div className="text-xs text-gray-400">{b.ville} · {b.superficie.toLocaleString("fr-FR")} m²</div>
                   <div className="text-navy font-bold text-sm mt-1">{formatFCFA(b.prix)}</div>
                   {selection === b.id && (
                     <Link href={`/annonces/${b.id}`} className="text-xs text-blue font-medium hover:underline mt-1 inline-block">Voir le détail →</Link>

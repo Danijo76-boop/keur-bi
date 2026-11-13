@@ -43,7 +43,7 @@ export default function ComparerPage() {
   const iPlusGrand = compares.reduce((m, b, i) => (b.superficie > compares[m].superficie ? i : m), 0);
 
   const lignes: { label: string; rendu: (b: Bien, i: number) => ReactNode }[] = [
-    { label: "Superficie", rendu: (b, i) => <>{b.superficie.toLocaleString()} m²{compares.length > 1 && i === iPlusGrand && " ↑"}</> },
+    { label: "Superficie", rendu: (b, i) => <>{b.superficie.toLocaleString("fr-FR")} m²{compares.length > 1 && i === iPlusGrand && " ↑"}</> },
     { label: "Prix / m²", rendu: (b, i) => <>{formatFCFA(prixM2[i])}{compares.length > 1 && i === iMeilleurM2 && " ✓"}</> },
     { label: "Quartier", rendu: (b) => b.quartier },
     { label: "Titre Foncier", rendu: (b) => { const s = statutTF(b, overrides, demandes); return `${ICONES_TF[s]} ${LABELS_TF[s]}`; } },
@@ -65,7 +65,7 @@ export default function ComparerPage() {
       <>
         <strong>{moinsCher.titre}</strong> a le coût total d&apos;acquisition le plus bas, avec {formatFCFA(ecart)} de moins que le suivant.{" "}
         <strong>{compares[iMeilleurM2].titre}</strong> a le meilleur prix au m².
-        {grand.id !== moinsCher.id && <> <strong>{grand.titre}</strong> offre la plus grande surface ({grand.superficie.toLocaleString()} m²).</>}
+        {grand.id !== moinsCher.id && <> <strong>{grand.titre}</strong> offre la plus grande surface ({grand.superficie.toLocaleString("fr-FR")} m²).</>}
       </>
     );
   })();
