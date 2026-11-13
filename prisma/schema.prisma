@@ -70,8 +70,21 @@ model Utilisateur {
   messages        Message[]
   lectures        LectureConversation[]
   notificationsLues NotificationLue[]
+  sessions        Session[]
 
   @@index([role])
+}
+
+// Session ouverte après connexion. Le navigateur garde un jeton secret ; la base n'en conserve que l'empreinte.
+model Session {
+  id            String      @id @default(cuid())
+  jetonHash     String      @unique
+  utilisateurId String
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  creeLe        DateTime    @default(now())
+  expireLe      DateTime
+
+  @@index([utilisateurId])
 }
 
 // Pièces d'identité : la base ne garde que la référence des fichiers, rangés dans un stockage séparé et protégé.

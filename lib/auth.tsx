@@ -1,11 +1,16 @@
 "use client";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { assurerUtilisateur } from "./utilisateurs";
+import { assurerUtilisateur, enregistrerConnexion } from "./utilisateurs";
 
 export type Role = "acheteur" | "vendeur" | "agence" | "agent" | "notaire" | "clerc" | "moderateur" | "admin";
 export type User = { nom: string; email: string; role: Role };
 
 export const ROLES: Role[] = ["acheteur", "vendeur", "agence", "agent", "notaire", "clerc", "moderateur", "admin"];
+
+// Rôles qu'une personne peut choisir elle-même à l'inscription. Modérateur et admin sont attribués par un administrateur.
+export const ROLES_INSCRIPTION: Role[] = ["acheteur", "vendeur", "agence", "agent", "notaire", "clerc"];
+
+export const LONGUEUR_MIN_MOT_DE_PASSE = 8;
 
 export const ROLE_LABELS: Record<Role, string> = {
   acheteur: "Acheteur",
@@ -52,45 +57,81 @@ export const estCoteVendeur = (role: Role | undefined) => famille(role) === "ven
 export const estNotariat = (role: Role | undefined) => famille(role) === "notariat";
 export const estPlateforme = (role: Role | undefined) => famille(role) === "plateforme";
 
+export type ResultatAuth = { ok: true } | { ok: false; erreur: string };
+export type DonneesInscription = { nom: string; email: string; motDePasse: string; role: Role; telephone?: string };
+
 type AuthContextValue = {
   user: User | null;
   pret: boolean;
-  login: (user: User) => void;
-  logout: () => void;
+  connexion: (email: string, motDePasse: string) => Promise<ResultatAuth>;
+  inscription: (d: DonneesInscription) => Promise<ResultatAuth>;
+  majProfil: (patch: { nom?: string; telephone?: string; ville?: string }) => Promise<ResultatAuth>;
+  logout: () => Promise<void>;
 };
 
+// Copie locale du compte connecté, lue par quelques modules (journal). Elle ne donne aucun droit :
+// la session réelle est un cookie que seul le serveur peut lire et vérifier.
 const STORAGE_KEY = "keurbi_user";
 const AuthContext = createContext<AuthContextValue | null>(null);
+
+async function appeler(url: string, methode: "POST" | "PATCH", corps?: unknown): Promise<{ ok: boolean; donnees: { utilisateur?: User; erreur?: string } }> {
+  try {
+    const r = await fetch(url, { method: methode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(corps ?? {}) });
+    return { ok: r.ok, donnees: await r.json().catch(() => ({})) };
+  } catch {
+    return { ok: false, donnees: { erreur: "Connexion au serveur impossible. Vérifiez votre accès Internet." } };
+  }
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [pret, setPret] = useState(false);
 
-  useEffect(() => {
+  function appliquer(u: User | null) {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const stocke: User = JSON.parse(raw);
-        assurerUtilisateur(stocke);
-        setUser(stocke);
-      }
+      if (u) localStorage.setItem(STORAGE_KEY, JSON.stringify({ nom: u.nom, email: u.email, role: u.role }));
+      else localStorage.removeItem(STORAGE_KEY);
     } catch {
-      /* ignore */
+      /* stockage indisponible : sans conséquence sur la session */
     }
-    setPret(true);
+    setUser(u ? { nom: u.nom, email: u.email, role: u.role } : null);
+  }
+
+  useEffect(() => {
+    fetch("/api/auth/moi", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : { utilisateur: null }))
+      .then((d: { utilisateur: User | null }) => {
+        if (d.utilisateur) assurerUtilisateur(d.utilisateur);
+        appliquer(d.utilisateur);
+      })
+      .catch(() => appliquer(null))
+      .finally(() => setPret(true));
   }, []);
 
-  function login(u: User) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
-    setUser(u);
+  async function ouvrir(url: string, corps: unknown, telephone?: string): Promise<ResultatAuth> {
+    const { ok, donnees } = await appeler(url, "POST", corps);
+    if (!ok || !donnees.utilisateur) return { ok: false, erreur: donnees.erreur ?? "Une erreur est survenue. Réessayez." };
+    enregistrerConnexion(donnees.utilisateur, telephone);
+    appliquer(donnees.utilisateur);
+    return { ok: true };
   }
 
-  function logout() {
-    localStorage.removeItem(STORAGE_KEY);
-    setUser(null);
+  const connexion = (email: string, motDePasse: string) => ouvrir("/api/auth/connexion", { email, motDePasse });
+  const inscription = (d: DonneesInscription) => ouvrir("/api/auth/inscription", d, d.telephone);
+
+  async function majProfil(patch: { nom?: string; telephone?: string; ville?: string }): Promise<ResultatAuth> {
+    const { ok, donnees } = await appeler("/api/auth/moi", "PATCH", patch);
+    if (!ok || !donnees.utilisateur) return { ok: false, erreur: donnees.erreur ?? "Une erreur est survenue. Réessayez." };
+    appliquer(donnees.utilisateur);
+    return { ok: true };
   }
 
-  return <AuthContext.Provider value={{ user, pret, login, logout }}>{children}</AuthContext.Provider>;
+  async function logout() {
+    await appeler("/api/auth/deconnexion", "POST");
+    appliquer(null);
+  }
+
+  return <AuthContext.Provider value={{ user, pret, connexion, inscription, majProfil, logout }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

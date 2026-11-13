@@ -104,6 +104,18 @@ export function ajouterUtilisateur(u: Utilisateur) {
   sauvegarder([u, ...lireUtilisateurs().filter((x) => x.email !== u.email)]);
 }
 
+// Répercute sur le serveur une décision d'administration (suspension, rôle), pour qu'elle s'applique à la vraie connexion.
+// Un compte qui n'existe que dans l'annuaire de démonstration du navigateur est simplement ignoré (404).
+export function majCompteServeur(email: string, patch: { suspendu?: boolean; role?: Role }) {
+  fetch("/api/admin/utilisateurs", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, ...patch }) })
+    .then(async (r) => {
+      if (r.ok || r.status === 404) return;
+      const d = await r.json().catch(() => ({}));
+      popup.erreur("Modification non appliquée au compte", d.erreur ?? "Le serveur a refusé la demande.");
+    })
+    .catch(() => popup.erreur("Modification non appliquée au compte", "Connexion au serveur impossible."));
+}
+
 export function soumettreKYC(email: string, kyc: DossierKYC) {
   popup.succes("Dossier d'identité envoyé", "Il sera examiné par notre équipe.");
   majUtilisateur(email, { statutKYC: "en_attente", kyc: { ...kyc, soumisLe: new Date().toISOString() } });

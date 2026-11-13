@@ -14,7 +14,7 @@ import Rattachement from "@/components/Rattachement";
 const champ = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mt-1 font-normal";
 
 function Contenu({ user }: { user: User }) {
-  const { login } = useAuth();
+  const { majProfil } = useAuth();
   const biens = useBiens(true);
   const profil = useStocke(() => trouverUtilisateur(user.email), undefined, [user.email]);
   const dossiers = useStocke(() => lireDossiers().filter((d) => d.acheteurEmail === user.email), [], [user.email]);
@@ -33,11 +33,12 @@ function Contenu({ user }: { user: User }) {
   const lignes = detailScore(profil, transactions);
   const appreciation = score >= 80 ? "Excellent" : score >= 50 ? "Bon" : "À compléter";
 
-  function enregistrer(e: React.FormEvent) {
+  async function enregistrer(e: React.FormEvent) {
     e.preventDefault();
+    const resultat = await majProfil({ nom: nom.trim(), telephone: telephone.trim(), ville: ville.trim() });
+    if (!resultat.ok) return popup.erreur("Profil non enregistré", resultat.erreur);
     majUtilisateur(user.email, { nom: nom.trim(), telephone: telephone.trim(), ville: ville.trim() });
     popup.succes("Profil enregistré");
-    login({ ...user, nom: nom.trim() });
     setOk(true);
   }
 

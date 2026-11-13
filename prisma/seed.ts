@@ -1,6 +1,7 @@
 // Charge les données d'exemple dans la base : agences, notaires, comptes de démonstration, annonces.
 // Peut être relancé sans risque : chaque ligne est créée ou mise à jour, jamais dupliquée.
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 import { AGENCES } from "../lib/agences";
 import { NOTAIRES } from "../lib/notaires";
 import { BIENS, COORDONNEES } from "../lib/mock-data";
@@ -25,14 +26,30 @@ async function main() {
     await prisma.notaire.upsert({ where: { slug }, update: donnees, create: { slug, ...donnees } });
   }
 
+  // Sans MOT_DE_PASSE_DEMO, les comptes d'exemple existent mais personne ne peut s'y connecter.
+  const motDePasseDemo = process.env.MOT_DE_PASSE_DEMO;
+  const hashDemo = motDePasseDemo ? await bcrypt.hash(motDePasseDemo, 12) : undefined;
+
   for (const u of COMPTES_DEMO) {
     const { kyc, email, inscritLe, derniereConnexion, ...champs } = u;
-    const donnees = { ...champs, inscritLe: new Date(inscritLe), derniereConnexion: date(derniereConnexion) };
+    const donnees = { ...champs, inscritLe: new Date(inscritLe), derniereConnexion: date(derniereConnexion), ...(hashDemo && { motDePasseHash: hashDemo }) };
     const compte = await prisma.utilisateur.upsert({ where: { email }, update: donnees, create: { email, ...donnees } });
     if (kyc) {
       const dossier = { ...kyc, dateNaissance: date(kyc.dateNaissance), soumisLe: date(kyc.soumisLe) };
       await prisma.dossierKYC.upsert({ where: { utilisateurId: compte.id }, update: dossier, create: { utilisateurId: compte.id, ...dossier } });
     }
+  }
+
+  // Premier administrateur : créé uniquement si ses identifiants sont fournis dans .env.
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const adminMotDePasse = process.env.ADMIN_MOT_DE_PASSE;
+  if (adminEmail && adminMotDePasse) {
+    const motDePasseHash = await bcrypt.hash(adminMotDePasse, 12);
+    await prisma.utilisateur.upsert({
+      where: { email: adminEmail },
+      update: { role: "admin", motDePasseHash, suspendu: false },
+      create: { email: adminEmail, nom: "Administrateur", role: "admin", statutKYC: "verifie", motDePasseHash },
+    });
   }
 
   const agences = new Map((await prisma.agence.findMany()).map((a) => [a.slug, a.id]));

@@ -2,9 +2,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Mail, Lock, User as UserIcon, Phone } from "lucide-react";
-import { useAuth, ROLE_LABELS, Role, ROLES, ROLE_DESCRIPTIONS, estPlateforme } from "@/lib/auth";
-import { enregistrerConnexion, trouverUtilisateur } from "@/lib/utilisateurs";
-import BandeauDemo from "@/components/BandeauDemo";
+import { useAuth, ROLE_LABELS, Role, ROLES_INSCRIPTION, ROLE_DESCRIPTIONS, LONGUEUR_MIN_MOT_DE_PASSE } from "@/lib/auth";
 
 
 export default function ConnexionPage() {
@@ -18,33 +16,39 @@ export default function ConnexionPage() {
 function Formulaire() {
   const params = useSearchParams();
   const router = useRouter();
-  const { login } = useAuth();
+  const { connexion, inscription } = useAuth();
   const [mode, setMode] = useState<"connexion" | "inscription">(params.get("mode") === "inscription" ? "inscription" : "connexion");
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
   const [telephone, setTelephone] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
-  const [role, setRole] = useState<Role>(() => ROLES.find((r) => r === params.get("role")) ?? "acheteur");
+  const [role, setRole] = useState<Role>(() => ROLES_INSCRIPTION.find((r) => r === params.get("role")) ?? "acheteur");
   const [erreur, setErreur] = useState("");
+  const [envoi, setEnvoi] = useState(false);
 
-  function soumettre(e: React.FormEvent) {
+  async function soumettre(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim() || !motDePasse.trim() || (mode === "inscription" && !nom.trim())) {
+    if (envoi) return;
+    if (!email.trim() || !motDePasse || (mode === "inscription" && !nom.trim())) {
       setErreur("Merci de remplir tous les champs.");
       return;
     }
-    const adresse = email.trim();
-    const existant = trouverUtilisateur(adresse);
-    if (existant?.suspendu) {
-      setErreur("Ce compte est suspendu. Contactez le support KEUR BI.");
+    if (mode === "inscription" && motDePasse.length < LONGUEUR_MIN_MOT_DE_PASSE) {
+      setErreur(`Le mot de passe doit contenir au moins ${LONGUEUR_MIN_MOT_DE_PASSE} caractères.`);
       return;
     }
     setErreur("");
-    const nomAffiche = mode === "inscription" ? nom.trim() : existant?.nom ?? adresse.split("@")[0];
-    const user = { nom: nomAffiche, email: adresse, role };
-    enregistrerConnexion(user, telephone.trim() || undefined);
-    login(user);
-    router.push(mode === "inscription" && !estPlateforme(role) ? "/kyc" : "/tableau-de-bord");
+    setEnvoi(true);
+    const resultat =
+      mode === "inscription"
+        ? await inscription({ nom: nom.trim(), email: email.trim(), motDePasse, role, telephone: telephone.trim() || undefined })
+        : await connexion(email.trim(), motDePasse);
+    setEnvoi(false);
+    if (!resultat.ok) {
+      setErreur(resultat.erreur);
+      return;
+    }
+    router.push(mode === "inscription" ? "/kyc" : "/tableau-de-bord");
   }
 
   return (
@@ -57,15 +61,12 @@ function Formulaire() {
           {mode === "connexion" ? "Accédez à votre espace KEUR BI" : "Rejoignez KEUR BI en quelques secondes"}
         </p>
 
-        <BandeauDemo>Version de démonstration : aucun mot de passe n&apos;est vérifié ni enregistré, et le rôle se choisit librement.</BandeauDemo>
-
         <form onSubmit={soumettre} className="flex flex-col gap-3">
+          {mode === "inscription" && (
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-2">
-              {mode === "inscription" ? "Je suis un(e)" : "Se connecter en tant que"}
-            </label>
+            <label className="text-sm font-semibold text-gray-700 block mb-2">Je suis un(e)</label>
             <div className="grid grid-cols-2 gap-2">
-              {ROLES.map((r) => (
+              {ROLES_INSCRIPTION.map((r) => (
                 <button
                   key={r}
                   type="button"
@@ -84,6 +85,7 @@ function Formulaire() {
             </div>
             <p className="text-xs text-gray-500 mt-2">{ROLE_DESCRIPTIONS[role]}</p>
           </div>
+          )}
           {mode === "inscription" && (
             <>
               <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 focus-within:border-navy">
@@ -114,6 +116,7 @@ function Formulaire() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Adresse email"
+              autoComplete="email"
               className="w-full text-sm outline-none"
             />
           </div>
@@ -123,15 +126,16 @@ function Formulaire() {
               type="password"
               value={motDePasse}
               onChange={(e) => setMotDePasse(e.target.value)}
-              placeholder="Mot de passe"
+              placeholder={mode === "inscription" ? `Mot de passe (${LONGUEUR_MIN_MOT_DE_PASSE} caractères minimum)` : "Mot de passe"}
+              autoComplete={mode === "inscription" ? "new-password" : "current-password"}
               className="w-full text-sm outline-none"
             />
           </div>
 
-          {erreur && <p className="text-red text-xs">{erreur}</p>}
+          {erreur && <p role="alert" className="text-red text-xs">{erreur}</p>}
 
-          <button type="submit" className="btn-navy w-full mt-2">
-            {mode === "connexion" ? "Se connecter" : "Créer mon compte"}
+          <button type="submit" disabled={envoi} className="btn-navy w-full mt-2 disabled:opacity-60">
+            {envoi ? "Un instant…" : mode === "connexion" ? "Se connecter" : "Créer mon compte"}
           </button>
         </form>
 
