@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    @apply font-sans text-gray-800 antialiased;
+    background-color: #f7f5f0;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display), var(--font-inter), system-ui, sans-serif;
+  }
+  h1, h2 { letter-spacing: -0.02em; }
+  ::selection { background: rgba(240, 165, 0, 0.3); }
+
+  /* Champs : même finition partout, sans retoucher chaque écran. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  select,
+  textarea {
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus,
+  select:focus,
+  textarea:focus {
+    box-shadow: 0 0 0 3px rgba(27, 79, 114, 0.12);
+  }
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid #f0a500;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  table thead th { @apply uppercase tracking-wide; }
+}
+
+@keyframes apparition {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gold text-navy-dark font-semibold px-5 py-2.5 rounded-xl transition-all duration-150
+           hover:bg-gold-light hover:-translate-y-px active:translate-y-0;
+    box-shadow: 0 1px 2px rgba(27, 42, 74, 0.12), 0 6px 16px -6px rgba(240, 165, 0, 0.55);
+  }
+  .btn-navy {
+    @apply bg-navy text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-150
+           hover:bg-navy-light hover:-translate-y-px active:translate-y-0;
+    box-shadow: 0 1px 2px rgba(27, 42, 74, 0.15), 0 6px 16px -8px rgba(27, 79, 114, 0.6);
+  }
+  .btn-primary:disabled,
+  .btn-navy:disabled {
+    @apply translate-y-0 shadow-none;
+  }
+  .badge-verified {
+    @apply inline-flex items-center gap-1 bg-green/10 text-green-light text-xs font-semibold px-2 py-0.5 rounded-full;
+  }
+  .badge-tf {
+    @apply inline-flex items-center gap-1 bg-blue/10 text-blue text-xs font-semibold px-2 py-0.5 rounded-full;
+  }
+  .card {
+    @apply bg-white rounded-2xl overflow-hidden;
+    border: 1px solid rgba(27, 42, 74, 0.07);
+    box-shadow: 0 1px 2px rgba(27, 42, 74, 0.04), 0 8px 24px -12px rgba(27, 42, 74, 0.12);
+  }
+  .card-hover {
+    @apply transition-all duration-200 hover:-translate-y-1;
+  }
+  .card-hover:hover {
+    box-shadow: 0 2px 4px rgba(27, 42, 74, 0.05), 0 20px 40px -16px rgba(27, 42, 74, 0.25);
+  }
+  .eyebrow {
+    @apply inline-block text-xs font-bold uppercase text-gold;
+    letter-spacing: 0.14em;
+  }
+  .section-title {
+    @apply text-2xl md:text-3xl font-extrabold text-navy-dark;
+  }
+}
+
+@keyframes decompte {
+  from { width: 100%; }
+  to { width: 0; }
+}
+
+/* ───────────── Mode nuit ─────────────
+   Les écrans utilisent des classes utilitaires claires (bg-white, text-gray-900…).
+   Plutôt que de doubler chaque classe d'une variante sombre dans une soixantaine de fichiers,
+   la palette est remappée ici, en un seul endroit, quand <html> porte la classe "dark". */
+@media screen {
+  html.dark { color-scheme: dark; }
+  html.dark body { background-color: #0e1524; color: #e5e9f0; }
+
+  /* Surfaces */
+  html.dark .card {
+    background-color: #182236;
+    border-color: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px -14px rgba(0, 0, 0, 0.7);
+  }
+  html.dark .card-hover:hover { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35), 0 24px 44px -16px rgba(0, 0, 0, 0.85); }
+  html.dark .bg-white { background-color: #182236; }
+  html.dark .bg-white\/90 { background-color: rgba(24, 34, 54, 0.9); }
+  html.dark .bg-gray-50 { background-color: #1f2b42; }
+  html.dark .bg-gray-100 { background-color: #25324b; }
+  html.dark .bg-gray-200 { background-color: #2d3b56; }
+  html.dark .hover\:bg-gray-50:hover,
+  html.dark .hover\:bg-white:hover { background-color: #25324b; }
+  html.dark .hover\:bg-gray-100:hover { background-color: #2d3b56; }
+  html.dark .bg-navy\/5 { background-color: rgba(142, 197, 234, 0.08); }
+  html.dark .bg-navy\/10 { background-color: rgba(142, 197, 234, 0.14); }
+  html.dark .hover\:bg-navy\/5:hover { background-color: rgba(142, 197, 234, 0.1); }
+  html.dark .bg-navy { background-color: #23618c; }
+  html.dark .btn-navy { background-color: #23618c; }
+  html.dark .btn-navy:hover, html.dark .hover\:bg-navy-light:hover { background-color: #2e7bb0; }
+
+  /* Textes */
+  html.dark .text-gray-900 { color: #f3f6fa; }
+  html.dark .text-gray-800 { color: #e5e9f0; }
+  html.dark .text-gray-700 { color: #cdd5e0; }
+  html.dark .text-gray-600 { color: #b1bccb; }
+  html.dark .text-gray-500 { color: #93a0b4; }
+  html.dark .text-gray-400 { color: #7b889d; }
+  html.dark .text-gray-300 { color: #5c697e; }
+  html.dark .text-navy,
+  html.dark .hover\:text-navy:hover,
+  html.dark .group:hover .group-hover\:text-navy { color: #8ec5ea; }
+  html.dark .text-navy-dark,
+  html.dark .section-title { color: #f3f6fa; }
+  html.dark .text-navy\/30 { color: rgba(142, 197, 234, 0.35); }
+  html.dark .text-blue, html.dark .hover\:text-blue:hover { color: #62bbe0; }
+  html.dark .text-green { color: #5fd08a; }
+  html.dark .text-red, html.dark .hover\:text-red:hover { color: #f28d80; }
+  html.dark .hover\:text-gray-600:hover { color: #cdd5e0; }
+  /* Sur un fond doré plein, le texte reste sombre pour rester lisible. */
+  html.dark :is(.bg-gold, .bg-gold-light, .btn-primary, [class*="from-gold"]).text-navy-dark,
+  html.dark :is(.bg-gold, .bg-gold-light, .btn-primary, [class*="from-gold"]) .text-navy-dark,
+  html.dark .btn-primary { color: #1b2a4a; }
+  html.dark .bg-navy.text-white, html.dark .bg-navy .text-white { color: #fff; }
+
+  /* Bordures */
+  html.dark .border-gray-50 { border-color: rgba(255, 255, 255, 0.05); }
+  html.dark .border-gray-100 { border-color: rgba(255, 255, 255, 0.08); }
+  html.dark .border-gray-200 { border-color: rgba(255, 255, 255, 0.13); }
+  html.dark .border-gray-300 { border-color: rgba(255, 255, 255, 0.2); }
+  html.dark .border-navy\/20 { border-color: rgba(142, 197, 234, 0.3); }
+  html.dark .border-navy, html.dark .hover\:border-navy:hover, html.dark .focus\:border-navy:focus { border-color: #5b9fcb; }
+  html.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(255, 255, 255, 0.08); }
+
+  /* Champs de saisie */
+  html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  html.dark select,
+  html.dark textarea {
+    background-color: #111a2c;
+    color: #e5e9f0;
+  }
+  html.dark input::placeholder, html.dark textarea::placeholder { color: #6c7a90; }
+  html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus,
+  html.dark select:focus,
+  html.dark textarea:focus { box-shadow: 0 0 0 3px rgba(142, 197, 234, 0.2); }
+
+  /* Fonds teintés : un peu plus soutenus pour rester visibles sur fond sombre */
+  html.dark .bg-green\/10, html.dark .bg-green\/5 { background-color: rgba(95, 208, 138, 0.13); }
+  html.dark .bg-red\/10 { background-color: rgba(242, 141, 128, 0.14); }
+  html.dark .hover\:bg-red\/5:hover { background-color: rgba(242, 141, 128, 0.1); }
+  html.dark .bg-blue\/10 { background-color: rgba(98, 187, 224, 0.14); }
+  html.dark .border-red\/30 { border-color: rgba(242, 141, 128, 0.4); }
+
+  /* Carte */
+  html.dark .leaflet-tile { filter: brightness(0.75) contrast(1.1) saturate(0.85); }
+  html.dark .leaflet-popup-content-wrapper,
+  html.dark .leaflet-popup-tip { background: #182236; color: #e5e9f0; }
+  html.dark .leaflet-container { background: #111a2c; }
+}
