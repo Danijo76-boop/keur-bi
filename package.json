@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/base-locale.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "postinstall": "prisma generate",
-    "db:start": "pg_ctl -D .pgdata -o \"-p 5434 -c listen_addresses=localhost\" -l .pgdata/journal.log start",
+    "db:start": "node scripts/base-locale.mjs",
     "db:stop": "pg_ctl -D .pgdata stop",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",

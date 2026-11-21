@@ -52,7 +52,7 @@ Le reste (dossiers de vente, offres, messagerie, visites, favoris, réglages de 
 | `npm run db:seed` | Charge ou met à jour les données d'exemple |
 | `npm run db:studio` | Ouvre un tableau pour consulter et modifier les données |
 
-La base locale ne redémarre pas toute seule après un redémarrage du PC : lancez `npm run db:start`.
+`npm run dev` démarre automatiquement la base locale si elle est arrêtée (par exemple après un redémarrage du PC).
 
 L'adresse de la base se règle dans le fichier `.env` (modèle : `.env.example`), qui n'est jamais envoyé sur GitHub.
 Pour utiliser une base hébergée (Supabase, Neon), remplacez `DATABASE_URL`, puis lancez `npx prisma migrate deploy` et `npm run db:seed`.
