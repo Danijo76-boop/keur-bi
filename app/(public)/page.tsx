@@ -5,6 +5,7 @@ import { BIENS, REGIONS, formatPrix } from "@/lib/mock-data";
 import { ChiffresCles, NbAnnoncesRegion } from "@/components/ChiffresAccueil";
 import PropertyCard from "@/components/PropertyCard";
 import { listerAnnonces } from "@/lib/serveur/annonces";
+import { log } from "@/lib/serveur/journal";
 import HeroSearch from "@/components/HeroSearch";
 import SectionPersonnalisee from "@/components/SectionPersonnalisee";
 
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const biens = await listerAnnonces().catch((e) => {
-    console.error("Accueil : base de données injoignable", e);
+    log.erreur("Accueil : base de données injoignable", e);
     return BIENS;
   });
   const featured = biens.filter(b => b.is_featured).slice(0, 3);

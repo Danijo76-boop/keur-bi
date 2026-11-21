@@ -1,6 +1,7 @@
 "use client";
 import { signalerMaj } from "./stockage";
 import { popup } from "./popup";
+import { avecReference } from "./rapport-erreurs";
 import { Role } from "./auth";
 
 export type PlanId = "gratuit" | "pro" | "promoteur" | "essentiel" | "pro_notaire";
@@ -96,7 +97,9 @@ export function viderUtilisateurs() {
 async function envoyer(methode: "PATCH" | "POST", corps: unknown): Promise<{ ok: boolean; donnees: { utilisateur?: Utilisateur; motDePasseProvisoire?: string; erreur?: string } }> {
   try {
     const r = await fetch("/api/utilisateurs", { method: methode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(corps) });
-    return { ok: r.ok, donnees: await r.json().catch(() => ({})) };
+    const donnees = await r.json().catch(() => ({}));
+    if (r.status >= 500) donnees.erreur = avecReference(donnees.erreur ?? "Le service est momentanément indisponible.", r);
+    return { ok: r.ok, donnees };
   } catch {
     return { ok: false, donnees: { erreur: "Connexion au serveur impossible." } };
   }

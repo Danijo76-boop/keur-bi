@@ -59,6 +59,7 @@ model Utilisateur {
 
   kyc             DossierKYC?
   biens           Bien[]
+  programmes      Programme[]
   favoris         Favori[]
   dossiers        Dossier[]
   visites         Visite[]
@@ -140,6 +141,7 @@ model Agence {
 
   agents AgentAgence[]
   biens  Bien[]
+  programmes Programme[]
 }
 
 model AgentAgence {
@@ -193,10 +195,21 @@ enum TypeBien {
   bureau
 }
 
+enum Transaction {
+  vente
+  location
+}
+
 model Bien {
   id          String   @id @default(cuid())
   reference   String   @unique
   titre       String
+  // Vente : prix total. Location : loyer mensuel (charges à part).
+  transaction Transaction @default(vente)
+  charges     BigInt?
+  caution     BigInt?
+  meuble      Boolean  @default(false)
+  nbPieces    Int?
   type        TypeBien
   superficie  Int
   prix        BigInt
@@ -241,6 +254,7 @@ model Bien {
   signalements   Signalement[]
   conversations  Conversation[]
 
+  @@index([transaction, region, type])
   @@index([region, type])
   @@index([prix])
   @@index([depublie, publieLe])
@@ -273,8 +287,14 @@ model Alerte {
   utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
   // { q, type, region, prixMax, superficieMin, superficieMax, tfVerifie }
   criteres      Json
+  // « Quotidien » ou « Hebdomadaire »
   frequence     String
+  actif         Boolean     @default(true)
   creeLe        DateTime    @default(now())
+  // Date de la dernière vérification : seules les annonces publiées après elle sont envoyées.
+  dernierEnvoi  DateTime?
+
+  @@index([actif, dernierEnvoi])
 }
 
 model Visite {
@@ -677,4 +697,76 @@ model JournalReglages {
   date   DateTime @default(now())
   auteur String
   detail String
+}
+
+// ───────────── Programmes neufs ─────────────
+
+// Un programme d'un promoteur regroupe plusieurs lots (appartements, villas, bureaux…) vendus sur plan ou en construction.
+model Programme {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  nom         String
+  promoteur   String
+  agenceId    String?
+  agence      Agence?      @relation(fields: [agenceId], references: [id], onDelete: SetNull)
+  auteurId    String?
+  auteur      Utilisateur? @relation(fields: [auteurId], references: [id], onDelete: SetNull)
+  region      String
+  ville       String
+  quartier    String
+  description String
+  photo       String
+  photos      String[]
+  // Date de livraison prévue, en clair (ex. « 2e trimestre 2027 »).
+  livraison   String
+  avancement  String
+  lat         Float?
+  lng         Float?
+  publie      Boolean  @default(true)
+  creeLe      DateTime @default(now())
+
+  lots LotProgramme[]
+
+  @@index([publie, region])
+}
+
+model LotProgramme {
+  id          String    @id @default(cuid())
+  programmeId String
+  programme   Programme @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  type        TypeBien
+  libelle     String
+  superficie  Int
+  nbPieces    Int?
+  prix        BigInt
+  disponible  Boolean   @default(true)
+
+  @@index([programmeId])
+}
+
+// ───────────── Sécurité et diagnostic ─────────────
+
+// Compteurs d'essais (connexions, inscriptions, envois…) partagés entre toutes les instances du serveur.
+model Tentative {
+  cle   String   @id
+  nb    Int      @default(1)
+  debut DateTime @default(now())
+
+  @@index([debut])
+}
+
+// Avertissements, erreurs et actions d'administration, gardés pour le diagnostic (voir lib/serveur/journal.ts).
+model JournalTechnique {
+  id            String   @id @default(cuid())
+  date          DateTime @default(now())
+  niveau        String
+  categorie     String?
+  message       String
+  details       Json?
+  requeteId     String?
+  route         String?
+  utilisateurId String?
+
+  @@index([date])
+  @@index([niveau, date])
 }

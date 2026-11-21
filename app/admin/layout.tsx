@@ -2,7 +2,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Coins, FileSpreadsheet, Flag, ScrollText, Settings, ShieldCheck, Users } from "lucide-react";
+import { BarChart3, Bug, Coins, FileSpreadsheet, Flag, ScrollText, Settings, ShieldCheck, Users } from "lucide-react";
 import Protege from "@/components/Protege";
 import { Role } from "@/lib/auth";
 import { sectionsAdminOuvertes, useMatrice } from "@/lib/permissions";
@@ -16,6 +16,7 @@ const LIENS = [
   { href: "/admin/reporting", label: "Reporting & export", icone: FileSpreadsheet },
   { href: "/admin/revenus", label: "Revenus", icone: Coins },
   { href: "/admin/journal", label: "Journal d'activité", icone: ScrollText },
+  { href: "/admin/journal-technique", label: "Journal technique", icone: Bug },
 ];
 
 // L'accès se décide section par section, d'après la matrice des habilitations et non d'après le seul rôle admin.

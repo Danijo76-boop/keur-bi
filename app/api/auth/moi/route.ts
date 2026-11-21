@@ -1,27 +1,29 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/serveur/db";
 import { compteCourant, memeOrigine, versSession } from "@/lib/serveur/auth";
+import { avecJournal, log } from "@/lib/serveur/journal";
+import { lireJson } from "@/lib/serveur/securite";
 
 export const dynamic = "force-dynamic";
 
 // GET /api/auth/moi : la personne connectée, ou null.
-export async function GET() {
+async function get() {
   try {
     const compte = await compteCourant();
     return NextResponse.json({ utilisateur: compte ? versSession(compte) : null });
   } catch (e) {
-    console.error("GET /api/auth/moi", e);
+    log.erreur("GET /api/auth/moi", e);
     return NextResponse.json({ erreur: "Le service est momentanément indisponible." }, { status: 503 });
   }
 }
 
 // PATCH /api/auth/moi  { nom?, telephone?, ville? } : la personne modifie son propre profil.
-export async function PATCH(requete: Request) {
+async function patch(requete: Request) {
   if (!memeOrigine()) return NextResponse.json({ erreur: "Requête refusée." }, { status: 403 });
   try {
     const compte = await compteCourant();
     if (!compte) return NextResponse.json({ erreur: "Connexion requise." }, { status: 401 });
-    const corps = await requete.json().catch(() => null);
+    const corps = await lireJson(requete);
     const texte = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : undefined);
     const nom = texte(corps?.nom, 100);
     if (nom !== undefined && nom.length < 2) return NextResponse.json({ erreur: "Indiquez votre nom complet." }, { status: 400 });
@@ -33,7 +35,10 @@ export async function PATCH(requete: Request) {
     });
     return NextResponse.json({ utilisateur: versSession(maj) });
   } catch (e) {
-    console.error("PATCH /api/auth/moi", e);
+    log.erreur("PATCH /api/auth/moi", e);
     return NextResponse.json({ erreur: "Le service est momentanément indisponible." }, { status: 503 });
   }
 }
+
+export const GET = avecJournal("GET /api/auth/moi", get);
+export const PATCH = avecJournal("PATCH /api/auth/moi", patch);

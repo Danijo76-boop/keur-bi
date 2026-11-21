@@ -4,6 +4,7 @@ import Link from "next/link";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import ChargeurAnnonces from "@/components/ChargeurAnnonces";
+import RapportErreurs from "@/components/RapportErreurs";
 import MaintenanceGate from "@/components/MaintenanceGate";
 import GardeVisiteur from "@/components/GardeVisiteur";
 import PopupHost from "@/components/PopupHost";
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AuthProvider>
           <ChargeurAnnonces />
+          <RapportErreurs />
           <Navbar />
           <main><MaintenanceGate><GardeVisiteur>{children}</GardeVisiteur></MaintenanceGate></main>
           <PopupHost />

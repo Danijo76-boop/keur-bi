@@ -2,23 +2,23 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/serveur/db";
 import {
-  adresseClient, compterTentative, emailValide, hacherMotDePasse, LONGUEUR_MIN_MOT_DE_PASSE, memeOrigine,
-  normaliserEmail, ouvrirSession, ROLES_INSCRIPTION, tropDeTentatives, versSession,
+  adresseClient, emailValide, hacherMotDePasse, LONGUEUR_MIN_MOT_DE_PASSE, memeOrigine,
+  normaliserEmail, ouvrirSession, ROLES_INSCRIPTION, versSession,
 } from "@/lib/serveur/auth";
+import { avecJournal, log } from "@/lib/serveur/journal";
+import { freiner, LIMITES, lireJson, motDePasseFaible } from "@/lib/serveur/securite";
 
 const refus = (erreur: string, status = 400) => NextResponse.json({ erreur }, { status });
 
 // POST /api/auth/inscription  { nom, email, motDePasse, role, telephone? }
-export async function POST(requete: Request) {
+async function post(requete: Request) {
   if (!memeOrigine()) return refus("Requête refusée.", 403);
   const ip = adresseClient();
   if (ip) {
-    const cle = `inscription:${ip}`;
-    if (tropDeTentatives(cle, 20)) return refus("Trop de tentatives. Réessayez dans quelques minutes.", 429);
-    compterTentative(cle);
+    if (await freiner(`inscription:${ip}`, LIMITES.inscription)) return refus("Trop de tentatives. Réessayez dans quelques minutes.", 429);
   }
 
-  const corps = await requete.json().catch(() => null);
+  const corps = await lireJson(requete);
   const nom = typeof corps?.nom === "string" ? corps.nom.trim() : "";
   const email = typeof corps?.email === "string" ? normaliserEmail(corps.email) : "";
   const motDePasse = typeof corps?.motDePasse === "string" ? corps.motDePasse : "";
@@ -31,16 +31,21 @@ export async function POST(requete: Request) {
   // bcrypt ignore tout ce qui dépasse 72 octets : on refuse plutôt que de tronquer en silence.
   if (Buffer.byteLength(motDePasse) > 72) return refus("Le mot de passe est trop long (72 caractères au maximum).");
   if (!role) return refus("Ce type de compte ne peut pas être créé ici.");
+  const faiblesse = motDePasseFaible(motDePasse, email);
+  if (faiblesse) return refus(faiblesse);
 
   try {
     const compte = await db.utilisateur.create({
       data: { nom, email, role, telephone: telephone || null, motDePasseHash: await hacherMotDePasse(motDePasse) },
     });
     await ouvrirSession(compte.id);
+    log.info("Compte créé", { utilisateurId: compte.id, role });
     return NextResponse.json({ utilisateur: versSession(compte) }, { status: 201 });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") return refus("Un compte existe déjà avec cette adresse. Connectez-vous.", 409);
-    console.error("POST /api/auth/inscription", e);
+    log.erreur("POST /api/auth/inscription", e);
     return refus("Le service est momentanément indisponible.", 503);
   }
 }
+
+export const POST = avecJournal("POST /api/auth/inscription", post);

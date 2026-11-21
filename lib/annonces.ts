@@ -2,6 +2,7 @@
 import { BIENS, Bien, COORDONNEES, CENTRES_REGIONS } from "./mock-data";
 import { nouvelId, signalerMaj, useStocke } from "./stockage";
 import { popup } from "./popup";
+import { avecReference } from "./rapport-erreurs";
 
 // État de gestion d'une annonce, visible de son auteur et de la modération.
 export type MetaAnnonce = {
@@ -77,7 +78,9 @@ type Reponse = { ok: boolean; donnees: { annonce?: Bien; url?: string; erreur?: 
 async function appeler(url: string, methode: "POST" | "PATCH", corps: unknown): Promise<Reponse> {
   try {
     const r = await fetch(url, { method: methode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(corps) });
-    return { ok: r.ok, donnees: await r.json().catch(() => ({})) };
+    const donnees = await r.json().catch(() => ({}));
+    if (r.status >= 500) donnees.erreur = avecReference(donnees.erreur ?? "Le service est momentanément indisponible.", r);
+    return { ok: r.ok, donnees };
   } catch {
     return { ok: false, donnees: { erreur: "Connexion au serveur impossible." } };
   }

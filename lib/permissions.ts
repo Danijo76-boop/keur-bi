@@ -65,6 +65,8 @@ export const SECTIONS_ADMIN: { href: string; permissions: string[] }[] = [
   { href: "/admin/reporting", permissions: ["admin_rapports"] },
   { href: "/admin/revenus", permissions: ["admin_rapports"] },
   { href: "/admin/journal", permissions: ["admin_rapports"] },
+  // Détails techniques : administrateurs seulement (le serveur le vérifie aussi).
+  { href: "/admin/journal-technique", permissions: ["admin_parametres"] },
 ];
 
 export function peut(matrice: Matrice, role: Role | undefined, permission: string): boolean {

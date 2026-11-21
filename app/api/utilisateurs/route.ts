@@ -4,6 +4,8 @@ import { Prisma, type Plan, type Role, type StatutKYC } from "@prisma/client";
 import { db } from "@/lib/serveur/db";
 import { compteCourant, emailValide, hacherMotDePasse, memeOrigine, normaliserEmail } from "@/lib/serveur/auth";
 import { versUtilisateur, versUtilisateurReduit } from "@/lib/serveur/utilisateurs";
+import { avecJournal, log } from "@/lib/serveur/journal";
+import { lireJson } from "@/lib/serveur/securite";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +23,7 @@ const date = (v: unknown) => {
 };
 
 // GET /api/utilisateurs : les comptes que la personne connectée a le droit de voir.
-export async function GET() {
+async function get() {
   try {
     const moi = await compteCourant();
     if (!moi) return refus("Connexion requise.", 401);
@@ -40,7 +42,7 @@ export async function GET() {
     }
     return NextResponse.json({ utilisateurs });
   } catch (e) {
-    console.error("GET /api/utilisateurs", e);
+    log.erreur("GET /api/utilisateurs", e);
     return refus("Le service est momentanément indisponible.", 503);
   }
 }
@@ -49,13 +51,13 @@ export async function GET() {
 //  - soi-même : coordonnées, rattachement, relevé bancaire, abonnement, envoi du dossier d'identité ;
 //  - admin : rôle et suspension d'un autre compte ;
 //  - admin ou modérateur : décision sur un dossier d'identité.
-export async function PATCH(requete: Request) {
+async function patch(requete: Request) {
   if (!memeOrigine()) return refus("Requête refusée.", 403);
   try {
     const moi = await compteCourant();
     if (!moi) return refus("Connexion requise.", 401);
 
-    const corps = await requete.json().catch(() => null);
+    const corps = await lireJson(requete);
     const email = typeof corps?.email === "string" ? normaliserEmail(corps.email) : "";
     const patch = corps?.patch && typeof corps.patch === "object" ? (corps.patch as Record<string, unknown>) : null;
     if (!email || !patch) return refus("Demande incomplète.", 400);
@@ -143,23 +145,26 @@ export async function PATCH(requete: Request) {
       // Suspendre ou changer de rôle ferme les sessions ouvertes : le changement s'applique tout de suite.
       ...(fermerSessions ? [db.session.deleteMany({ where: { utilisateurId: cible.id } })] : []),
     ]);
+    const champs = Object.keys(patch);
+    if (!soi || fermerSessions) log.audit("Compte modifié par l'équipe", { cible: cible.id, champs, ...("role" in patch && { role: patch.role }), ...("suspendu" in patch && { suspendu: patch.suspendu }), ...("statutKYC" in patch && { statutKYC: patch.statutKYC }) });
+    else log.info("Profil modifié", { champs });
     return NextResponse.json({ utilisateur: versUtilisateur(maj) });
   } catch (e) {
-    console.error("PATCH /api/utilisateurs", e);
+    log.erreur("PATCH /api/utilisateurs", e);
     return refus("Le service est momentanément indisponible.", 503);
   }
 }
 
 // POST /api/utilisateurs  { nom, email, role, telephone?, suspendu?, statutKYC? } : création d'un compte par un administrateur.
 // Le compte reçoit un mot de passe provisoire, renvoyé une seule fois pour être transmis à la personne.
-export async function POST(requete: Request) {
+async function post(requete: Request) {
   if (!memeOrigine()) return refus("Requête refusée.", 403);
   try {
     const moi = await compteCourant();
     if (!moi) return refus("Connexion requise.", 401);
     if (moi.role !== "admin") return refus("Réservé aux administrateurs.", 403);
 
-    const corps = await requete.json().catch(() => null);
+    const corps = await lireJson(requete);
     const nom = texte(corps?.nom, 100) ?? "";
     const email = typeof corps?.email === "string" ? normaliserEmail(corps.email) : "";
     const role = ROLES.find((r) => r === corps?.role);
@@ -178,10 +183,15 @@ export async function POST(requete: Request) {
       },
       include: { kyc: true },
     });
+    log.audit("Compte créé par un administrateur", { cible: compte.id, role });
     return NextResponse.json({ utilisateur: versUtilisateur(compte), motDePasseProvisoire }, { status: 201 });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") return refus("Un compte existe déjà avec cet email.", 409);
-    console.error("POST /api/utilisateurs", e);
+    log.erreur("POST /api/utilisateurs", e);
     return refus("Le service est momentanément indisponible.", 503);
   }
 }
+
+export const GET = avecJournal("GET /api/utilisateurs", get);
+export const PATCH = avecJournal("PATCH /api/utilisateurs", patch);
+export const POST = avecJournal("POST /api/utilisateurs", post);

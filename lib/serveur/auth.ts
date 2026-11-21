@@ -4,6 +4,7 @@ import { cookies, headers } from "next/headers";
 import bcrypt from "bcryptjs";
 import type { Role, Utilisateur } from "@prisma/client";
 import { db } from "./db";
+import { noterUtilisateur } from "./journal";
 
 /* ── Comptes et sessions ──
    Le mot de passe n'est jamais stocké : seule son empreinte bcrypt l'est.
@@ -66,6 +67,7 @@ export async function compteCourant(): Promise<Utilisateur | null> {
   if (!jeton) return null;
   const session = await db.session.findUnique({ where: { jetonHash: empreinteJeton(jeton) }, include: { utilisateur: true } });
   if (!session || session.expireLe < new Date() || session.utilisateur.suspendu) return null;
+  noterUtilisateur(session.utilisateur.id);
   return session.utilisateur;
 }
 
@@ -77,6 +79,8 @@ export async function exigerRole(...roles: Role[]): Promise<Utilisateur | null> 
 // Les requêtes qui modifient des données doivent venir du site lui-même, pas d'une page tierce.
 export function memeOrigine(): boolean {
   const h = headers();
+  // Les navigateurs récents indiquent d'où vient la requête : une requête d'un autre site est refusée d'emblée.
+  if (h.get("sec-fetch-site") === "cross-site") return false;
   const origine = h.get("origin");
   if (!origine) return true; // navigation directe ou client non navigateur : le cookie SameSite protège déjà
   try {
@@ -86,28 +90,6 @@ export function memeOrigine(): boolean {
   }
 }
 
-/* ── Limite de tentatives ──
-   Freine les essais de mots de passe en série. Compteur en mémoire : suffisant pour un seul serveur,
-   à remplacer par un compteur partagé (base ou Redis) si l'application tourne sur plusieurs instances. */
-const tentatives = new Map<string, { nb: number; debut: number }>();
-const FENETRE_MS = 15 * 60_000;
-const MAX_TENTATIVES = 8;
-
-export function tropDeTentatives(cle: string, max = MAX_TENTATIVES): boolean {
-  const t = tentatives.get(cle);
-  if (!t || Date.now() - t.debut > FENETRE_MS) return false;
-  return t.nb >= max;
-}
-
-export function compterTentative(cle: string) {
-  const maintenant = Date.now();
-  const t = tentatives.get(cle);
-  if (!t || maintenant - t.debut > FENETRE_MS) tentatives.set(cle, { nb: 1, debut: maintenant });
-  else t.nb += 1;
-  if (tentatives.size > 5000) for (const [k, v] of tentatives) if (maintenant - v.debut > FENETRE_MS) tentatives.delete(k);
-}
-
-export const oublierTentatives = (cle: string) => tentatives.delete(cle);
 
 // Adresse du visiteur telle que transmise par l'hébergeur. Absente en local : on ne limite alors que par compte,
 // sinon tous les visiteurs partageraient le même compteur.
@@ -116,5 +98,4 @@ export function adresseClient(): string | undefined {
   return h.get("x-forwarded-for")?.split(",")[0].trim() || h.get("x-real-ip") || undefined;
 }
 
-// Plusieurs personnes peuvent partager une adresse (bureau, opérateur mobile) : le plafond par adresse est plus large que par compte.
-export const MAX_TENTATIVES_PAR_ADRESSE = 40;
+

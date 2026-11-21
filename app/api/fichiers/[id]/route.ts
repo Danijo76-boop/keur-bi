@@ -1,7 +1,8 @@
 import { lireFichier } from "@/lib/serveur/fichiers";
+import { avecJournal, log } from "@/lib/serveur/journal";
 
 // GET /api/fichiers/<id> : sert une photo d'annonce. Publique, comme les annonces elles-mêmes.
-export async function GET(_requete: Request, { params }: { params: { id: string } }) {
+async function get(_requete: Request, { params }: { params: { id: string } }) {
   try {
     const fichier = /^[a-z0-9]+$/.test(params.id) ? await lireFichier(params.id) : null;
     if (!fichier) return new Response("Fichier introuvable.", { status: 404 });
@@ -14,7 +15,9 @@ export async function GET(_requete: Request, { params }: { params: { id: string 
       },
     });
   } catch (e) {
-    console.error("GET /api/fichiers/[id]", e);
+    log.erreur("GET /api/fichiers/[id]", e);
     return new Response("Service indisponible.", { status: 503 });
   }
 }
+
+export const GET = avecJournal("GET /api/fichiers/[id]", get);
