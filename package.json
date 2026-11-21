@@ -12,7 +12,8 @@
     "db:stop": "pg_ctl -D .pgdata stop",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "vercel-build": "prisma generate && node scripts/migrer.mjs && next build"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

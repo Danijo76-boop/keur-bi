@@ -3,6 +3,7 @@ node_modules/
 
 # Build Next.js
 .next/
+.next-build/
 out/
 *.tsbuildinfo
 next-env.d.ts

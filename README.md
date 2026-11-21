@@ -88,3 +88,18 @@ La liste des pages ouvertes est dans `lib/acces.ts` ; elle est appliquée par `m
 - Les photos sont envoyées au serveur une par une (JPEG, PNG ou WebP, 2 Mo au maximum) et servies par `/api/fichiers/<id>`. Elles sont stockées dans la base pour l'instant ; `lib/serveur/fichiers.ts` est le seul fichier à changer pour les déplacer vers un stockage dédié.
 
 Les règles sont dans `lib/serveur/annonces.ts`.
+
+## Déploiement sur Vercel
+
+Vercel compile avec `npm run vercel-build` : génération du client Prisma, migrations de la base (`scripts/migrer.mjs`), puis `next build`.
+
+Variables à définir dans le projet Vercel (Settings → Environment Variables) :
+
+| Variable | Rôle |
+|---|---|
+| `DATABASE_URL` | Adresse de la base PostgreSQL (fournie automatiquement par l'intégration Neon de Vercel) |
+| `DATABASE_URL_UNPOOLED` | Adresse directe, utilisée pour les migrations (fournie aussi par Neon ; sinon `DATABASE_URL` sert) |
+| `ADMIN_EMAIL`, `ADMIN_MOT_DE_PASSE` | Premier compte administrateur |
+| `SEED_AU_DEPLOIEMENT` | `1` au premier déploiement pour charger les données d'exemple et créer l'administrateur ; à retirer ensuite |
+
+Ne définissez pas `MOT_DE_PASSE_DEMO` en ligne : sans lui, les comptes d'exemple existent mais personne ne peut s'y connecter.
