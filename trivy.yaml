@@ -1,0 +1,27 @@
+# Analyse de sécurité du projet avec Trivy (https://trivy.dev).
+# Lancement : npm run securite
+#
+# Trivy cherche :
+#  - vuln      : les failles connues dans les dépendances (package-lock.json) ;
+#  - secret    : les mots de passe, clés et jetons écrits dans le code ;
+#  - misconfig : les erreurs de configuration détectables (Dockerfile, Kubernetes, Terraform… s'il y en a).
+scan:
+  scanners:
+    - vuln
+    - secret
+    - misconfig
+  # Dossiers générés ou locaux : rien à y analyser, et la base locale contient des fichiers binaires volumineux.
+  skip-dirs:
+    - node_modules
+    - .next
+    - .next-build
+    - .pgdata
+    - .vercel
+
+severity:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+
+# Par défaut, Trivy n'analyse pas les dépendances de développement (Prisma CLI, tsx…),
+# qui ne sont pas livrées avec le site. Pour les inclure : npm run securite -- --include-dev-deps

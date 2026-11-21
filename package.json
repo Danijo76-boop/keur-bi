@@ -13,7 +13,8 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "vercel-build": "prisma generate && node scripts/migrer.mjs && next build"
+    "vercel-build": "prisma generate && node scripts/migrer.mjs && next build",
+    "securite": "trivy fs --config trivy.yaml ."
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
