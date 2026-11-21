@@ -19,7 +19,7 @@ export type NouvelleAnnonce = Pick<
   photos: string[];
   proprietaire: string;
   tf: Bien["tf"];
-};
+} & Pick<Bien, "transaction" | "charges" | "caution" | "meuble" | "nb_pieces">;
 
 /* ── Annonces de la base de données ──
    Le serveur les fournit via /api/annonces : les annonces publiées pour tout le monde, plus les annonces

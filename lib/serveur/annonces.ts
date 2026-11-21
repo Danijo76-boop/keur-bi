@@ -45,6 +45,11 @@ export function versBien(l: LigneComplete): Bien {
     publieLe: l.publieLe.toISOString(),
     depublie: l.depublie || undefined,
     boostJusquau: l.boostJusquau?.toISOString(),
+    transaction: l.transaction,
+    charges: l.charges === null ? undefined : Number(l.charges),
+    caution: l.caution === null ? undefined : Number(l.caution),
+    meuble: l.meuble || undefined,
+    nb_pieces: l.nbPieces ?? undefined,
     historiquePrix: l.historiquePrix.length ? l.historiquePrix.map((h) => ({ date: h.date.toISOString(), prix: Number(h.prix) })) : undefined,
   };
 }
@@ -69,7 +74,7 @@ const annoncesActives = (auteurId: string) => db.bien.count({ where: { auteurId,
 
 /* ── Lecture ── */
 
-export type FiltresAnnonces = { q?: string; type?: string; region?: string; quartier?: string; prixMin?: number; prixMax?: number };
+export type FiltresAnnonces = { transaction?: string; q?: string; type?: string; region?: string; quartier?: string; prixMin?: number; prixMax?: number };
 
 const TYPES = ["terrain", "villa", "appartement", "bureau"] as const;
 export const REGIONS_ACCEPTEES = ["Dakar", "Thiès", "Saint-Louis", "Ziguinchor", "Kaolack"];
@@ -86,6 +91,7 @@ export async function listerAnnonces(f: FiltresAnnonces = {}, compte?: Utilisate
     AND: [
       visibilite,
       {
+        ...((f.transaction === "vente" || f.transaction === "location") && { transaction: f.transaction }),
         ...(type && { type }),
         ...(f.region && { region: f.region }),
         ...(f.quartier && { quartier: f.quartier }),
@@ -130,6 +136,11 @@ const PRIX_MAX = 1_000_000_000_000;
 export async function creerAnnonce(compte: Utilisateur, corps: Record<string, unknown>): Promise<ResultatAnnonce> {
   if (!peutPublier(compte.role)) return refus("La publication est réservée aux vendeurs : particulier, agence ou agent.", 403);
 
+  const transaction = corps.transaction === "location" ? "location" : "vente";
+  const montantFacultatif = (v: unknown) => { const n = entier(v); return n >= 0 && n <= PRIX_MAX ? BigInt(n) : null; };
+  const charges = montantFacultatif(corps.charges);
+  const caution = montantFacultatif(corps.caution);
+  const nbPieces = entier(corps.nb_pieces);
   const titre = texte(corps.titre, 120);
   const type = TYPES.find((t) => t === corps.type);
   const superficie = entier(corps.superficie);
@@ -146,7 +157,7 @@ export async function creerAnnonce(compte: Utilisateur, corps: Record<string, un
   if (titre.length < 5) return refus("Le titre doit contenir au moins 5 caractères.");
   if (!type) return refus("Type de bien inconnu.");
   if (!(superficie >= 1 && superficie <= 10_000_000)) return refus("Superficie invalide.");
-  if (!(prix >= 1 && prix <= PRIX_MAX)) return refus("Prix invalide.");
+  if (!(prix >= 1 && prix <= (transaction === "location" ? 100_000_000 : PRIX_MAX))) return refus(transaction === "location" ? "Loyer invalide." : "Prix invalide.");
   if (!region) return refus("Région inconnue.");
   if (!ville || !quartier) return refus("Indiquez la ville et le quartier.");
   if (description.length < 10) return refus("La description est trop courte.");
@@ -170,6 +181,9 @@ export async function creerAnnonce(compte: Utilisateur, corps: Record<string, un
         data: {
           reference: `KB-${annee}-${String(numero).padStart(4, "0")}`,
           titre, type, superficie, prix: BigInt(prix), region, ville, quartier, description,
+          transaction,
+          ...(transaction === "location" && { charges, caution, meuble: corps.meuble === true }),
+          nbPieces: nbPieces >= 1 && nbPieces <= 50 ? nbPieces : null,
           photo: photos[0], photos,
           telephone: texte(corps.telephone, 30) || compte.telephone || "",
           lat: lat0 + decalage(), lng: lng0 + decalage(),

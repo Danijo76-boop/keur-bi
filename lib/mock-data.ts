@@ -30,6 +30,12 @@ export type Bien = {
   auteurEmail?: string;
   proprietaire?: string;
   publieLe?: string;
+  // Vente (par défaut) ou location. En location, « prix » est le loyer mensuel.
+  transaction?: "vente" | "location";
+  charges?: number;
+  caution?: number;
+  meuble?: boolean;
+  nb_pieces?: number;
   // État de gestion, renseigné par le serveur : seuls l'auteur et la modération reçoivent les annonces retirées.
   depublie?: boolean;
   boostJusquau?: string;
@@ -165,6 +171,16 @@ export function formatPrix(fcfa: number): string {
   if (fcfa >= 1_000_000) return `${(fcfa / 1_000_000).toFixed(0)} M FCFA`;
   if (fcfa >= 1_000) return `${(fcfa / 1_000).toFixed(0)} K FCFA`;
   return `${fcfa} FCFA`;
+}
+
+export const estLocation = (b: Pick<Bien, "transaction">) => b.transaction === "location";
+// Les statistiques de prix (médianes, prix au m², estimations) ne portent que sur les ventes : un loyer les fausserait.
+export const enVente = (b: Pick<Bien, "transaction">) => !estLocation(b);
+
+// Prix tel qu'il s'affiche : loyer exact suivi de « / mois » pour une location, prix arrondi pour une vente.
+export function prixAffiche(b: Pick<Bien, "prix" | "transaction">, court = false): string {
+  if (!estLocation(b)) return formatPrix(b.prix);
+  return court ? `${formatPrix(b.prix)}/mois` : `${formatFCFA(b.prix)} / mois`;
 }
 
 // Montant exact, pour les frais et paiements où l'arrondi de formatPrix serait trompeur.

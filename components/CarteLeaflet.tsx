@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Bien, formatPrix } from "@/lib/mock-data";
+import { Bien, prixAffiche } from "@/lib/mock-data";
 import { coordonnees } from "@/lib/annonces";
 
 const DISTANCE_GROUPE = 70;
@@ -94,7 +94,7 @@ export default function CarteLeaflet({
       const actif = b.id === selection;
       // Le prix sert d'étiquette : le texte est échappé car il peut venir d'une annonce utilisateur.
       const span = document.createElement("span");
-      span.textContent = formatPrix(b.prix);
+      span.textContent = prixAffiche(b, true);
       L.marker(g.position, {
         icon: pastille(actif ? "#F0A500" : "#1B4F72", actif ? "#1B2A4A" : "#fff", span.innerHTML, "padding:4px 8px;border-radius:999px;"),
         zIndexOffset: actif ? 1000 : 0,

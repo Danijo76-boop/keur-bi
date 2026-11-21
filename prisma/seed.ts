@@ -7,6 +7,7 @@ import { NOTAIRES } from "../lib/notaires";
 import { BIENS, COORDONNEES } from "../lib/mock-data";
 import { COMPTES_DEMO } from "../lib/utilisateurs";
 import { PARAMETRES_DEFAUT } from "../lib/parametres";
+import { LOCATIONS, PROGRAMMES } from "./exemples-location-neuf";
 
 const prisma = new PrismaClient();
 const date = (s?: string | null) => (s ? new Date(s) : null);
@@ -90,10 +91,30 @@ async function main() {
     await prisma.bien.upsert({ where: { reference: b.reference }, update: donnees, create: { id: b.id, reference: b.reference, ...donnees } });
   }
 
+  // Annonces à louer et programmes neufs d'exemple.
+  for (const l of LOCATIONS) {
+    const agenceId = agences.get(l.agence) ?? null;
+    const donnees = {
+      titre: l.titre, type: l.type, superficie: l.superficie, prix: BigInt(l.prix), transaction: "location" as const,
+      charges: l.charges === null ? null : BigInt(l.charges), caution: BigInt(l.caution), meuble: l.meuble, nbPieces: l.nbPieces,
+      region: l.region, ville: l.ville, quartier: l.quartier, description: l.description, photo: l.photo, photos: [l.photo],
+      telephone: l.telephone, lat: l.lat, lng: l.lng, agenceId, agenceNom: AGENCES.find((x) => x.slug === l.agence)?.nom ?? "",
+      auteurId: comptes.get(GESTIONNAIRES[l.agence] ?? "") ?? null,
+    };
+    await prisma.bien.upsert({ where: { reference: l.reference }, update: donnees, create: { id: l.id, reference: l.reference, ...donnees } });
+  }
+  for (const p of PROGRAMMES) {
+    const { lots, agence, slug, ...champs } = p;
+    const donnees = { ...champs, agenceId: agences.get(agence) ?? null, auteurId: comptes.get(GESTIONNAIRES[agence] ?? "") ?? null };
+    const programme = await prisma.programme.upsert({ where: { slug }, update: donnees, create: { slug, ...donnees } });
+    await prisma.lotProgramme.deleteMany({ where: { programmeId: programme.id } });
+    await prisma.lotProgramme.createMany({ data: lots.map((l) => ({ ...l, prix: BigInt(l.prix), programmeId: programme.id })) });
+  }
+
   await prisma.reglage.upsert({ where: { cle: "parametres" }, update: {}, create: { cle: "parametres", valeur: PARAMETRES_DEFAUT } });
 
   const [nbAgences, nbNotaires, nbComptes, nbBiens] = await Promise.all([prisma.agence.count(), prisma.notaire.count(), prisma.utilisateur.count(), prisma.bien.count()]);
-  console.log(`Base chargée : ${nbAgences} agences, ${nbNotaires} notaires, ${nbComptes} comptes, ${nbBiens} annonces.`);
+  console.log(`Base chargée : ${nbAgences} agences, ${nbNotaires} notaires, ${nbComptes} comptes, ${nbBiens} annonces, ${await prisma.programme.count()} programmes neufs.`);
 }
 
 main()

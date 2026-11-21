@@ -285,7 +285,8 @@ model Alerte {
   id            String      @id @default(cuid())
   utilisateurId String
   utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
-  // { q, type, region, prixMax, superficieMin, superficieMax, tfVerifie }
+  nom           String      @default("")
+  // { transaction, q, type, region, prixMax, superficieMin, superficieMax, tfVerifie }
   criteres      Json
   // « Quotidien » ou « Hebdomadaire »
   frequence     String

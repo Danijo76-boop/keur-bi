@@ -1,9 +1,10 @@
 "use client";
 import { popup } from "@/lib/popup";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { SlidersHorizontal, Map, BellPlus, Link2, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, Map, BellPlus, Link2, ChevronDown, Columns2 } from "lucide-react";
 import { Bien } from "@/lib/mock-data";
 import PropertyCard from "@/components/PropertyCard";
 import EncartSponsorise from "@/components/EncartSponsorise";
@@ -13,6 +14,12 @@ import { useStocke } from "@/lib/stockage";
 import { useAuth } from "@/lib/auth";
 import { useParametres } from "@/lib/parametres";
 import { creerAlerte, CriteresAlerte, resumeCriteres } from "@/lib/preferences";
+
+// Leaflet a besoin de window : la carte n'est rendue que côté navigateur.
+const CarteLeaflet = dynamic(() => import("@/components/CarteLeaflet"), {
+  ssr: false,
+  loading: () => <div className="h-full flex items-center justify-center text-gray-400 text-sm">Chargement de la carte…</div>,
+});
 
 const TYPES = ["Tous", "Terrain", "Villa", "Appartement", "Bureau"];
 const REGIONS_OPTIONS = ["Toutes les régions", "Dakar", "Thiès", "Saint-Louis", "Ziguinchor", "Kaolack"];
@@ -44,6 +51,8 @@ function filtresDepuis(sp: URLSearchParams) {
     featured: sp.get("vedette") === "1",
     baisse: sp.get("baisse") === "1",
     tri: TRIS.some((t) => t.value === tri) ? tri : "recent",
+    transaction: sp.get("transaction") === "location" ? ("location" as const) : ("vente" as const),
+    avecCarte: sp.get("vue") === "carte",
   };
 }
 
@@ -52,7 +61,12 @@ export default function AnnoncesContent() {
   const [init] = useState(() => filtresDepuis(searchParams));
   const urlConnue = useRef(searchParams.toString());
 
+  const [transaction, setTransaction] = useState<"vente" | "location">(init.transaction);
   const [type, setType] = useState(init.type);
+  // Vue « liste + carte » : les résultats et leur carte côte à côte.
+  const [avecCarte, setAvecCarte] = useState(init.avecCarte);
+  const [selection, setSelection] = useState<string | null>(null);
+  const selectionner = useCallback((id: string) => setSelection(id), []);
   const [region, setRegion] = useState(init.region);
   const [quartier, setQuartier] = useState(init.quartier);
   const [page, setPage] = useState(1);
@@ -92,6 +106,7 @@ export default function AnnoncesContent() {
   useEffect(() => {
     const p = new URLSearchParams();
     if (recherche.trim()) p.set("q", recherche.trim());
+    if (transaction === "location") p.set("transaction", "location");
     if (type !== "Tous") p.set("type", type.toLowerCase());
     if (region !== "Toutes les régions") p.set("region", region);
     if (quartier) p.set("quartier", quartier);
@@ -103,13 +118,14 @@ export default function AnnoncesContent() {
     if (featured) p.set("vedette", "1");
     if (baisse) p.set("baisse", "1");
     if (tri !== "recent") p.set("tri", tri);
+    if (avecCarte) p.set("vue", "carte");
     const qs = p.toString();
     if (qs === urlConnue.current) return;
     urlConnue.current = qs;
     window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
     setAlerteCreee(false);
     setLienCopie(false);
-  }, [type, region, quartier, recherche, prixMin, prixMax, superficieMin, superficieMax, statutsTF, featured, baisse, tri]);
+  }, [transaction, type, region, quartier, recherche, prixMin, prixMax, superficieMin, superficieMax, statutsTF, featured, baisse, tri, avecCarte]);
 
   async function copierLien() {
     try {
@@ -129,6 +145,7 @@ export default function AnnoncesContent() {
   const resultats = useMemo(() => {
     const q = recherche.trim().toLowerCase();
     let r = biens.filter((b) => {
+      if ((b.transaction ?? "vente") !== transaction) return false;
       if (type !== "Tous" && b.type !== type.toLowerCase()) return false;
       if (region !== "Toutes les régions" && b.region !== region) return false;
       if (quartier && b.quartier !== quartier) return false;
@@ -151,7 +168,7 @@ export default function AnnoncesContent() {
     };
     if (sorters[tri]) r = [...r].sort(sorters[tri]);
     return r;
-  }, [biens, type, region, quartier, recherche, prixMin, prixMax, superficieMin, superficieMax, statutsTF, featured, baisse, tri, overridesTF, demandesTF]);
+  }, [biens, transaction, type, region, quartier, recherche, prixMin, prixMax, superficieMin, superficieMax, statutsTF, featured, baisse, tri, overridesTF, demandesTF]);
 
   const quartiers = useMemo(
     () => Array.from(new Set(biens.filter((b) => region === "Toutes les régions" || b.region === region).map((b) => b.quartier))).sort(),
@@ -174,6 +191,7 @@ export default function AnnoncesContent() {
   function enregistrerRecherche() {
     if (!user) return;
     const criteres: CriteresAlerte = {
+      transaction: transaction === "location" ? "location" : undefined,
       q: recherche.trim() || undefined,
       type: type !== "Tous" ? type.toLowerCase() : undefined,
       region: region !== "Toutes les régions" ? region : undefined,
@@ -225,6 +243,16 @@ export default function AnnoncesContent() {
               <Map size={16} /> Carte
             </Link>
           )}
+          {flags.carte && (
+            <button
+              type="button"
+              aria-pressed={avecCarte}
+              onClick={() => setAvecCarte((v) => !v)}
+              className={`hidden lg:flex items-center gap-2 border rounded-lg px-4 py-2 text-sm font-medium ${avecCarte ? "bg-navy text-white border-navy" : "border-gray-200 bg-white hover:bg-gray-50"}`}
+            >
+              <Columns2 size={16} /> Liste + carte
+            </button>
+          )}
         </div>
       </div>
 
@@ -246,6 +274,30 @@ export default function AnnoncesContent() {
               <ChevronDown size={18} className={`text-gray-400 lg:hidden transition-transform ${filtresOuverts ? "rotate-180" : ""}`} />
             </button>
             <div className={`mt-4 ${filtresOuverts ? "" : "hidden"} lg:block`}>
+
+            {/* Acheter ou louer */}
+            <div className="mb-5">
+              <span className="text-sm font-semibold text-gray-700 block mb-2">Je souhaite</span>
+              <div className="flex flex-wrap gap-2">
+                {([["vente", "Acheter"], ["location", "Louer"]] as const).map(([val, label]) => (
+                  <button
+                    key={val}
+                    aria-pressed={transaction === val}
+                    onClick={() => {
+                      setTransaction(val);
+                      if (val === "location") setStatutsTF([]);
+                    }}
+                    className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
+                      transaction === val
+                        ? "bg-navy text-white border-navy"
+                        : "bg-white text-gray-600 border-gray-200 hover:border-navy hover:text-navy"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {/* Type de bien */}
             <div className="mb-5">
@@ -302,7 +354,7 @@ export default function AnnoncesContent() {
 
             {/* Prix */}
             <div className="mb-5">
-              <label className="text-sm font-semibold text-gray-700 block mb-2">Budget (FCFA)</label>
+              <label className="text-sm font-semibold text-gray-700 block mb-2">{transaction === "location" ? "Loyer mensuel (FCFA)" : "Budget (FCFA)"}</label>
               <div className="flex gap-2">
                 <input
                   type="number"
@@ -344,8 +396,9 @@ export default function AnnoncesContent() {
 
             {/* Options */}
             <div className="mb-5 flex flex-col gap-2">
-              <span className="text-sm font-semibold text-gray-700">Statut du Titre Foncier</span>
-              {STATUTS_TF.map((s) => (
+              {/* Le Titre Foncier ne concerne que les ventes. */}
+              {transaction === "vente" && <span className="text-sm font-semibold text-gray-700">Statut du Titre Foncier</span>}
+              {transaction === "vente" && STATUTS_TF.map((s) => (
                 <label key={s} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                   <input type="checkbox" className="rounded accent-navy" checked={statutsTF.includes(s)} onChange={() => basculerStatut(s)} />
                   {ICONES_TF[s]} {LABELS_TF[s]}
@@ -370,7 +423,7 @@ export default function AnnoncesContent() {
         </aside>
 
         {/* Grille annonces */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           {/* Tri */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3 flex-wrap">
@@ -412,12 +465,14 @@ export default function AnnoncesContent() {
             </div>
           ) : (
             <>
-              <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
+              <div className={`grid gap-5 ${avecCarte && flags.carte ? "sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2" : "sm:grid-cols-2 xl:grid-cols-3"}`}>
                 {affiches.map((b, i) => (
                   <Fragment key={b.id}>
                     {/* Un encart partenaire après la troisième annonce, signalé comme sponsorisé. */}
                     {i === 3 && <EncartSponsorise emplacement="recherche" />}
-                    <PropertyCard bien={b} />
+                    <div id={`annonce-${b.id}`} onMouseEnter={() => avecCarte && setSelection(b.id)}>
+                      <PropertyCard bien={b} className={avecCarte && selection === b.id ? "ring-2 ring-gold" : undefined} />
+                    </div>
                   </Fragment>
                 ))}
               </div>
@@ -438,6 +493,14 @@ export default function AnnoncesContent() {
             </>
           )}
         </div>
+
+        {avecCarte && flags.carte && (
+          <div className="hidden lg:block lg:w-[26rem] shrink-0">
+            <div className="card overflow-hidden lg:sticky lg:top-20 h-[calc(100vh-7rem)]">
+              <CarteLeaflet biens={resultats} selection={selection} onSelection={selectionner} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

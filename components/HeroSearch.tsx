@@ -8,11 +8,13 @@ const TYPES = ["Tous types", "Terrain", "Villa", "Appartement", "Bureau"];
 export default function HeroSearch() {
   const router = useRouter();
   const [q, setQ] = useState("");
+  const [transaction, setTransaction] = useState("Acheter");
   const [type, setType] = useState("Tous types");
 
   function rechercher(e: React.FormEvent) {
     e.preventDefault();
     const params = new URLSearchParams();
+    if (transaction === "Louer") params.set("transaction", "location");
     if (q.trim()) params.set("q", q.trim());
     if (type !== "Tous types") params.set("type", type.toLowerCase());
     const query = params.toString();
@@ -32,6 +34,16 @@ export default function HeroSearch() {
         />
       </div>
       <select
+        aria-label="Acheter ou louer"
+        value={transaction}
+        onChange={(e) => setTransaction(e.target.value)}
+        className="text-sm text-gray-600 border-l border-gray-200 px-3 py-2 outline-none bg-transparent"
+      >
+        <option>Acheter</option>
+        <option>Louer</option>
+      </select>
+      <select
+        aria-label="Type de bien"
         value={type}
         onChange={(e) => setType(e.target.value)}
         className="text-sm text-gray-600 border-l border-gray-200 px-3 py-2 outline-none bg-transparent"

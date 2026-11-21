@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, Wallet } from "lucide-react";
 import { useBiens } from "@/lib/annonces";
-import { formatFCFA } from "@/lib/mock-data";
+import { formatFCFA, enVente } from "@/lib/mock-data";
 import { calculerFrais, useParametres } from "@/lib/parametres";
 import PropertyCard from "@/components/PropertyCard";
 
@@ -19,7 +19,8 @@ function capitalEmpruntable(mensualite: number, tauxAnnuel: number, mois: number
 }
 
 export default function BudgetPage() {
-  const biens = useBiens();
+  // Statistiques de prix : ventes seulement, un loyer fausserait les moyennes.
+  const biens = useBiens().filter(enVente);
   const p = useParametres();
   const [revenu, setRevenu] = useState("");
   const [charges, setCharges] = useState("");

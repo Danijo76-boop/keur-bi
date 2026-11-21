@@ -1,0 +1,76 @@
+// Données d'exemple pour la location et les programmes neufs, chargées par prisma/seed.ts.
+// Les annonceurs et les promoteurs sont fictifs.
+
+const U = (id: string) => `https://images.unsplash.com/${id}?w=600&q=80`;
+const APPART = U("photo-1522708323590-d24dbb6b0267");
+const VILLA = U("photo-1613977257363-707ba9348227");
+const BUREAU = U("photo-1497366216548-37526070297c");
+
+export const LOCATIONS = [
+  {
+    id: "l1", reference: "KB-2026-L001", titre: "Appartement F3 meublé — Mermoz", type: "appartement" as const, superficie: 95, prix: 450_000,
+    charges: 35_000, caution: 900_000, meuble: true, nbPieces: 3, region: "Dakar", ville: "Dakar", quartier: "Mermoz", lat: 14.7085, lng: -17.4752,
+    photo: APPART, agence: "foncier-plus", telephone: "+221 77 123 45 67",
+    description: "Appartement lumineux de trois pièces, entièrement meublé, au deuxième étage d'une résidence sécurisée. Cuisine équipée, climatisation, parking.",
+  },
+  {
+    id: "l2", reference: "KB-2026-L002", titre: "Villa 5 pièces avec jardin — Ngor", type: "villa" as const, superficie: 280, prix: 1_500_000,
+    charges: null, caution: 3_000_000, meuble: false, nbPieces: 5, region: "Dakar", ville: "Dakar", quartier: "Ngor", lat: 14.7461, lng: -17.5106,
+    photo: VILLA, agence: "immo-senegal", telephone: "+221 76 345 67 89",
+    description: "Villa familiale de cinq pièces avec jardin arboré, à quelques minutes de la plage de Ngor. Quatre chambres, dépendance et garage.",
+  },
+  {
+    id: "l3", reference: "KB-2026-L003", titre: "Studio meublé — Plateau", type: "appartement" as const, superficie: 35, prix: 250_000,
+    charges: 20_000, caution: 500_000, meuble: true, nbPieces: 1, region: "Dakar", ville: "Dakar", quartier: "Plateau", lat: 14.6712, lng: -17.4376,
+    photo: APPART, agence: "immo-senegal", telephone: "+221 76 345 67 89",
+    description: "Studio meublé au cœur du Plateau, idéal pour une personne seule ou un séjour professionnel. Internet et entretien de l'immeuble inclus.",
+  },
+  {
+    id: "l4", reference: "KB-2026-L004", titre: "Bureau 120 m² — Point E", type: "bureau" as const, superficie: 120, prix: 900_000,
+    charges: 60_000, caution: 2_700_000, meuble: false, nbPieces: 4, region: "Dakar", ville: "Dakar", quartier: "Point E", lat: 14.6957, lng: -17.4618,
+    photo: BUREAU, agence: "sene-immo", telephone: "+221 78 234 56 78",
+    description: "Plateau de bureaux de 120 m² cloisonné en quatre espaces, avec salle de réunion, fibre optique et groupe électrogène.",
+  },
+  {
+    id: "l5", reference: "KB-2026-L005", titre: "Appartement F4 vue mer — Saly", type: "appartement" as const, superficie: 110, prix: 300_000,
+    charges: 25_000, caution: 600_000, meuble: true, nbPieces: 4, region: "Thiès", ville: "Mbour", quartier: "Saly Portudal", lat: 14.4472, lng: -16.9978,
+    photo: APPART, agence: "sene-immo", telephone: "+221 78 234 56 78",
+    description: "Appartement de quatre pièces dans une résidence avec piscine, à deux pas de la plage de Saly. Location à l'année.",
+  },
+];
+
+export const PROGRAMMES = [
+  {
+    slug: "residence-les-filaos-diamniadio", nom: "Résidence Les Filaos", promoteur: "Promoteur partenaire A", agence: "foncier-plus",
+    region: "Dakar", ville: "Diamniadio", quartier: "Pôle urbain", lat: 14.7206, lng: -17.1833, livraison: "2e trimestre 2027", avancement: "Gros œuvre terminé",
+    photo: APPART, photos: [APPART, VILLA, BUREAU],
+    description: "Programme de 48 appartements du studio au F4, dans le pôle urbain de Diamniadio, à proximité du TER. Résidence fermée avec gardiennage, espaces verts et parkings.",
+    lots: [
+      { type: "appartement" as const, libelle: "Studio — rez-de-chaussée", superficie: 38, nbPieces: 1, prix: 18_500_000, disponible: true },
+      { type: "appartement" as const, libelle: "F2 — 1er étage", superficie: 58, nbPieces: 2, prix: 27_000_000, disponible: true },
+      { type: "appartement" as const, libelle: "F3 — 2e étage", superficie: 82, nbPieces: 3, prix: 38_000_000, disponible: true },
+      { type: "appartement" as const, libelle: "F4 — 3e étage avec terrasse", superficie: 110, nbPieces: 4, prix: 52_000_000, disponible: false },
+    ],
+  },
+  {
+    slug: "les-villas-du-lac-rose", nom: "Les Villas du Lac Rose", promoteur: "Promoteur partenaire B", agence: "immo-senegal",
+    region: "Dakar", ville: "Bambilor", quartier: "Lac Rose", lat: 14.8378, lng: -17.2386, livraison: "4e trimestre 2027", avancement: "Fondations en cours",
+    photo: VILLA, photos: [VILLA, APPART],
+    description: "Vingt villas individuelles sur des parcelles de 300 à 500 m², avec Titre Foncier individuel remis à la livraison. Paiement échelonné pendant la construction.",
+    lots: [
+      { type: "villa" as const, libelle: "Villa F4 — parcelle 300 m²", superficie: 150, nbPieces: 4, prix: 55_000_000, disponible: true },
+      { type: "villa" as const, libelle: "Villa F5 — parcelle 400 m²", superficie: 190, nbPieces: 5, prix: 72_000_000, disponible: true },
+      { type: "villa" as const, libelle: "Villa F6 avec piscine — parcelle 500 m²", superficie: 240, nbPieces: 6, prix: 98_000_000, disponible: true },
+    ],
+  },
+  {
+    slug: "thies-centre-affaires", nom: "Centre d'affaires Thiès Centre", promoteur: "Promoteur partenaire C", agence: "sene-immo",
+    region: "Thiès", ville: "Thiès", quartier: "Centre", lat: 14.7886, lng: -16.9246, livraison: "1er trimestre 2027", avancement: "Second œuvre",
+    photo: BUREAU, photos: [BUREAU, APPART],
+    description: "Immeuble de bureaux de cinq niveaux en centre-ville, vendus en plateaux modulables. Ascenseur, parking en sous-sol et fibre optique.",
+    lots: [
+      { type: "bureau" as const, libelle: "Plateau de 60 m² — 1er étage", superficie: 60, nbPieces: 2, prix: 24_000_000, disponible: true },
+      { type: "bureau" as const, libelle: "Plateau de 120 m² — 3e étage", superficie: 120, nbPieces: 4, prix: 46_000_000, disponible: true },
+    ],
+  },
+];

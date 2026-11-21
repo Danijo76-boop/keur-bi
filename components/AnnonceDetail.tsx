@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle, MapPin, Eye, Phone, MessageCircle, MessageSquare, ChevronRight, Settings2 } from "lucide-react";
 import dynamic from "next/dynamic";
-import { Bien, formatPrix } from "@/lib/mock-data";
+import { Bien, estLocation, formatFCFA, formatPrix, prixAffiche } from "@/lib/mock-data";
 import { LABELS_VENTE, lireDossiers, statutVente } from "@/lib/dossiers";
 import { useStocke } from "@/lib/stockage";
 import { useBiens, useMetasAnnonces } from "@/lib/annonces";
@@ -62,9 +62,10 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
   const photoAffichee = photos[photoActive] ?? bien.photo;
   const vente = statutVente(bien.id, dossiers);
   const monDossier = dossiers.some((d) => d.bienId === bien.id && d.acheteurEmail === user?.email);
+  const location = estLocation(bien);
   // Même type d'abord, puis la même région et le budget le plus proche.
   const similaires = biens
-    .filter((b) => b.id !== bien.id && b.type === bien.type && !metas[b.id]?.depublie)
+    .filter((b) => b.id !== bien.id && b.type === bien.type && estLocation(b) === location && !metas[b.id]?.depublie)
     .sort((a, b) => Number(b.region === bien.region) - Number(a.region === bien.region) || Math.abs(a.prix - bien.prix) - Math.abs(b.prix - bien.prix))
     .slice(0, 3);
   const notaire = notaireSuggere(bien.region);
@@ -124,7 +125,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
             <div className="flex items-start justify-between gap-4 mb-2">
               <h1 className="text-2xl font-bold text-gray-900">{bien.titre}</h1>
               <div className="text-right shrink-0">
-                <div className="text-2xl font-bold text-navy">{formatPrix(bien.prix)}</div>
+                <div className="text-2xl font-bold text-navy">{prixAffiche(bien)}</div>
                 {bien.prix_baisser && bien.ancien_prix && (
                   <div className="text-sm text-gray-400 line-through">{formatPrix(bien.ancien_prix)}</div>
                 )}
@@ -142,7 +143,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
 
           <div className="flex flex-col gap-3 mb-6">
             <BadgeDemande bien={bien} detail />
-            <PositionMarche bien={bien} />
+            {!location && <PositionMarche bien={bien} />}
           </div>
 
           {/* Caractéristiques */}
@@ -152,15 +153,26 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
               {[
                 { label: "Type", val: bien.type },
                 { label: "Superficie", val: `${bien.superficie.toLocaleString("fr-FR")} m²` },
-                { label: "Prix/m²", val: `${Math.round(bien.prix / bien.superficie).toLocaleString("fr-FR")} FCFA` },
+                ...(bien.nb_pieces ? [{ label: "Pièces", val: String(bien.nb_pieces) }] : []),
+                ...(location
+                  ? [
+                      { label: "Charges", val: bien.charges ? `${formatFCFA(bien.charges)} / mois` : "Comprises" },
+                      { label: "Caution", val: bien.caution ? formatFCFA(bien.caution) : "—" },
+                      { label: "Meublé", val: bien.meuble ? "Oui" : "Non" },
+                    ]
+                  : [{ label: "Prix/m²", val: `${Math.round(bien.prix / bien.superficie).toLocaleString("fr-FR")} FCFA` }]),
                 { label: "Région", val: bien.region },
                 { label: "Ville", val: bien.ville },
                 { label: "Quartier", val: bien.quartier },
-                { label: "Titre Foncier", val: <TFCaracteristique bien={bien} /> },
-                { label: "N° Titre Foncier", val: bien.tf.numero ?? "En attente" },
-                { label: "Conservation", val: bien.tf.conservation ?? "—" },
+                ...(location
+                  ? []
+                  : [
+                      { label: "Titre Foncier", val: <TFCaracteristique bien={bien} /> },
+                      { label: "N° Titre Foncier", val: bien.tf.numero ?? "En attente" },
+                      { label: "Conservation", val: bien.tf.conservation ?? "—" },
+                    ]),
                 { label: "Référence", val: bien.reference },
-                { label: "Statut", val: LABELS_VENTE[vente] },
+                { label: "Statut", val: location ? "À louer" : LABELS_VENTE[vente] },
               ].map(c => (
                 <div key={c.label} className="bg-gray-50 rounded-lg p-3">
                   <div className="text-xs text-gray-400 mb-0.5">{c.label}</div>
@@ -181,9 +193,12 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
           {/* Suivi TF */}
           {cadastre && <SuiviTF bien={bien} />}
 
-          <SimulationFrais prix={bien.prix} />
-
-          <SimulateurCredit prix={bien.prix} />
+          {!location && (
+            <>
+              <SimulationFrais prix={bien.prix} />
+              <SimulateurCredit prix={bien.prix} />
+            </>
+          )}
 
           {/* Localisation */}
           <div className="card p-5 mb-6">
@@ -264,7 +279,12 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
 
           {/* Faire une offre */}
           <div className="card p-5 bg-navy text-white mb-4">
-            {vente === "disponible" || monDossier ? (
+            {location ? (
+              <>
+                <h3 className="font-bold mb-1">Intéressé(e) ?</h3>
+                <p className="text-white/70 text-sm">Ce bien est à louer : contactez l&apos;annonceur ou demandez une visite ci-dessus.</p>
+              </>
+            ) : vente === "disponible" || monDossier ? (
               <>
                 <h3 className="font-bold mb-1">Intéressé(e) ?</h3>
                 <p className="text-white/70 text-sm mb-4">Soumettez une offre directement depuis la plateforme. Chaque étape est tracée dans votre dossier.</p>
@@ -291,12 +311,12 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
           )}
 
           <div className="card p-5 mb-4">
-            <h3 className="font-bold text-gray-900 mb-1">Achetez l'esprit tranquille</h3>
+            <h3 className="font-bold text-gray-900 mb-1">{location ? "Louez l'esprit tranquille" : "Achetez l'esprit tranquille"}</h3>
             <p className="text-sm text-gray-500 mb-3">Faites contrôler ce bien par un professionnel avant de vous engager.</p>
             <div className="flex flex-col gap-2">
-              <CommanderService serviceId="rapport_tf" bienId={bien.id} className="text-sm text-left text-blue font-medium hover:underline">Rapport complet du Titre Foncier →</CommanderService>
+              {!location && <CommanderService serviceId="rapport_tf" bienId={bien.id} className="text-sm text-left text-blue font-medium hover:underline">Rapport complet du Titre Foncier →</CommanderService>}
               <CommanderService serviceId="visite_accompagnee" bienId={bien.id} className="text-sm text-left text-blue font-medium hover:underline">Visite accompagnée par un expert →</CommanderService>
-              <Link href="/financement" className="text-sm text-blue font-medium hover:underline">Comparer les crédits →</Link>
+              {!location && <Link href="/financement" className="text-sm text-blue font-medium hover:underline">Comparer les crédits →</Link>}
             </div>
           </div>
 

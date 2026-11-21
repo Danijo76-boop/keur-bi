@@ -4,7 +4,7 @@ import Link from "next/link";
 import { MapPin, Search } from "lucide-react";
 import { useBiens } from "@/lib/annonces";
 import { mediane } from "@/lib/marche";
-import { formatFCFA, formatPrix } from "@/lib/mock-data";
+import { formatFCFA, formatPrix, enVente } from "@/lib/mock-data";
 import { useStocke } from "@/lib/stockage";
 import { estVerifie, lireOverridesTF } from "@/lib/tf";
 
@@ -15,7 +15,8 @@ const TRIS = [
 ] as const;
 
 export default function QuartiersPage() {
-  const biens = useBiens();
+  // Statistiques de prix : ventes seulement, un loyer fausserait les moyennes.
+  const biens = useBiens().filter(enVente);
   const overrides = useStocke(lireOverridesTF, []);
   const [region, setRegion] = useState("");
   const [recherche, setRecherche] = useState("");

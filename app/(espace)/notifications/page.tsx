@@ -37,6 +37,7 @@ function Contenu({ user }: { user: User }) {
   const profil = useStocke(() => trouverUtilisateur(user.email), undefined, [user.email]);
   const [onglet, setOnglet] = useState<CategorieNotif | "tout">("tout");
   const [creation, setCreation] = useState(false);
+  const [transaction, setTransaction] = useState<"vente" | "location">("vente");
   const [region, setRegion] = useState("");
   const [prixMax, setPrixMax] = useState("");
   const [frequence, setFrequence] = useState<"Quotidien" | "Hebdomadaire">("Quotidien");
@@ -46,7 +47,7 @@ function Contenu({ user }: { user: User }) {
 
   function creer(e: React.FormEvent) {
     e.preventDefault();
-    const criteres = { region: region || undefined, prixMax: prixMax ? Number(prixMax) : undefined, tfVerifie: true };
+    const criteres = { transaction: transaction === "location" ? ("location" as const) : undefined, region: region || undefined, prixMax: prixMax ? Number(prixMax) : undefined };
     creerAlerte(user.email, resumeCriteres(criteres), criteres, frequence);
     setCreation(false);
     setRegion("");
@@ -134,11 +135,15 @@ function Contenu({ user }: { user: User }) {
             </div>
             {creation ? (
               <form onSubmit={creer} className="flex flex-col gap-2">
+                <select aria-label="Achat ou location" value={transaction} onChange={(e) => setTransaction(e.target.value as typeof transaction)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy">
+                  <option value="vente">Acheter</option>
+                  <option value="location">Louer</option>
+                </select>
                 <select value={region} onChange={(e) => setRegion(e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy">
                   <option value="">Toutes les régions</option>
                   {REGIONS.map((r) => <option key={r}>{r}</option>)}
                 </select>
-                <input type="number" placeholder="Budget max (FCFA)" value={prixMax} onChange={(e) => setPrixMax(e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy" />
+                <input type="number" placeholder={transaction === "location" ? "Loyer max (FCFA)" : "Budget max (FCFA)"} value={prixMax} onChange={(e) => setPrixMax(e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy" />
                 <select value={frequence} onChange={(e) => setFrequence(e.target.value as typeof frequence)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy">
                   <option>Quotidien</option>
                   <option>Hebdomadaire</option>

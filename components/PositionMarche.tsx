@@ -10,7 +10,7 @@ const NIVEAUX = {
   dessus: { texte: "Au-dessus du marché", icone: TrendingUp, classe: "bg-gold/20 text-navy-dark" },
 };
 
-export default function PositionMarche({ bien, className = "" }: { bien: Pick<Bien, "type" | "region" | "prix" | "superficie"> & { id?: string }; className?: string }) {
+export default function PositionMarche({ bien, className = "" }: { bien: Pick<Bien, "type" | "region" | "prix" | "superficie" | "transaction"> & { id?: string }; className?: string }) {
   const biens = useBiens();
   const p = positionPrix(bien, biens);
   if (!p) return null;

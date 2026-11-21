@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle, Circle } from "lucide-react";
@@ -68,6 +68,15 @@ function Assistant({ user }: { user: User }) {
 
   const [etape, setEtape] = useState(0);
   const [envoi, setEnvoi] = useState(false);
+  const [transaction, setTransaction] = useState<"vente" | "location">("vente");
+  const [charges, setCharges] = useState("");
+  const [caution, setCaution] = useState("");
+  const [nbPieces, setNbPieces] = useState("");
+  const [meuble, setMeuble] = useState(false);
+  // Lien « Publier une location » : le formulaire s'ouvre directement sur la location.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("transaction") === "location") setTransaction("location");
+  }, []);
   const [titre, setTitre] = useState("");
   const [type, setType] = useState<Bien["type"]>("terrain");
   const [region, setRegion] = useState("Dakar");
@@ -89,7 +98,8 @@ function Assistant({ user }: { user: User }) {
   const [publiee, setPubliee] = useState<Bien | null>(null);
 
   const etape1 = titre.trim() && ville.trim() && quartier.trim() && Number(superficie) > 0 && Number(prix) > 0 && description.trim();
-  const etape2 = numeroTF.trim() && proprietaire.trim() && Number(superficieTF) > 0 && fichierTF;
+  // Le Titre Foncier est exigé pour vendre ; pour une location il reste facultatif.
+  const etape2 = transaction === "location" || (numeroTF.trim() && proprietaire.trim() && Number(superficieTF) > 0 && fichierTF);
   const etape3 = photos.length >= MIN_PHOTOS;
   const validite = [etape1, etape2, etape3];
 
@@ -132,11 +142,14 @@ function Assistant({ user }: { user: User }) {
         agence: user.nom,
         telephone: telephone.trim() || profil?.telephone || "",
         photos,
+        transaction,
+        ...(transaction === "location" && { charges: Number(charges) || 0, caution: Number(caution) || 0, meuble }),
+        nb_pieces: Number(nbPieces) || undefined,
         proprietaire: proprietaire.trim(),
-        tf: { numero: numeroTF.trim(), conservation, date_etablissement: dateTF || null, superficie_cadastrale: Number(superficieTF) },
+        tf: { numero: numeroTF.trim(), conservation: numeroTF.trim() ? conservation : null, date_etablissement: dateTF || null, superficie_cadastrale: Number(superficieTF) },
       });
       // Module cadastre en pause : l'annonce est publiée avec son titre déclaré, sans demande de vérification.
-      if (p.flags.cadastre) soumettreDemandeTF({
+      if (p.flags.cadastre && transaction === "vente") soumettreDemandeTF({
         bienId: annonce.id,
         numero: numeroTF.trim(),
         region,
@@ -217,6 +230,12 @@ function Assistant({ user }: { user: User }) {
           {etape === 0 && (
             <>
               <h2 className="font-bold text-gray-900">Informations du bien</h2>
+              <label className={libelle}>Type d&apos;annonce *
+                <select value={transaction} onChange={(e) => setTransaction(e.target.value as "vente" | "location")} className={champ}>
+                  <option value="vente">À vendre</option>
+                  <option value="location">À louer</option>
+                </select>
+              </label>
               <label className={libelle}>Titre *<input value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="ex. Terrain résidentiel — Almadies" className={champ} /></label>
               <div className="grid sm:grid-cols-2 gap-4">
                 <label className={libelle}>Type de bien *
@@ -233,9 +252,17 @@ function Assistant({ user }: { user: User }) {
                 <label className={libelle}>Ville *<input value={ville} onChange={(e) => setVille(e.target.value)} className={champ} /></label>
                 <label className={libelle}>Quartier *<input value={quartier} onChange={(e) => setQuartier(e.target.value)} className={champ} /></label>
                 <label className={libelle}>Superficie (m²) *<input type="number" min={1} value={superficie} onChange={(e) => setSuperficie(e.target.value)} className={champ} /></label>
-                <label className={libelle}>Prix (FCFA) *<input type="number" min={1} value={prix} onChange={(e) => setPrix(e.target.value)} className={champ} /></label>
+                <label className={libelle}>{transaction === "location" ? "Loyer mensuel (FCFA) *" : "Prix (FCFA) *"}<input type="number" min={1} value={prix} onChange={(e) => setPrix(e.target.value)} className={champ} /></label>
+                <label className={libelle}>Nombre de pièces<input type="number" min={1} max={50} value={nbPieces} onChange={(e) => setNbPieces(e.target.value)} className={champ} /></label>
+                {transaction === "location" && (
+                  <>
+                    <label className={libelle}>Charges mensuelles (FCFA)<input type="number" min={0} value={charges} onChange={(e) => setCharges(e.target.value)} className={champ} /></label>
+                    <label className={libelle}>Caution (FCFA)<input type="number" min={0} value={caution} onChange={(e) => setCaution(e.target.value)} className={champ} /></label>
+                    <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer sm:col-span-2"><input type="checkbox" className="accent-navy" checked={meuble} onChange={(e) => setMeuble(e.target.checked)} /> Logement meublé</label>
+                  </>
+                )}
               </div>
-              <PositionMarche bien={{ type, region, prix: Number(prix) || 0, superficie: Number(superficie) || 0 }} />
+              <PositionMarche bien={{ type, region, prix: Number(prix) || 0, superficie: Number(superficie) || 0, transaction }} />
               <label className={libelle}>Téléphone de contact<input type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} className={champ} /></label>
               <label className={libelle}>Description *<textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className={`${champ} resize-none`} /></label>
             </>
@@ -244,7 +271,7 @@ function Assistant({ user }: { user: User }) {
           {etape === 1 && (
             <>
               <div>
-                <h2 className="font-bold text-gray-900">Titre Foncier</h2>
+                <h2 className="font-bold text-gray-900">Titre Foncier{transaction === "location" ? " (facultatif pour une location)" : ""}</h2>
                 <p className="text-sm text-gray-500">Un notaire partenaire vérifiera votre TF avant validation.</p>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
@@ -295,7 +322,7 @@ function Assistant({ user }: { user: User }) {
                 <div><dt className="text-xs text-gray-400">Bien</dt><dd className="font-semibold">{titre}</dd></div>
                 <div><dt className="text-xs text-gray-400">Zone</dt><dd className="font-semibold">{quartier}, {ville}</dd></div>
                 <div><dt className="text-xs text-gray-400">Surface</dt><dd className="font-semibold">{surface.toLocaleString("fr-FR")} m²</dd></div>
-                <div><dt className="text-xs text-gray-400">Prix</dt><dd className="font-semibold">{formatFCFA(prixNombre)}</dd></div>
+                <div><dt className="text-xs text-gray-400">{transaction === "location" ? "Loyer" : "Prix"}</dt><dd className="font-semibold">{formatFCFA(prixNombre)}{transaction === "location" ? " / mois" : ""}</dd></div>
                 <div><dt className="text-xs text-gray-400">TF</dt><dd className="font-semibold">{numeroTF} · {conservation}</dd></div>
                 <div><dt className="text-xs text-gray-400">Photos</dt><dd className="font-semibold">{photos.length}</dd></div>
               </dl>

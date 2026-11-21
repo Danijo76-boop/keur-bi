@@ -103,3 +103,36 @@ Variables à définir dans le projet Vercel (Settings → Environment Variables)
 | `SEED_AU_DEPLOIEMENT` | `1` au premier déploiement pour charger les données d'exemple et créer l'administrateur ; à retirer ensuite |
 
 Ne définissez pas `MOT_DE_PASSE_DEMO` en ligne : sans lui, les comptes d'exemple existent mais personne ne peut s'y connecter.
+
+## Location, programmes neufs, recherche sur carte, alertes
+
+- **Location** : une annonce est « à vendre » ou « à louer ». En location, le prix est un loyer mensuel, avec charges, caution, meublé et nombre de pièces. La recherche, l'accueil et le menu proposent Acheter / Louer ; les statistiques de prix ne portent que sur les ventes.
+- **Programmes neufs** (`/neuf`) : un programme d'un promoteur regroupe plusieurs lots avec leurs prix. Publication par les comptes Agence et l'administration (`/neuf/publier`). Code : `lib/serveur/programmes.ts`.
+- **Liste + carte** : bouton dans la recherche (`?vue=carte`), résultats et carte côte à côte sur grand écran.
+- **Alertes par email** : une recherche enregistrée est vérifiée chaque matin à 7 h (tâche planifiée dans `vercel.json`, route `/api/cron/alertes`) ; les nouvelles annonces correspondantes sont envoyées par email via Resend. Code : `lib/serveur/alertes.ts` et `lib/serveur/email.ts`.
+
+## Sécurité
+
+- Next.js 14.2.35 (corrige notamment le contournement du middleware).
+- En-têtes de sécurité sur toutes les pages (`next.config.mjs`) : politique de contenu (CSP), interdiction d'affichage dans un cadre, HTTPS obligatoire, etc.
+- Limitation des essais en série gardée en base (connexion, inscription, envois de photos, publications, alertes) : `lib/serveur/securite.ts`.
+- Taille des requêtes plafonnée, requêtes venant d'un autre site refusées, mots de passe trop courants refusés.
+- Actions d'administration tracées (rôles, suspensions, décisions d'identité, retraits d'annonces).
+
+## Journaux et débogage
+
+- Chaque requête reçoit un identifiant (`x-request-id`), repris dans toutes les lignes du journal.
+- Le serveur écrit une ligne JSON par événement : dans le terminal en local, dans Vercel → projet → Logs en ligne. Niveau réglable par `LOG_LEVEL` (`debug`, `info`, `warn`, `erreur`) : `debug` par défaut en local, `info` en ligne.
+- Les avertissements, erreurs et actions d'administration sont aussi gardés en base et consultables dans **Administration → Journal technique**, avec recherche par code ou par référence.
+- Les erreurs du navigateur sont transmises au serveur (`/api/journal`). Une page qui plante affiche un code d'erreur ; une erreur du serveur affiche une référence. Avec ce code ou cette référence, on retrouve l'entrée exacte dans le journal technique.
+- Rien de secret n'est écrit dans les journaux (mots de passe, jetons, cookies, images), et les emails y sont partiellement masqués.
+
+## Variables d'environnement supplémentaires
+
+| Variable | Rôle |
+|---|---|
+| `RESEND_API_KEY` | Clé du service d'envoi d'emails Resend. Sans elle, les alertes ne partent pas (elles sont seulement journalisées). |
+| `EMAIL_EXPEDITEUR` | Expéditeur des emails, d'un domaine vérifié chez Resend (ex. `KEUR BI <alertes@keurbi.sn>`). |
+| `CRON_SECRET` | Secret présenté par la tâche planifiée de Vercel ; sans lui, l'envoi des alertes est refusé. |
+| `APP_URL` | Adresse publique du site, utilisée dans les liens des emails. |
+| `LOG_LEVEL` | Niveau de détail du journal (facultatif). |

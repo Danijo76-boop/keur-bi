@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Eye, MapPin, Maximize2, TrendingDown } from "lucide-react";
-import { Bien, formatPrix } from "@/lib/mock-data";
+import { Bien, estLocation, formatPrix, prixAffiche } from "@/lib/mock-data";
 import clsx from "clsx";
 import FavoriButton from "@/components/FavoriButton";
 import BoutonComparer from "@/components/BoutonComparer";
@@ -26,8 +26,14 @@ export default function PropertyCard({ bien, className }: { bien: Bien; classNam
           <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/45 to-transparent pointer-events-none" />
           {/* Badges overlay */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
-            <TFBadge bien={bien} />
-            <BadgeVente bienId={bien.id} />
+            {estLocation(bien) ? (
+              <span className="bg-blue text-white text-xs font-semibold px-2 py-0.5 rounded-full">À louer{bien.meuble ? " · meublé" : ""}</span>
+            ) : (
+              <>
+                <TFBadge bien={bien} />
+                <BadgeVente bienId={bien.id} />
+              </>
+            )}
             <BadgeDemande bien={bien} />
             {bien.is_featured && (
               <span className="bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">
@@ -70,7 +76,7 @@ export default function PropertyCard({ bien, className }: { bien: Bien; classNam
 
           <div className="flex items-end justify-between gap-3">
             <div>
-              <div className="font-display text-navy-dark font-extrabold text-lg leading-none">{formatPrix(bien.prix)}</div>
+              <div className="font-display text-navy-dark font-extrabold text-lg leading-none">{prixAffiche(bien)}</div>
               {bien.prix_baisser && bien.ancien_prix && (
                 <div className="text-xs text-gray-400 line-through mt-1">{formatPrix(bien.ancien_prix)}</div>
               )}

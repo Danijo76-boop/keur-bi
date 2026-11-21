@@ -69,6 +69,9 @@ function Formulaire({ bien, user }: { bien: Bien; user: User }) {
   if (!autorise) {
     return <div className="card p-8 text-center text-gray-500">Votre rôle ne permet pas de soumettre une offre d&apos;achat.</div>;
   }
+  if (bien.transaction === "location") {
+    return <div className="card p-8 text-center text-gray-500">Ce bien est à louer : contactez l&apos;annonceur ou demandez une visite depuis son annonce.</div>;
+  }
   if (vente !== "disponible") {
     return <div className="card p-8 text-center text-gray-500">Ce bien est {vente === "vendu" ? "vendu" : "sous offre"} : il n&apos;accepte plus de nouvelles offres.</div>;
   }

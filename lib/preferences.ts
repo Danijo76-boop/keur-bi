@@ -1,5 +1,5 @@
 "use client";
-import { lire, ecrire, nouvelId } from "./stockage";
+import { lire, ecrire, nouvelId, signalerMaj } from "./stockage";
 import { popup } from "./popup";
 import { Bien } from "./mock-data";
 
@@ -68,9 +68,9 @@ export function definirComparaison(ids: string[]) {
 }
 
 /* ── Alertes de recherche ── */
-const CLE_ALERTES = "keurbi_alertes";
 
 export type CriteresAlerte = {
+  transaction?: "vente" | "location";
   q?: string;
   type?: string;
   region?: string;
@@ -89,24 +89,52 @@ export type Alerte = {
   creeLe: string;
 };
 
-export function lireAlertes(email: string): Alerte[] {
-  return lire<Alerte[]>(CLE_ALERTES, []).filter((a) => a.email === email);
+/* Les alertes vivent dans la base : chaque matin, le serveur envoie par email les nouvelles annonces
+   qui correspondent (voir lib/serveur/alertes.ts). Cette copie en mémoire permet aux pages de les lire sans attendre. */
+let alertes: Alerte[] = [];
+
+export function lireAlertes(_email?: string): Alerte[] {
+  return alertes;
 }
 
-export function creerAlerte(email: string, nom: string, criteres: CriteresAlerte, frequence: Alerte["frequence"] = "Quotidien") {
-  popup.succes("Alerte créée", nom);
-  ecrire(CLE_ALERTES, [
-    { id: nouvelId(), email, nom, criteres, frequence, creeLe: new Date().toISOString() },
-    ...lire<Alerte[]>(CLE_ALERTES, []),
-  ]);
+export async function chargerAlertes(): Promise<void> {
+  try {
+    const r = await fetch("/api/alertes", { cache: "no-store" });
+    alertes = r.ok ? ((await r.json()) as { alertes: Alerte[] }).alertes : [];
+  } catch {
+    alertes = [];
+  }
+  signalerMaj();
 }
 
-export function supprimerAlerte(id: string) {
+export function viderAlertes() {
+  alertes = [];
+  signalerMaj();
+}
+
+export async function creerAlerte(_email: string, nom: string, criteres: CriteresAlerte, frequence: Alerte["frequence"] = "Quotidien") {
+  try {
+    const r = await fetch("/api/alertes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nom, criteres, frequence }) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.alerte) return popup.erreur("Alerte non créée", d.erreur ?? "Le serveur a refusé la demande.");
+    alertes = [d.alerte, ...alertes];
+    signalerMaj();
+    popup.succes("Alerte créée", `${nom}. Vous recevrez un email quand de nouvelles annonces correspondront.`);
+  } catch {
+    popup.erreur("Alerte non créée", "Connexion au serveur impossible.");
+  }
+}
+
+export async function supprimerAlerte(id: string) {
+  const r = await fetch(`/api/alertes/${encodeURIComponent(id)}`, { method: "DELETE" }).catch(() => null);
+  if (!r?.ok) return popup.erreur("Alerte non supprimée", "Réessayez dans un instant.");
+  alertes = alertes.filter((a) => a.id !== id);
+  signalerMaj();
   popup.succes("Alerte supprimée");
-  ecrire(CLE_ALERTES, lire<Alerte[]>(CLE_ALERTES, []).filter((a) => a.id !== id));
 }
 
 export function correspond(b: Bien, c: CriteresAlerte, tfVerifie: boolean): boolean {
+  if ((c.transaction ?? "vente") !== (b.transaction ?? "vente")) return false;
   if (c.type && b.type !== c.type) return false;
   if (c.region && b.region !== c.region) return false;
   if (c.prixMax && b.prix > c.prixMax) return false;
@@ -120,6 +148,7 @@ export function correspond(b: Bien, c: CriteresAlerte, tfVerifie: boolean): bool
 // Lien vers la recherche pré-filtrée (mêmes paramètres que ceux lus par la page Annonces).
 export function urlRecherche(c: CriteresAlerte): string {
   const p = new URLSearchParams();
+  if (c.transaction === "location") p.set("transaction", "location");
   if (c.q) p.set("q", c.q);
   if (c.type) p.set("type", c.type);
   if (c.region) p.set("region", c.region);
@@ -133,11 +162,12 @@ export function urlRecherche(c: CriteresAlerte): string {
 
 export function resumeCriteres(c: CriteresAlerte): string {
   const parts = [
+    c.transaction === "location" ? "Location" : undefined,
     c.q,
     c.type,
     c.region,
     c.tfVerifie ? "TF vérifié" : undefined,
-    c.prixMax ? `< ${Math.round(c.prixMax / 1_000_000)} M FCFA` : undefined,
+    c.prixMax ? (c.transaction === "location" ? `loyer < ${c.prixMax.toLocaleString("fr-FR")} FCFA` : `< ${Math.round(c.prixMax / 1_000_000)} M FCFA`) : undefined,
     c.superficieMin || c.superficieMax ? `${c.superficieMin ?? 0}–${c.superficieMax ?? "∞"} m²` : undefined,
   ].filter(Boolean);
   return parts.join(" · ") || "Tous les biens";

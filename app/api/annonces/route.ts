@@ -20,6 +20,7 @@ async function get(requete: Request) {
   try {
     const annonces = await listerAnnonces(
       {
+        transaction: p.get("transaction") ?? undefined,
         q: p.get("q")?.trim() || undefined,
         type: p.get("type") ?? undefined,
         region: p.get("region") ?? undefined,

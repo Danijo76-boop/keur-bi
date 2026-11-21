@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useBiens } from "@/lib/annonces";
 import { mediane } from "@/lib/marche";
-import { Bien, formatFCFA, formatPrix } from "@/lib/mock-data";
+import { Bien, formatFCFA, formatPrix, enVente } from "@/lib/mock-data";
 import { useStocke } from "@/lib/stockage";
 import { lireDossiers } from "@/lib/dossiers";
 import { ICONES_TF, LABELS_TF, lireDemandesTF, lireOverridesTF, statutTF, StatutTF } from "@/lib/tf";
@@ -34,7 +34,8 @@ const EVOLUTION_DAKAR = [
 ];
 
 export default function StatistiquesPage() {
-  const biens = useBiens();
+  // Statistiques de prix : ventes seulement, un loyer fausserait les moyennes.
+  const biens = useBiens().filter(enVente);
   const overrides = useStocke(lireOverridesTF, []);
   const demandes = useStocke(lireDemandesTF, []);
   const [type, setType] = useState<Bien["type"]>("terrain");

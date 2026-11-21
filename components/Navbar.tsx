@@ -65,16 +65,27 @@ const RUBRIQUES: Rubrique[] = [
       { href: "/annonces?type=villa", label: "Villas", desc: "Maisons individuelles", icone: Home },
       { href: "/annonces?type=appartement", label: "Appartements", desc: "En immeuble ou résidence", icone: Building },
       { href: "/annonces?type=bureau", label: "Bureaux", desc: "Locaux professionnels", icone: Briefcase },
+      { href: "/neuf", label: "Programmes neufs", desc: "Sur plan et en construction", icone: Building2 },
       { href: "/carte", label: "Recherche sur la carte", desc: "Les biens autour de vous", icone: Map, flag: "carte" },
       { href: "/quartiers", label: "Guide des quartiers", desc: "Prix au m² par quartier", icone: MapPinned },
       { href: "/comparer", label: "Comparateur", desc: "Jusqu'à trois biens côte à côte", icone: Scale, flag: "comparateur" },
     ],
   },
   {
+    id: "louer",
+    label: "Louer",
+    entrees: [
+      { href: "/annonces?transaction=location", label: "Toutes les locations", desc: "Loyers mensuels, meublé ou vide", icone: LayoutGrid },
+      { href: "/annonces?transaction=location&type=appartement", label: "Appartements à louer", desc: "Studios et grands appartements", icone: Building },
+      { href: "/annonces?transaction=location&type=villa", label: "Villas à louer", desc: "Maisons avec jardin ou piscine", icone: Home },
+      { href: "/annonces?transaction=location&type=bureau", label: "Bureaux à louer", desc: "Locaux professionnels", icone: Briefcase },
+    ],
+  },
+  {
     id: "vendre",
     label: "Vendre",
     entrees: [
-      { href: "/publier", label: "Publier une annonce", desc: "Mettez votre bien en ligne", icone: PlusCircle },
+      { href: "/publier", label: "Publier une annonce", desc: "À vendre ou à louer", icone: PlusCircle },
       { href: "/estimer", label: "Estimer mon bien", desc: "Sa valeur en quelques secondes", icone: Calculator },
       { href: "/tarifs", label: "Tarifs et abonnements", desc: "Commission et plans vendeur", icone: Tag },
     ],

@@ -19,12 +19,13 @@ export type PositionPrix = {
 const SEUIL_ECART = 15;
 const MIN_COMPARABLES = 2;
 
-type Reference = Pick<Bien, "type" | "region" | "prix" | "superficie"> & { id?: string };
+type Reference = Pick<Bien, "type" | "region" | "prix" | "superficie" | "transaction"> & { id?: string };
 
 // Compare d'abord à la même région, puis à tout le pays si les annonces locales sont trop peu nombreuses.
 export function positionPrix(bien: Reference, biens: Bien[]): PositionPrix | null {
   if (bien.prix <= 0 || bien.superficie <= 0) return null;
-  const memeType = biens.filter((b) => b.id !== bien.id && b.type === bien.type);
+  // Une vente se compare à des ventes, une location à des locations.
+  const memeType = biens.filter((b) => b.id !== bien.id && b.type === bien.type && (b.transaction ?? "vente") === (bien.transaction ?? "vente"));
   const memeRegion = memeType.filter((b) => b.region === bien.region);
   const lot = memeRegion.length >= MIN_COMPARABLES ? memeRegion : memeType;
   if (lot.length < MIN_COMPARABLES) return null;

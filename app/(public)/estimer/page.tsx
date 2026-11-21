@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Calculator, Home, TrendingUp } from "lucide-react";
 import { useBiens } from "@/lib/annonces";
 import { estimer } from "@/lib/marche";
-import { Bien, formatFCFA, formatPrix } from "@/lib/mock-data";
+import { Bien, formatFCFA, formatPrix, enVente } from "@/lib/mock-data";
 import { commissionVente, useParametres } from "@/lib/parametres";
 import PropertyCard from "@/components/PropertyCard";
 
@@ -19,7 +19,8 @@ const FIABILITE = {
 };
 
 export default function EstimerPage() {
-  const biens = useBiens();
+  // Statistiques de prix : ventes seulement, un loyer fausserait les moyennes.
+  const biens = useBiens().filter(enVente);
   const p = useParametres();
   const [type, setType] = useState<Bien["type"]>("terrain");
   const [region, setRegion] = useState("Dakar");

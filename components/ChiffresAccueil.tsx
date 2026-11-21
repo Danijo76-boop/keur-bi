@@ -1,16 +1,17 @@
 "use client";
 import { useBiens } from "@/lib/annonces";
 import { AGENCES } from "@/lib/agences";
-import { formatPrix } from "@/lib/mock-data";
+import { formatPrix, enVente } from "@/lib/mock-data";
 
 // Les chiffres de l'accueil sont calculés sur les données du site, pour rester
 // cohérents avec la liste des annonces, les statistiques et les fiches d'agence.
 
 export function ChiffresCles() {
-  const biens = useBiens();
-  const dakar = biens.filter((b) => b.region === "Dakar");
+  const tous = useBiens();
+  // Le prix moyen ne porte que sur les ventes : un loyer fausserait la moyenne.
+  const dakar = tous.filter(enVente).filter((b) => b.region === "Dakar");
   const chiffres = [
-    { label: "Annonces actives", val: biens.length.toLocaleString("fr-FR") },
+    { label: "Annonces actives", val: tous.length.toLocaleString("fr-FR") },
     { label: "Ventes des agences partenaires", val: AGENCES.reduce((s, a) => s + a.ventes, 0).toLocaleString("fr-FR") },
     { label: "Agences partenaires", val: String(AGENCES.length) },
     { label: "Prix moyen Dakar", val: dakar.length ? formatPrix(dakar.reduce((s, b) => s + b.prix, 0) / dakar.length) : "—" },
