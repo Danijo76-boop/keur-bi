@@ -9,7 +9,7 @@ const refus = (erreur: string, status: number) => NextResponse.json({ erreur }, 
 
 // POST /api/fichiers  { dataUrl } : envoi d'une photo d'annonce, une par requête.
 async function post(requete: Request) {
-  if (!memeOrigine()) return refus("Requête refusée.", 403);
+  if (!(await memeOrigine())) return refus("Requête refusée.", 403);
   try {
     const moi = await compteCourant();
     if (!moi) return refus("Connexion requise.", 401);

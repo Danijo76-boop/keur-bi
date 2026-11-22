@@ -113,7 +113,7 @@ Ne définissez pas `MOT_DE_PASSE_DEMO` en ligne : sans lui, les comptes d'exempl
 
 ## Sécurité
 
-- Next.js 14.2.35 (corrige notamment le contournement du middleware).
+- Next.js 15.5 et React 19 : versions sans faille connue au dernier contrôle (voir « Analyse avec Trivy »).
 - En-têtes de sécurité sur toutes les pages (`next.config.mjs`) : politique de contenu (CSP), interdiction d'affichage dans un cadre, HTTPS obligatoire, etc.
 - Limitation des essais en série gardée en base (connexion, inscription, envois de photos, publications, alertes) : `lib/serveur/securite.ts`.
 - Taille des requêtes plafonnée, requêtes venant d'un autre site refusées, mots de passe trop courants refusés.
@@ -136,3 +136,18 @@ Ne définissez pas `MOT_DE_PASSE_DEMO` en ligne : sans lui, les comptes d'exempl
 | `CRON_SECRET` | Secret présenté par la tâche planifiée de Vercel ; sans lui, l'envoi des alertes est refusé. |
 | `APP_URL` | Adresse publique du site, utilisée dans les liens des emails. |
 | `LOG_LEVEL` | Niveau de détail du journal (facultatif). |
+
+## Analyse avec Trivy
+
+[Trivy](https://trivy.dev) recherche les failles connues dans les dépendances, les secrets écrits dans le code et les erreurs de configuration.
+
+```
+npm run securite
+```
+
+- Réglages dans `trivy.yaml` : dossiers générés et fichiers de réglages locaux (`.env`, `.env.local`, jamais envoyés sur GitHub) exclus, sévérités moyenne à critique.
+- Pour inclure les outils de développement : `npm run securite -- --include-dev-deps`.
+- Si la mise à jour de la base de failles échoue (réseau), relancer avec `--skip-db-update` pour utiliser la dernière base téléchargée.
+- Quand une sous-dépendance vulnérable n'est pas encore corrigée par le paquet qui l'embarque, sa version est forcée dans la section `overrides` de `package.json` (aujourd'hui : PostCSS dans Next.js, deepmerge-ts et effect dans Prisma).
+
+Dernier contrôle (22/11/2026) : aucune faille, aucun secret.

@@ -5,7 +5,8 @@ import AnnonceDetail from "@/components/AnnonceDetail";
 
 export const dynamic = "force-dynamic";
 
-export default async function DetailPage({ params }: { params: { id: string } }) {
+export default async function DetailPage(ctx: { params: Promise<{ id: string }> }) {
+  const params = await ctx.params;
   // L'annonce est lue dans la base. Celles publiées depuis le navigateur n'y sont pas encore : AnnonceDetail les résout côté client.
   const initial = await trouverAnnonce(params.id).catch((e) => {
     log.erreur("Annonce : base de données injoignable", e);

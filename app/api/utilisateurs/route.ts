@@ -52,7 +52,7 @@ async function get() {
 //  - admin : rôle et suspension d'un autre compte ;
 //  - admin ou modérateur : décision sur un dossier d'identité.
 async function patch(requete: Request) {
-  if (!memeOrigine()) return refus("Requête refusée.", 403);
+  if (!(await memeOrigine())) return refus("Requête refusée.", 403);
   try {
     const moi = await compteCourant();
     if (!moi) return refus("Connexion requise.", 401);
@@ -158,7 +158,7 @@ async function patch(requete: Request) {
 // POST /api/utilisateurs  { nom, email, role, telephone?, suspendu?, statutKYC? } : création d'un compte par un administrateur.
 // Le compte reçoit un mot de passe provisoire, renvoyé une seule fois pour être transmis à la personne.
 async function post(requete: Request) {
-  if (!memeOrigine()) return refus("Requête refusée.", 403);
+  if (!(await memeOrigine())) return refus("Requête refusée.", 403);
   try {
     const moi = await compteCourant();
     if (!moi) return refus("Connexion requise.", 401);

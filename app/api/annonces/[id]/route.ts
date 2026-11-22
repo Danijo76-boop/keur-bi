@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic";
 const refus = (erreur: string, status: number) => NextResponse.json({ erreur }, { status });
 
 // GET /api/annonces/1
-async function get(_requete: Request, { params }: { params: { id: string } }) {
+async function get(_requete: Request, ctx: { params: Promise<{ id: string }> }) {
+  const params = await ctx.params;
   try {
     const annonce = await trouverAnnonce(params.id, await compteCourant());
     if (!annonce) return refus("Annonce introuvable.", 404);
@@ -21,8 +22,9 @@ async function get(_requete: Request, { params }: { params: { id: string } }) {
 }
 
 // PATCH /api/annonces/1  { titre?, description?, prix?, depublie?, boost? }
-async function patch(requete: Request, { params }: { params: { id: string } }) {
-  if (!memeOrigine()) return refus("Requête refusée.", 403);
+async function patch(requete: Request, ctx: { params: Promise<{ id: string }> }) {
+  const params = await ctx.params;
+  if (!(await memeOrigine())) return refus("Requête refusée.", 403);
   try {
     const moi = await compteCourant();
     if (!moi) return refus("Connexion requise.", 401);

@@ -46,7 +46,7 @@ export async function ouvrirSession(utilisateurId: string) {
     db.session.create({ data: { jetonHash: empreinteJeton(jeton), utilisateurId, expireLe } }),
     db.utilisateur.update({ where: { id: utilisateurId }, data: { derniereConnexion: new Date() } }),
   ]);
-  cookies().set(COOKIE_SESSION, jeton, {
+  (await cookies()).set(COOKIE_SESSION, jeton, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -56,14 +56,15 @@ export async function ouvrirSession(utilisateurId: string) {
 }
 
 export async function fermerSession() {
-  const jeton = cookies().get(COOKIE_SESSION)?.value;
+  const pot = await cookies();
+  const jeton = pot.get(COOKIE_SESSION)?.value;
   if (jeton) await db.session.deleteMany({ where: { jetonHash: empreinteJeton(jeton) } });
-  cookies().delete(COOKIE_SESSION);
+  pot.delete(COOKIE_SESSION);
 }
 
 // Compte de la personne connectée, ou null. Une session expirée ou un compte suspendu ne donnent accès à rien.
 export async function compteCourant(): Promise<Utilisateur | null> {
-  const jeton = cookies().get(COOKIE_SESSION)?.value;
+  const jeton = (await cookies()).get(COOKIE_SESSION)?.value;
   if (!jeton) return null;
   const session = await db.session.findUnique({ where: { jetonHash: empreinteJeton(jeton) }, include: { utilisateur: true } });
   if (!session || session.expireLe < new Date() || session.utilisateur.suspendu) return null;
@@ -77,8 +78,8 @@ export async function exigerRole(...roles: Role[]): Promise<Utilisateur | null> 
 }
 
 // Les requêtes qui modifient des données doivent venir du site lui-même, pas d'une page tierce.
-export function memeOrigine(): boolean {
-  const h = headers();
+export async function memeOrigine(): Promise<boolean> {
+  const h = await headers();
   // Les navigateurs récents indiquent d'où vient la requête : une requête d'un autre site est refusée d'emblée.
   if (h.get("sec-fetch-site") === "cross-site") return false;
   const origine = h.get("origin");
@@ -93,8 +94,8 @@ export function memeOrigine(): boolean {
 
 // Adresse du visiteur telle que transmise par l'hébergeur. Absente en local : on ne limite alors que par compte,
 // sinon tous les visiteurs partageraient le même compteur.
-export function adresseClient(): string | undefined {
-  const h = headers();
+export async function adresseClient(): Promise<string | undefined> {
+  const h = await headers();
   return h.get("x-forwarded-for")?.split(",")[0].trim() || h.get("x-real-ip") || undefined;
 }
 

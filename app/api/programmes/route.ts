@@ -21,7 +21,7 @@ async function get(requete: Request) {
 
 // POST /api/programmes : publication d'un programme neuf par une agence ou un administrateur.
 async function post(requete: Request) {
-  if (!memeOrigine()) return refus("Requête refusée.", 403);
+  if (!(await memeOrigine())) return refus("Requête refusée.", 403);
   try {
     const moi = await compteCourant();
     if (!moi) return refus("Connexion requise.", 401);

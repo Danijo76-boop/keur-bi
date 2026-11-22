@@ -4,7 +4,7 @@ import { avecJournal, log } from "@/lib/serveur/journal";
 
 // POST /api/auth/deconnexion
 async function post() {
-  if (!memeOrigine()) return NextResponse.json({ erreur: "Requête refusée." }, { status: 403 });
+  if (!(await memeOrigine())) return NextResponse.json({ erreur: "Requête refusée." }, { status: 403 });
   try {
     await fermerSession();
   } catch (e) {

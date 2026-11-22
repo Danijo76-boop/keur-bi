@@ -22,7 +22,7 @@ async function get() {
 
 // POST /api/alertes  { nom, criteres, frequence } : enregistre une recherche, envoyée par email quand de nouvelles annonces correspondent.
 async function post(requete: Request) {
-  if (!memeOrigine()) return refus("Requête refusée.", 403);
+  if (!(await memeOrigine())) return refus("Requête refusée.", 403);
   try {
     const moi = await compteCourant();
     if (!moi) return refus("Connexion requise.", 401);

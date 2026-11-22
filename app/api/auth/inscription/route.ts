@@ -12,8 +12,8 @@ const refus = (erreur: string, status = 400) => NextResponse.json({ erreur }, { 
 
 // POST /api/auth/inscription  { nom, email, motDePasse, role, telephone? }
 async function post(requete: Request) {
-  if (!memeOrigine()) return refus("Requête refusée.", 403);
-  const ip = adresseClient();
+  if (!(await memeOrigine())) return refus("Requête refusée.", 403);
+  const ip = (await adresseClient());
   if (ip) {
     if (await freiner(`inscription:${ip}`, LIMITES.inscription)) return refus("Trop de tentatives. Réessayez dans quelques minutes.", 429);
   }

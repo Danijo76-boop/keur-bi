@@ -39,7 +39,7 @@ async function get(requete: Request) {
 
 // POST /api/annonces : publication d'une annonce par un vendeur connecté.
 async function post(requete: Request) {
-  if (!memeOrigine()) return refus("Requête refusée.", 403);
+  if (!(await memeOrigine())) return refus("Requête refusée.", 403);
   try {
     const moi = await compteCourant();
     if (!moi) return refus("Connexion requise.", 401);

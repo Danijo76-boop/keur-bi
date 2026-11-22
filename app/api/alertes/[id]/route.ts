@@ -4,8 +4,9 @@ import { supprimerAlerte } from "@/lib/serveur/alertes";
 import { avecJournal, log } from "@/lib/serveur/journal";
 
 // DELETE /api/alertes/<id> : supprime une alerte de la personne connectée.
-async function supprimer(_requete: Request, { params }: { params: { id: string } }) {
-  if (!memeOrigine()) return NextResponse.json({ erreur: "Requête refusée." }, { status: 403 });
+async function supprimer(_requete: Request, ctx: { params: Promise<{ id: string }> }) {
+  const params = await ctx.params;
+  if (!(await memeOrigine())) return NextResponse.json({ erreur: "Requête refusée." }, { status: 403 });
   try {
     const moi = await compteCourant();
     if (!moi) return NextResponse.json({ erreur: "Connexion requise." }, { status: 401 });

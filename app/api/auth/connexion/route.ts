@@ -10,13 +10,13 @@ const refus = (erreur: string, status = 400) => NextResponse.json({ erreur }, { 
 
 // POST /api/auth/connexion  { email, motDePasse }
 async function post(requete: Request) {
-  if (!memeOrigine()) return refus("Requête refusée.", 403);
+  if (!(await memeOrigine())) return refus("Requête refusée.", 403);
   const corps = await lireJson(requete);
   const email = typeof corps?.email === "string" ? normaliserEmail(corps.email) : "";
   const motDePasse = typeof corps?.motDePasse === "string" ? corps.motDePasse : "";
   if (!email || !motDePasse) return refus("Email et mot de passe requis.");
 
-  const ip = adresseClient();
+  const ip = (await adresseClient());
   const cleCompte = `connexion:${email}`;
   const cleAdresse = ip && `connexion-ip:${ip}`;
   if ((await limiteAtteinte(cleCompte, LIMITES.connexionCompte)) || (cleAdresse && (await limiteAtteinte(cleAdresse, LIMITES.connexionAdresse)))) {

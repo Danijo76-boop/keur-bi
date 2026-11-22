@@ -6,7 +6,8 @@ const TITRES: Record<string, string> = {
   mentions: "Mentions légales",
 };
 
-export default function LegalPage({ params }: { params: { page: string } }) {
+export default async function LegalPage(ctx: { params: Promise<{ page: string }> }) {
+  const params = await ctx.params;
   const titre = TITRES[params.page];
   if (!titre) notFound();
   return (

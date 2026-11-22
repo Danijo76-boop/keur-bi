@@ -2,7 +2,8 @@ import { lireFichier } from "@/lib/serveur/fichiers";
 import { avecJournal, log } from "@/lib/serveur/journal";
 
 // GET /api/fichiers/<id> : sert une photo d'annonce. Publique, comme les annonces elles-mêmes.
-async function get(_requete: Request, { params }: { params: { id: string } }) {
+async function get(_requete: Request, ctx: { params: Promise<{ id: string }> }) {
+  const params = await ctx.params;
   try {
     const fichier = /^[a-z0-9]+$/.test(params.id) ? await lireFichier(params.id) : null;
     if (!fichier) return new Response("Fichier introuvable.", { status: 404 });

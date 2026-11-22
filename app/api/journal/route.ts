@@ -8,9 +8,9 @@ const texte = (v: unknown, max: number) => (typeof v === "string" ? v.slice(0, m
 // POST /api/journal  { code, message, pile?, page?, type? } : une erreur survenue dans le navigateur d'un visiteur.
 // Ouvert à tous (une erreur peut survenir avant la connexion), mais plafonné et limité en taille.
 async function post(requete: Request) {
-  if (!memeOrigine()) return NextResponse.json({ erreur: "Requête refusée." }, { status: 403 });
+  if (!(await memeOrigine())) return NextResponse.json({ erreur: "Requête refusée." }, { status: 403 });
   const compte = await compteCourant().catch(() => null);
-  const cle = `rapport:${compte?.id ?? adresseClient() ?? "anonyme"}`;
+  const cle = `rapport:${compte?.id ?? (await adresseClient()) ?? "anonyme"}`;
   if (await freiner(cle, LIMITES.rapportNavigateur)) return new NextResponse(null, { status: 204 });
   const corps = await lireJson(requete, 10_000);
   if (!corps) return NextResponse.json({ erreur: "Rapport illisible." }, { status: 400 });

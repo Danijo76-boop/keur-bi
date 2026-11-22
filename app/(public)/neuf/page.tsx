@@ -11,7 +11,8 @@ export const dynamic = "force-dynamic";
 const REGIONS = ["Toutes", "Dakar", "Thiès", "Saint-Louis", "Ziguinchor", "Kaolack"];
 
 // Programmes neufs : immeubles et lotissements vendus sur plan ou en construction, lot par lot.
-export default async function NeufPage({ searchParams }: { searchParams: { region?: string } }) {
+export default async function NeufPage(props: { searchParams: Promise<{ region?: string }> }) {
+  const searchParams = await props.searchParams;
   const region = REGIONS.includes(searchParams.region ?? "") ? (searchParams.region as string) : "Toutes";
   let programmes: Programme[] = [];
   let indisponible = false;

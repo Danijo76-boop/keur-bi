@@ -17,6 +17,13 @@ scan:
     - .next-build
     - .pgdata
     - .vercel
+  # Fichiers de réglages locaux, jamais envoyés sur GitHub (voir .gitignore) : ils contiennent normalement des secrets.
+  # Ce qui part sur GitHub, y compris .env.example, reste analysé.
+  skip-files:
+    - .env
+    - .env.local
+    - .env.production.local
+    - .env.development.local
 
 severity:
   - CRITICAL

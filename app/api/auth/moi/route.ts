@@ -19,7 +19,7 @@ async function get() {
 
 // PATCH /api/auth/moi  { nom?, telephone?, ville? } : la personne modifie son propre profil.
 async function patch(requete: Request) {
-  if (!memeOrigine()) return NextResponse.json({ erreur: "Requête refusée." }, { status: 403 });
+  if (!(await memeOrigine())) return NextResponse.json({ erreur: "Requête refusée." }, { status: 403 });
   try {
     const compte = await compteCourant();
     if (!compte) return NextResponse.json({ erreur: "Connexion requise." }, { status: 401 });

@@ -10,7 +10,8 @@ export const dynamic = "force-dynamic";
 
 const TYPES: Record<string, string> = { terrain: "Terrain", villa: "Villa", appartement: "Appartement", bureau: "Bureau" };
 
-export default async function ProgrammePage({ params }: { params: { slug: string } }) {
+export default async function ProgrammePage(ctx: { params: Promise<{ slug: string }> }) {
+  const params = await ctx.params;
   const p = await trouverProgramme(params.slug);
   if (!p) notFound();
   const prix = aPartirDe(p);
