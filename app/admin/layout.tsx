@@ -31,7 +31,8 @@ function Espace({ role, children }: { role: Role; children: ReactNode }) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid lg:grid-cols-[14rem_1fr] gap-6">
-      <nav className="card p-2 h-fit flex lg:flex-col gap-1 overflow-x-auto print:hidden" aria-label="Administration">
+      {/* Sur téléphone, les entrées passent à la ligne : toutes restent visibles sans faire défiler. */}
+      <nav className="card p-2 h-fit flex flex-wrap lg:flex-col lg:flex-nowrap gap-1 print:hidden" aria-label="Administration">
         {liens.map((l) => (
           <Link
             key={l.href}
