@@ -18,7 +18,10 @@
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:verifier": "prettier --check .",
-    "types": "tsc --noEmit"
+    "types": "tsc --noEmit",
+    "test": "vitest run",
+    "test:surveiller": "vitest",
+    "verifier": "npm run types && npm run lint && npm run format:verifier && npm test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.13.0",

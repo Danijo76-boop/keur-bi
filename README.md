@@ -11,6 +11,20 @@ npm run dev      # http://localhost:3000
 
 Ne pas lancer `npm run build` pendant que `npm run dev` tourne : les deux écrivent dans `.next` et le serveur de développement se met à renvoyer des pages blanches. En cas de doute, arrêter le serveur, supprimer `.next`, relancer.
 
+## Qualité du code
+
+| Commande | Effet |
+|---|---|
+| `npm run verifier` | Tout en une fois : types, lint, mise en forme, tests |
+| `npm run types` | Vérifie les types TypeScript |
+| `npm run lint` | ESLint (règles officielles Next.js), aucun avertissement toléré |
+| `npm run format` | Met le code en forme (Prettier) ; `npm run format:verifier` contrôle sans modifier |
+| `npm test` | Tests automatiques (Vitest) ; `npm run test:surveiller` les relance à chaque modification |
+
+- **Tests unitaires** (`tests/unitaires`) : règles des mots de passe, numéros WhatsApp, adresses de photos, contenu des PDF et des fichiers Excel, droits de publication. Ils tournent sans base de données.
+- **Tests d'intégration** (`tests/integration`) : limitation des essais, connexion en deux temps, mot de passe oublié, envoi WhatsApp → SMS → email (simulé), règles de publication. Ils utilisent une vraie base PostgreSQL, désignée par `DATABASE_URL`, et sont ignorés si elle n'est pas définie. **Ne jamais les lancer sur la base de production** : ils créent puis suppriment des comptes en `…@tests.keurbi`.
+- **Vérification automatique** (`.github/workflows/verifications.yml`) : à chaque pull request, GitHub lance types, lint, mise en forme, tests (avec une base jetable) et build. Une pull request en échec ne doit pas être fusionnée ; pour l'imposer, activer la protection de la branche `main` (Settings → Branches → exiger la vérification « Types, lint, format, tests et build »).
+
 ## Organisation du code
 
 Le dossier `app/` est scindé en trois parties. Les parenthèses sont des « groupes de routes » Next.js : elles rangent le code sans apparaître dans les adresses (`app/(public)/annonces` répond toujours à `/annonces`).
