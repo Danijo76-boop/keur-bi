@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { CalendarDays, CreditCard, MessageSquare, PenLine, Upload } from "lucide-react";
+import { CalendarDays, CreditCard, MessageSquare, PenLine, Upload } from "@/components/icones";
 import { useAuth, estCoteVendeur, estNotariat } from "@/lib/auth";
 import { useBiens } from "@/lib/annonces";
 import { formatFCFA, formatPrix } from "@/lib/mock-data";

@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Paperclip, Search, Send } from "lucide-react";
+import { Paperclip, Search, Send } from "@/components/icones";
 import { User } from "@/lib/auth";
 import { conversationsDe, envoyerMessage, marquerLue, nonLus } from "@/lib/messagerie";
 import { useStocke } from "@/lib/stockage";

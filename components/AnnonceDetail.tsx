@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle, MapPin, Eye, Phone, MessageCircle, MessageSquare, ChevronRight, Settings2 } from "lucide-react";
+import { CheckCircle, MapPin, Eye, Phone, MessageCircle, MessageSquare, ChevronRight, Settings2 } from "@/components/icones";
 import dynamic from "next/dynamic";
 import { Bien, estLocation, formatFCFA, formatPrix, prixAffiche } from "@/lib/mock-data";
 import { LABELS_VENTE, lireDossiers, statutVente } from "@/lib/dossiers";

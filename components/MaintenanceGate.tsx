@@ -1,7 +1,7 @@
 "use client";
 import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { Wrench } from "lucide-react";
+import { Wrench } from "@/components/icones";
 import { useAuth } from "@/lib/auth";
 import { useParametres } from "@/lib/parametres";
 

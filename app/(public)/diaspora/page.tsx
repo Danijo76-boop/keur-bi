@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { BadgeCheck, FileSignature, Globe2, ShieldCheck, Video, Wallet } from "lucide-react";
+import { BadgeCheck, FileSignature, Globe2, ShieldCheck, Video, Wallet } from "@/components/icones";
 import { formatFCFA } from "@/lib/mock-data";
 import { SERVICES } from "@/lib/revenus";
 import CommanderService from "@/components/CommanderService";

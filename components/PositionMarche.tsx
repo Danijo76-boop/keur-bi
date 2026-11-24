@@ -1,5 +1,5 @@
 "use client";
-import { TrendingDown, TrendingUp, Minus } from "lucide-react";
+import { TrendingDown, TrendingUp, Minus } from "@/components/icones";
 import { useBiens } from "@/lib/annonces";
 import { Bien, formatFCFA } from "@/lib/mock-data";
 import { positionPrix } from "@/lib/marche";

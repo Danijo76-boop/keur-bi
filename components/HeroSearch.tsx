@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search } from "@/components/icones";
 
 const TYPES = ["Tous types", "Terrain", "Villa", "Appartement", "Bureau"];
 

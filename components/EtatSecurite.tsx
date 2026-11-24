@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ShieldAlert, ShieldCheck } from "lucide-react";
+import { ShieldAlert, ShieldCheck } from "@/components/icones";
 
 type Etat = {
   doubleVerification: boolean;

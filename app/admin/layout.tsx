@@ -2,7 +2,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Bug, Coins, FileSpreadsheet, Flag, ScrollText, Settings, ShieldCheck, Users } from "lucide-react";
+import { BarChart3, Bug, Coins, FileSpreadsheet, Flag, ScrollText, Settings, ShieldCheck, Users } from "@/components/icones";
 import Protege from "@/components/Protege";
 import { Role } from "@/lib/auth";
 import { sectionsAdminOuvertes, useMatrice } from "@/lib/permissions";

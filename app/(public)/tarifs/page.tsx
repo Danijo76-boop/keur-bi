@@ -2,7 +2,7 @@
 import { popup } from "@/lib/popup";
 import { useState } from "react";
 import Link from "next/link";
-import { Check, Minus, Star, Zap, FileText, Camera } from "lucide-react";
+import { Check, Minus, Star, Zap, FileText, Camera } from "@/components/icones";
 import { formatFCFA } from "@/lib/mock-data";
 import { useParametres } from "@/lib/parametres";
 import { SERVICES } from "@/lib/revenus";

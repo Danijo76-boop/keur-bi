@@ -1,5 +1,5 @@
 "use client";
-import { Heart } from "lucide-react";
+import { Heart } from "@/components/icones";
 import { basculerFavori, lireFavoris } from "@/lib/preferences";
 import { useStocke } from "@/lib/stockage";
 

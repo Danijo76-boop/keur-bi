@@ -31,8 +31,8 @@ import {
   User,
   Wallet,
   X,
-  type LucideIcon,
-} from "lucide-react";
+  type TypeIcone,
+} from "@/components/icones";
 import { Role, useAuth } from "@/lib/auth";
 import { useNotifications } from "@/lib/notifications";
 import { useParametres } from "@/lib/parametres";
@@ -40,6 +40,7 @@ import { conversationsDe, nonLus } from "@/lib/messagerie";
 import { useStocke } from "@/lib/stockage";
 import ThemeToggle from "@/components/ThemeToggle";
 import { sectionsAdminOuvertes, useMatrice } from "@/lib/permissions";
+import Pastille, { type CouleurPastille } from "@/components/Pastille";
 
 const LIENS_COMPTE: { href: string; label: string; roles?: Role[]; flag?: "cadastre" | "comparateur" }[] = [
   { href: "/tableau-de-bord", label: "Tableau de bord" },
@@ -51,14 +52,15 @@ const LIENS_COMPTE: { href: string; label: string; roles?: Role[]; flag?: "cadas
   { href: "/comparer", label: "Comparateur", flag: "comparateur" },
 ];
 
-type Entree = { href: string; label: string; desc: string; icone: LucideIcon; flag?: "carte" | "comparateur" };
-type Rubrique = { id: string; label: string; entrees: Entree[] };
+type Entree = { href: string; label: string; desc: string; icone: TypeIcone; flag?: "carte" | "comparateur" };
+type Rubrique = { id: string; label: string; couleur: CouleurPastille; entrees: Entree[] };
 
 // Le menu suit ce que la personne vient faire : acheter, vendre, financer, se faire aider, s'informer.
 const RUBRIQUES: Rubrique[] = [
   {
     id: "acheter",
     label: "Acheter",
+    couleur: "navy",
     entrees: [
       { href: "/annonces", label: "Toutes les annonces", desc: "Recherche avec filtres", icone: LayoutGrid },
       { href: "/annonces?type=terrain", label: "Terrains", desc: "Parcelles et terrains agricoles", icone: Trees },
@@ -74,6 +76,7 @@ const RUBRIQUES: Rubrique[] = [
   {
     id: "louer",
     label: "Louer",
+    couleur: "bleu",
     entrees: [
       { href: "/annonces?transaction=location", label: "Toutes les locations", desc: "Loyers mensuels, meublé ou vide", icone: LayoutGrid },
       { href: "/annonces?transaction=location&type=appartement", label: "Appartements à louer", desc: "Studios et grands appartements", icone: Building },
@@ -84,6 +87,7 @@ const RUBRIQUES: Rubrique[] = [
   {
     id: "vendre",
     label: "Vendre",
+    couleur: "or",
     entrees: [
       { href: "/publier", label: "Publier une annonce", desc: "À vendre ou à louer", icone: PlusCircle },
       { href: "/estimer", label: "Estimer mon bien", desc: "Sa valeur en quelques secondes", icone: Calculator },
@@ -93,6 +97,7 @@ const RUBRIQUES: Rubrique[] = [
   {
     id: "financer",
     label: "Financer",
+    couleur: "vert",
     entrees: [
       { href: "/budget", label: "Calculer mon budget", desc: "Le prix maximum à viser", icone: Wallet },
       { href: "/financement", label: "Comparer les crédits", desc: "Mensualités de plusieurs banques", icone: Landmark },
@@ -102,6 +107,7 @@ const RUBRIQUES: Rubrique[] = [
   {
     id: "services",
     label: "Services",
+    couleur: "rouge",
     entrees: [
       { href: "/services", label: "Services à la carte", desc: "Rapport de titre, visite, photos", icone: BadgeCheck },
       { href: "/notaires", label: "Notaires partenaires", desc: "Annuaire et prise de rendez-vous", icone: Building2 },
@@ -111,6 +117,7 @@ const RUBRIQUES: Rubrique[] = [
   {
     id: "ressources",
     label: "Ressources",
+    couleur: "gris",
     entrees: [
       { href: "/statistiques", label: "Marché immobilier", desc: "Prix et tendances", icone: BarChart3 },
       { href: "/guides", label: "Guide d'achat", desc: "Les étapes, pas à pas", icone: BookOpen },
@@ -224,11 +231,9 @@ export default function Navbar() {
                           key={e.href}
                           href={e.href}
                           onClick={() => setRubriqueOuverte(null)}
-                          className="flex items-start gap-3 rounded-xl px-3 py-2.5 hover:bg-gray-50 group"
+                          className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-gray-50 group"
                         >
-                          <span className="w-9 h-9 rounded-xl bg-navy/10 text-navy flex items-center justify-center shrink-0 group-hover:bg-gold group-hover:text-navy-dark transition-colors">
-                            <e.icone size={17} />
-                          </span>
+                          <Pastille icone={e.icone} couleur={r.couleur} taille={38} className="transition-transform group-hover:scale-110" />
                           <span className="min-w-0">
                             <span className="block text-sm font-semibold text-gray-900">{e.label}</span>
                             <span className="block text-xs font-normal text-gray-500">{e.desc}</span>
@@ -376,7 +381,7 @@ export default function Navbar() {
                         onClick={() => setOpen(false)}
                         className="flex items-center gap-3 py-2.5 pl-1 text-white/85 hover:text-gold"
                       >
-                        <e.icone size={18} className="text-gold shrink-0" />
+                        <Pastille icone={e.icone} couleur={r.couleur} taille={32} />
                         <span>{e.label}</span>
                       </Link>
                     ))}

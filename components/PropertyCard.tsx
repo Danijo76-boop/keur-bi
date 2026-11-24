@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Eye, MapPin, Maximize2, TrendingDown } from "lucide-react";
+import { Eye, MapPin, Maximize2, TrendingDown } from "@/components/icones";
 import { Bien, estLocation, formatPrix, prixAffiche } from "@/lib/mock-data";
 import clsx from "clsx";
 import FavoriButton from "@/components/FavoriButton";

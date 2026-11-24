@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { FileSpreadsheet, FileText, Loader2 } from "lucide-react";
+import { FileSpreadsheet, FileText, Loader2 } from "@/components/icones";
 
 /* ── Boutons de téléchargement ──
    Les mêmes partout sur le site, bien visibles : rouge pour le PDF, vert Excel pour le tableur.

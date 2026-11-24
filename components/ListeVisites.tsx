@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { CalendarCheck } from "lucide-react";
+import { CalendarCheck } from "@/components/icones";
 import { User, estCoteVendeur } from "@/lib/auth";
 import { useStocke } from "@/lib/stockage";
 import { changerStatutVisite, LABELS_VISITE, lireVisites, Visite } from "@/lib/visites";

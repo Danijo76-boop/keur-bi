@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Building2, Inbox, FileText, Plus, Lightbulb, TriangleAlert } from "lucide-react";
+import { Building2, Inbox, FileText, Plus, Lightbulb, TriangleAlert } from "@/components/icones";
 import { formatPrix } from "@/lib/mock-data";
 import { useState } from "react";
 import { useBiens, useMetasAnnonces } from "@/lib/annonces";

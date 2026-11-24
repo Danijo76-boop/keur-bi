@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, Circle, Clock, Info, Star, XCircle, type LucideIcon } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Circle, Clock, Info, Star, XCircle, type TypeIcone } from "@/components/icones";
 import type { StatutTF } from "@/lib/tf";
 
 /* ── Icônes de statut (charte graphique) ──
@@ -8,7 +8,7 @@ import type { StatutTF } from "@/lib/tf";
 
 export type TypeStatut = "ok" | "attente" | "attention" | "erreur" | "info" | "vedette" | "neutre";
 
-const ICONES: Record<TypeStatut, LucideIcon> = {
+const ICONES: Record<TypeStatut, TypeIcone> = {
   ok: CheckCircle2,
   attente: Clock,
   attention: AlertTriangle,

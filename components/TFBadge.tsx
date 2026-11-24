@@ -1,5 +1,5 @@
 "use client";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle } from "@/components/icones";
 import { Bien } from "@/lib/mock-data";
 import { LABELS_TF, useVerificationTF } from "@/lib/tf";
 import { IconeTF } from "@/components/Statut";

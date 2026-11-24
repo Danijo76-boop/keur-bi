@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { Camera, Check, ClipboardCheck, Compass, FileSearch, Globe2, Ruler } from "lucide-react";
+import { Camera, Check, ClipboardCheck, Compass, FileSearch, Globe2, Ruler } from "@/components/icones";
 import { formatFCFA } from "@/lib/mock-data";
 import { Service, SERVICES } from "@/lib/revenus";
 import CommanderService from "@/components/CommanderService";

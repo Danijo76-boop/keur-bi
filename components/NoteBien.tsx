@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { StickyNote } from "lucide-react";
+import { StickyNote } from "@/components/icones";
 import { enregistrerNote, lireNotes } from "@/lib/preferences";
 import { useStocke } from "@/lib/stockage";
 

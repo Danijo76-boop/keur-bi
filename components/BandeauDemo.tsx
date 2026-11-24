@@ -1,4 +1,4 @@
-import { Info } from "lucide-react";
+import { Info } from "@/components/icones";
 import { ReactNode } from "react";
 
 export default function BandeauDemo({ children }: { children: ReactNode }) {

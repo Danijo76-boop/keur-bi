@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { Landmark } from "lucide-react";
+import { Landmark } from "@/components/icones";
 import { useAuth } from "@/lib/auth";
 import { formatFCFA } from "@/lib/mock-data";
 import { demanderFinancement, OffreFinancement, OFFRES_FINANCEMENT } from "@/lib/revenus";

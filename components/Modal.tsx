@@ -1,6 +1,6 @@
 "use client";
 import { ReactNode } from "react";
-import { X } from "lucide-react";
+import { X } from "@/components/icones";
 
 export default function Modal({ titre, sousTitre, onClose, children }: { titre: string; sousTitre?: string; onClose: () => void; children: ReactNode }) {
   return (

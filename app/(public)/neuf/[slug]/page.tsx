@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { CalendarClock, HardHat, MapPin } from "lucide-react";
+import { CalendarClock, HardHat, MapPin } from "@/components/icones";
 import { formatFCFA } from "@/lib/mock-data";
 import { aPartirDe } from "@/lib/programmes";
 import { trouverProgramme } from "@/lib/serveur/programmes";

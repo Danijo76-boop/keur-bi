@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { MapPin, Search } from "lucide-react";
+import { MapPin, Search } from "@/components/icones";
 import { useBiens } from "@/lib/annonces";
 import { mediane } from "@/lib/marche";
 import { formatFCFA, formatPrix, enVente } from "@/lib/mock-data";

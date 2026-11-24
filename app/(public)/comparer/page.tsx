@@ -3,7 +3,7 @@ import { popup } from "@/lib/popup";
 import { ReactNode, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { X, Plus, Share2 } from "lucide-react";
+import { X, Plus, Share2 } from "@/components/icones";
 import { useBiens } from "@/lib/annonces";
 import { Bien, formatFCFA } from "@/lib/mock-data";
 import { notaireSuggere } from "@/lib/notaires";

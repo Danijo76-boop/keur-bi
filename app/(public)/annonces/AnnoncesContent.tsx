@@ -4,7 +4,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { SlidersHorizontal, Map, BellPlus, Link2, ChevronDown, Columns2 } from "lucide-react";
+import { SlidersHorizontal, Map, BellPlus, Link2, ChevronDown, Columns2 } from "@/components/icones";
 import { Bien } from "@/lib/mock-data";
 import PropertyCard from "@/components/PropertyCard";
 import EncartSponsorise from "@/components/EncartSponsorise";

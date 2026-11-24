@@ -1,6 +1,6 @@
 "use client";
 import { Fragment, useCallback, useEffect, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw } from "@/components/icones";
 
 type Entree = {
   id: string;
