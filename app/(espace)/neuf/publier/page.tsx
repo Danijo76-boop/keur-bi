@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/lib/auth";
 import { AVANCEMENTS, type Programme } from "@/lib/programmes";
-import { envoyerPhoto, reduirePhoto } from "@/lib/photos";
+import { envoyerPhoto, envoyerPhotosVerifiees, reduirePhoto } from "@/lib/photos";
 import { avecReference } from "@/lib/rapport-erreurs";
 import { popup } from "@/lib/popup";
 
@@ -27,6 +27,7 @@ export default function PublierProgrammePage() {
   const [avancement, setAvancement] = useState(AVANCEMENTS[0]);
   const [description, setDescription] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
+  const [verification, setVerification] = useState(false);
   const [lots, setLots] = useState<Lot[]>([lotVide()]);
   const [erreur, setErreur] = useState("");
   const [envoi, setEnvoi] = useState(false);
@@ -58,11 +59,19 @@ export default function PublierProgrammePage() {
   async function ajouterPhotos(e: React.ChangeEvent<HTMLInputElement>) {
     const fichiers = Array.from(e.target.files ?? []);
     e.target.value = "";
+    if (!fichiers.length) return;
+    setErreur("");
+    setVerification(true);
     try {
-      const nouvelles = await Promise.all(fichiers.map((f) => reduirePhoto(f)));
-      setPhotos((p) => [...p, ...nouvelles].slice(0, 8));
+      const nouvelles = await Promise.all(fichiers.slice(0, 8 - photos.length).map((f) => reduirePhoto(f)));
+      // Chaque photo est vérifiée par le serveur (contenu choquant, données personnelles) dès son ajout.
+      const { adresses, message } = await envoyerPhotosVerifiees(nouvelles);
+      setPhotos((p) => [...p, ...adresses].slice(0, 8));
+      setErreur(message);
     } catch {
       setErreur("Une image n'a pas pu être lue.");
+    } finally {
+      setVerification(false);
     }
   }
 
@@ -117,7 +126,8 @@ export default function PublierProgrammePage() {
 
         <div>
           <span className={libelle}>Photos * (8 au maximum, la première sert de couverture)</span>
-          <input type="file" accept="image/*" multiple aria-label="Ajouter des photos" onChange={ajouterPhotos} className="text-sm block mt-2" />
+          <input type="file" accept="image/*" multiple aria-label="Ajouter des photos" onChange={ajouterPhotos} disabled={verification || photos.length >= 8} className="text-sm block mt-2" />
+          {verification && <p className="text-sm text-gray-500 mt-1" role="status">Vérification des photos en cours…</p>}
           {photos.length > 0 && (
             <div className="grid grid-cols-4 gap-2 mt-3">
               {photos.map((src, i) => (

@@ -1,5 +1,6 @@
 import "server-only";
 import { db } from "./db";
+import { verifierImage } from "./moderation-image";
 
 /* ── Stockage des fichiers envoyés ──
    Pour l'instant dans la base. Le jour où les fichiers partent vers un stockage dédié
@@ -15,7 +16,7 @@ const SIGNATURES: { type: string; test: (o: Buffer) => boolean }[] = [
   { type: "image/webp", test: (o) => o.subarray(0, 4).toString("ascii") === "RIFF" && o.subarray(8, 12).toString("ascii") === "WEBP" },
 ];
 
-export type ResultatImage = { ok: true; url: string } | { ok: false; erreur: string };
+export type ResultatImage = { ok: true; url: string } | { ok: false; erreur: string; motifs?: string[] };
 
 // Reçoit une image encodée (« data:image/jpeg;base64,… ») et renvoie l'adresse où elle sera servie.
 export async function enregistrerImage(dataUrl: string, auteurId: string): Promise<ResultatImage> {
@@ -25,6 +26,9 @@ export async function enregistrerImage(dataUrl: string, auteurId: string): Promi
   if (donnees.length === 0 || donnees.length > TAILLE_MAX_IMAGE) return { ok: false, erreur: "Image trop lourde (2 Mo au maximum)." };
   const type = SIGNATURES.find((s) => s.test(donnees))?.type;
   if (!type) return { ok: false, erreur: "Format d'image non accepté (JPEG, PNG ou WebP)." };
+  // Contenu sexuel, violent, choquant ou données personnelles : refusé avant tout enregistrement.
+  const verdict = await verifierImage(donnees, type);
+  if (!verdict.ok) return { ok: false, erreur: verdict.erreur, motifs: verdict.motifs };
   const fichier = await db.fichier.create({ data: { type, taille: donnees.length, donnees, auteurId }, select: { id: true } });
   return { ok: true, url: PREFIXE_URL + fichier.id };
 }

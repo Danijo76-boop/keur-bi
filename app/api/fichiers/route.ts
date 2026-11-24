@@ -5,6 +5,9 @@ import { peutPublier } from "@/lib/serveur/annonces";
 import { avecJournal, log } from "@/lib/serveur/journal";
 import { freiner, LIMITES, lireJson } from "@/lib/serveur/securite";
 
+// La vérification du contenu de la photo peut prendre quelques secondes.
+export const maxDuration = 60;
+
 const refus = (erreur: string, status: number) => NextResponse.json({ erreur }, { status });
 
 // POST /api/fichiers  { dataUrl } : envoi d'une photo d'annonce, une par requête.
@@ -19,8 +22,8 @@ async function post(requete: Request) {
     if (typeof corps?.dataUrl !== "string") return refus("Image manquante.", 400);
     const resultat = await enregistrerImage(corps.dataUrl, moi.id);
     if (!resultat.ok) {
-      log.info("Photo refusée", { raison: resultat.erreur });
-      return refus(resultat.erreur, 400);
+      log.info("Photo refusée", { raison: resultat.erreur, motifs: resultat.motifs, auteur: moi.id });
+      return refus(resultat.erreur, resultat.motifs?.length ? 422 : 400);
     }
     log.debug("Photo enregistrée", { url: resultat.url });
     return NextResponse.json({ url: resultat.url }, { status: 201 });

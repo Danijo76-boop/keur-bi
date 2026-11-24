@@ -10,6 +10,7 @@ import { useParametres } from "@/lib/parametres";
 import { usePeut } from "@/lib/permissions";
 import { useStocke } from "@/lib/stockage";
 import { soumettreDemandeTF } from "@/lib/tf";
+import { envoyerPhotosVerifiees } from "@/lib/photos";
 import { QUOTA_ANNONCES, QUOTA_PARTICULIER, trouverUtilisateur } from "@/lib/utilisateurs";
 import BandeauDemo from "@/components/BandeauDemo";
 import PositionMarche from "@/components/PositionMarche";
@@ -93,6 +94,7 @@ function Assistant({ user }: { user: User }) {
   const [superficieTF, setSuperficieTF] = useState("");
   const [fichierTF, setFichierTF] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
+  const [verification, setVerification] = useState(false);
   const [prioritaire, setPrioritaire] = useState(false);
   const [erreur, setErreur] = useState("");
   const [publiee, setPubliee] = useState<Bien | null>(null);
@@ -115,13 +117,20 @@ function Assistant({ user }: { user: User }) {
   async function ajouterPhotos(e: React.ChangeEvent<HTMLInputElement>) {
     const fichiers = Array.from(e.target.files ?? []);
     e.target.value = "";
+    if (!fichiers.length) return;
+    setErreur("");
+    setVerification(true);
     try {
-      const nouvelles = await Promise.all(fichiers.map(reduirePhoto));
+      const nouvelles = await Promise.all(fichiers.slice(0, 8 - photos.length).map(reduirePhoto));
       const retenues = nouvelles.filter((n) => n.length < TAILLE_MAX_PHOTO);
-      setPhotos((a) => [...a, ...retenues].slice(0, 8));
-      setErreur(retenues.length < nouvelles.length ? "Certaines photos sont trop lourdes et ont été ignorées." : "");
+      // Chaque photo est vérifiée par le serveur (contenu choquant, données personnelles) dès son ajout.
+      const { adresses, message } = await envoyerPhotosVerifiees(retenues);
+      setPhotos((a) => [...a, ...adresses].slice(0, 8));
+      setErreur([retenues.length < nouvelles.length ? "Certaines photos sont trop lourdes et ont été ignorées." : "", message].filter(Boolean).join(" "));
     } catch {
       setErreur("Une image n'a pas pu être lue.");
+    } finally {
+      setVerification(false);
     }
   }
 
@@ -296,7 +305,8 @@ function Assistant({ user }: { user: User }) {
                 <h2 className="font-bold text-gray-900">Photos</h2>
                 <p className="text-sm text-gray-500">Au moins {MIN_PHOTOS} photos, la première sert de couverture.</p>
               </div>
-              <input type="file" accept="image/*" multiple aria-label="Ajouter des photos" onChange={ajouterPhotos} className="text-sm" />
+              <input type="file" accept="image/*" multiple aria-label="Ajouter des photos" onChange={ajouterPhotos} disabled={verification || photos.length >= 8} className="text-sm" />
+              {verification && <p className="text-sm text-gray-500" role="status">Vérification des photos en cours…</p>}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {photos.map((src, i) => (
                   <div key={i} className="relative h-24 rounded-lg overflow-hidden bg-gray-100">
