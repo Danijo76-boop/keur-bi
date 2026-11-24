@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FolderPlus } from "lucide-react";
+import { FolderPlus } from "@/components/icones";
 import { useAuth } from "@/lib/auth";
 import { useBiens } from "@/lib/annonces";
 import { lireDossiers, obtenirOuCreerDossier, statutVente } from "@/lib/dossiers";

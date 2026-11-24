@@ -1,5 +1,5 @@
 "use client";
-import { Flame } from "lucide-react";
+import { Flame } from "@/components/icones";
 import { lireDossiers } from "@/lib/dossiers";
 import { niveauDemande } from "@/lib/marche";
 import { Bien } from "@/lib/mock-data";

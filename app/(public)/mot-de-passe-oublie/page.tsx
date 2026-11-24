@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { KeyRound, Lock, Mail } from "lucide-react";
+import { KeyRound, Lock, Mail } from "@/components/icones";
 import { useAuth, motDePasseConforme } from "@/lib/auth";
 import ReglesMotDePasse from "@/components/ReglesMotDePasse";
 

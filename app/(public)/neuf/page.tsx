@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Building2, CalendarClock, MapPin, Plus } from "lucide-react";
+import { Building2, CalendarClock, MapPin, Plus } from "@/components/icones";
 import { formatPrix } from "@/lib/mock-data";
 import { aPartirDe, type Programme } from "@/lib/programmes";
 import { listerProgrammes } from "@/lib/serveur/programmes";

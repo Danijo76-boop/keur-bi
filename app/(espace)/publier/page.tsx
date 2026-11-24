@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle, Circle } from "lucide-react";
+import { CheckCircle, Circle } from "@/components/icones";
 import { User, estCoteVendeur } from "@/lib/auth";
 import { Bien, formatFCFA } from "@/lib/mock-data";
 import { publierAnnonce, tousLesBiens } from "@/lib/annonces";

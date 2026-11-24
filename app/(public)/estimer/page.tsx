@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Calculator, Home, TrendingUp } from "lucide-react";
+import { Calculator, Home, TrendingUp } from "@/components/icones";
 import { useBiens } from "@/lib/annonces";
 import { estimer } from "@/lib/marche";
 import { Bien, formatFCFA, formatPrix, enVente } from "@/lib/mock-data";

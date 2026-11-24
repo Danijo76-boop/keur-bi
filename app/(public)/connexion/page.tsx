@@ -1,7 +1,7 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Mail, Lock, User as UserIcon, Phone, MessageCircle } from "lucide-react";
+import { Mail, Lock, User as UserIcon, Phone, MessageCircle } from "@/components/icones";
 import { suiteSure } from "@/lib/acces";
 import Link from "next/link";
 import {

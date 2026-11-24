@@ -1,5 +1,5 @@
 "use client";
-import { Check, X } from "lucide-react";
+import { Check, X } from "@/components/icones";
 import { REGLES_MOT_DE_PASSE } from "@/lib/auth";
 
 // Liste des règles du mot de passe, cochées au fil de la saisie : la personne voit tout de suite ce qui manque.

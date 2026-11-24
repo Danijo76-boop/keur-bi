@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarCheck } from "lucide-react";
+import { CalendarCheck } from "@/components/icones";
 import { useAuth } from "@/lib/auth";
 import { useStocke } from "@/lib/stockage";
 import { trouverUtilisateur } from "@/lib/utilisateurs";

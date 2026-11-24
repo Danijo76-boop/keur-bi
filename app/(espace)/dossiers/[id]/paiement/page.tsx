@@ -1,5 +1,5 @@
 "use client";
-import { Landmark, Smartphone, Banknote, type LucideIcon } from "lucide-react";
+import { Landmark, Smartphone, Banknote, type TypeIcone } from "@/components/icones";
 import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -13,7 +13,7 @@ import BandeauDemo from "@/components/BandeauDemo";
 import Protege from "@/components/Protege";
 import { IconeStatut } from "@/components/Statut";
 
-const MOYENS: { id: MoyenPaiement; icone: LucideIcon; detail: string; instructions: string }[] = [
+const MOYENS: { id: MoyenPaiement; icone: TypeIcone; detail: string; instructions: string }[] = [
   {
     id: "virement",
     icone: Landmark,

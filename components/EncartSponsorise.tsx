@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Megaphone } from "lucide-react";
+import { ArrowRight, Megaphone } from "@/components/icones";
 import { useParametres } from "@/lib/parametres";
 import { Campagne, choisirCampagne, Emplacement, enregistrerClicPublicite, enregistrerVuePublicite } from "@/lib/publicite";
 

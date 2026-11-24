@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { BarChart3, Megaphone, Target, Users } from "lucide-react";
+import { BarChart3, Megaphone, Target, Users } from "@/components/icones";
 import { ajouterMessage } from "@/lib/messages";
 import { FORMATS_PUBLICITE } from "@/lib/publicite";
 import EncartSponsorise from "@/components/EncartSponsorise";

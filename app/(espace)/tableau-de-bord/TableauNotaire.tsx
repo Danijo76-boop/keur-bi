@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { CalendarDays, ShieldAlert, ShieldCheck, FileClock, TriangleAlert } from "lucide-react";
+import { CalendarDays, ShieldAlert, ShieldCheck, FileClock, TriangleAlert } from "@/components/icones";
 import { lireRendezVous } from "@/lib/preferences";
 import { Bien, formatPrix } from "@/lib/mock-data";
 import { useBiens } from "@/lib/annonces";

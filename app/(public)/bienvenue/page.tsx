@@ -1,5 +1,5 @@
 "use client";
-import { Home, KeyRound, Handshake, Landmark } from "lucide-react";
+import { Home, KeyRound, Handshake, Landmark } from "@/components/icones";
 import { useState } from "react";
 import Link from "next/link";
 import { useBiens } from "@/lib/annonces";

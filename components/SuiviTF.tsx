@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Shield, FileCheck } from "lucide-react";
+import { Shield, FileCheck } from "@/components/icones";
 import { Bien } from "@/lib/mock-data";
 import { useVerificationTF, StatutTF } from "@/lib/tf";
 import { useAuth } from "@/lib/auth";

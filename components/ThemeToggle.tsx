@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "@/components/icones";
 
 import { CLE_THEME } from "@/lib/theme";
 

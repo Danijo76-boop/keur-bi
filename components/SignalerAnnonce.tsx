@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Flag } from "lucide-react";
+import { Flag } from "@/components/icones";
 import { useAuth } from "@/lib/auth";
 import { lireSignalements, MOTIFS_SIGNALEMENT, signaler } from "@/lib/moderation";
 import { useStocke } from "@/lib/stockage";

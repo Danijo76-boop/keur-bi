@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Scale, BellPlus } from "lucide-react";
+import { Scale, BellPlus } from "@/components/icones";
 import { useBiens } from "@/lib/annonces";
 import { creerAlerte, definirComparaison, lireFavoris, MAX_COMPARAISON } from "@/lib/preferences";
 import { useStocke } from "@/lib/stockage";

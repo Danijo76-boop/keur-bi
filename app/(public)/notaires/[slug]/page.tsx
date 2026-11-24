@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { notFound, useParams, useRouter } from "next/navigation";
-import { MapPin, Phone, Star } from "lucide-react";
+import { MapPin, Phone, Star } from "@/components/icones";
 import { useAuth } from "@/lib/auth";
 import { notaireParSlug, prochainsCreneaux } from "@/lib/notaires";
 import { obtenirConversation } from "@/lib/messagerie";

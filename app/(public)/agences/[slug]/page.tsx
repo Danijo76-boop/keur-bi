@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
-import { CheckCircle, Star, Phone, MessageSquare, MapPin, Mail, Clock, CalendarDays } from "lucide-react";
+import { CheckCircle, Star, Phone, MessageSquare, MapPin, Mail, Clock, CalendarDays } from "@/components/icones";
 import { agenceParSlug } from "@/lib/agences";
 import { useBiens } from "@/lib/annonces";
 import { useStocke } from "@/lib/stockage";

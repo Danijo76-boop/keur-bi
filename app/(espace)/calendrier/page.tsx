@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { CalendarPlus, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
+import { CalendarPlus, ChevronLeft, ChevronRight, Trash2 } from "@/components/icones";
 import { BoutonExcel, BoutonPDF } from "@/components/BoutonsExport";
 import { genererIcs } from "@/lib/ics";
 import { telecharger } from "@/lib/telechargement";

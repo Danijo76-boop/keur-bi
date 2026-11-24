@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Mail } from "lucide-react";
+import { Mail } from "@/components/icones";
 import { inscrireNewsletter } from "@/lib/revenus";
 
 export default function Newsletter() {

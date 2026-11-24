@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Star } from "lucide-react";
+import { Star } from "@/components/icones";
 import { avisDuDossier, Avis, publierAvis } from "@/lib/moderation";
 import { useStocke } from "@/lib/stockage";
 

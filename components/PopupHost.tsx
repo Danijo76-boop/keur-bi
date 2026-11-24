@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AlertTriangle, CheckCircle2, HelpCircle, Info } from "lucide-react";
+import { AlertTriangle, CheckCircle2, HelpCircle, Info } from "@/components/icones";
 import { DemandePopup, EVENEMENT_POPUP, TypePopup } from "@/lib/popup";
 
 const DUREE_SUCCES = 4500;

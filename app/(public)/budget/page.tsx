@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Wallet } from "lucide-react";
+import { Search, Wallet } from "@/components/icones";
 import { useBiens } from "@/lib/annonces";
 import { formatFCFA, enVente } from "@/lib/mock-data";
 import { calculerFrais, useParametres } from "@/lib/parametres";

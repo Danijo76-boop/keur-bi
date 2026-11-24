@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { Trash2 } from "lucide-react";
+import { Trash2 } from "@/components/icones";
 import { User } from "@/lib/auth";
 import { CategorieNotif, useNotifications } from "@/lib/notifications";
 import { Canaux, creerAlerte, ecrireCanaux, lireAlertes, lireCanaux, marquerLues, resumeCriteres, supprimerAlerte, urlRecherche } from "@/lib/preferences";

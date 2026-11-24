@@ -17,7 +17,7 @@ import {
   Clock,
   Circle,
   XCircle,
-} from "lucide-react";
+} from "@/components/icones";
 import { BIENS, REGIONS, formatPrix } from "@/lib/mock-data";
 import { ChiffresCles, NbAnnoncesRegion } from "@/components/ChiffresAccueil";
 import PropertyCard from "@/components/PropertyCard";
@@ -26,6 +26,7 @@ import { log } from "@/lib/serveur/journal";
 import HeroSearch from "@/components/HeroSearch";
 import SectionPersonnalisee from "@/components/SectionPersonnalisee";
 import { GrilleRevelee, HaloSouris, HalosCartes, Inclinaison, MotTournant, Revelation } from "@/components/Dynamique";
+import Pastille from "@/components/Pastille";
 
 // L'accueil lit les annonces en vedette dans la base à chaque visite.
 export const dynamic = "force-dynamic";
@@ -215,47 +216,63 @@ export default async function HomePage() {
           {[
             {
               href: "/estimer",
-              icone: <Home size={22} />,
+              icone: Home,
+              couleur: "or" as const,
               titre: "Estimer mon bien",
               desc: "La valeur de votre terrain ou villa, d'après les annonces comparables.",
             },
-            { href: "/budget", icone: <Wallet size={22} />, titre: "Calculer mon budget", desc: "Le prix maximum à viser selon vos revenus et votre apport." },
+            {
+              href: "/budget",
+              icone: Wallet,
+              couleur: "vert" as const,
+              titre: "Calculer mon budget",
+              desc: "Le prix maximum à viser selon vos revenus et votre apport.",
+            },
             {
               href: "/frais",
-              icone: <Calculator size={22} />,
+              icone: Calculator,
+              couleur: "navy" as const,
               titre: "Simuler les frais",
               desc: "Notaire, droits d'enregistrement et crédit, poste par poste.",
             },
-            { href: "/statistiques", icone: <TrendingUp size={22} />, titre: "Suivre le marché", desc: "Prix médians par région et par type de bien." },
+            {
+              href: "/statistiques",
+              icone: TrendingUp,
+              couleur: "bleu" as const,
+              titre: "Suivre le marché",
+              desc: "Prix médians par région et par type de bien.",
+            },
             {
               href: "/quartiers",
-              icone: <MapPin size={22} />,
+              icone: MapPin,
+              couleur: "rouge" as const,
               titre: "Guide des quartiers",
               desc: "Prix au m², annonces et titres vérifiés, quartier par quartier.",
             },
             {
               href: "/financement",
-              icone: <Landmark size={22} />,
+              icone: Landmark,
+              couleur: "vert" as const,
               titre: "Comparer les crédits",
               desc: "Les mensualités de plusieurs banques, et un rappel sans engagement.",
             },
             {
               href: "/services",
-              icone: <BadgeCheck size={22} />,
+              icone: BadgeCheck,
+              couleur: "navy" as const,
               titre: "Services d'experts",
               desc: "Rapport de titre, visite accompagnée, photos pro, bornage.",
             },
             {
               href: "/diaspora",
-              icone: <Globe2 size={22} />,
+              icone: Globe2,
+              couleur: "bleu" as const,
               titre: "Acheter depuis l'étranger",
               desc: "Visite vidéo, procuration et conseiller dédié pour la diaspora.",
             },
           ].map((o) => (
             <Link key={o.href} href={o.href} className="card card-hover carte-halo p-6 group flex flex-col">
-              <span className="icone-vivante w-12 h-12 rounded-2xl bg-gradient-to-br from-navy to-navy-dark text-gold flex items-center justify-center mb-4">
-                {o.icone}
-              </span>
+              <Pastille icone={o.icone} couleur={o.couleur} taille={48} className="icone-vivante mb-4" />
               <h3 className="font-bold text-gray-900 mb-1">{o.titre}</h3>
               <p className="text-gray-500 text-sm leading-relaxed flex-1">{o.desc}</p>
               <span className="text-sm text-navy font-semibold mt-4 flex items-center gap-1 group-hover:gap-2 transition-all">

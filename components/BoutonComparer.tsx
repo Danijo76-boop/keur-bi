@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Scale } from "lucide-react";
+import { Scale } from "@/components/icones";
 import { basculerComparaison, lireComparaison, MAX_COMPARAISON } from "@/lib/preferences";
 import { useParametres } from "@/lib/parametres";
 import { useStocke } from "@/lib/stockage";

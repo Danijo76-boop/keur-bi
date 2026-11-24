@@ -1,7 +1,7 @@
 "use client";
 import { popup } from "@/lib/popup";
 import { useState } from "react";
-import { Share2, Check } from "lucide-react";
+import { Share2, Check } from "@/components/icones";
 
 export default function ShareButton({ titre, className }: { titre: string; className?: string }) {
   const [copie, setCopie] = useState(false);

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Heart, MessageSquare, FileText, CalendarDays, ShieldCheck, TriangleAlert } from "lucide-react";
+import { Heart, MessageSquare, FileText, CalendarDays, ShieldCheck, TriangleAlert } from "@/components/icones";
 import { formatPrix } from "@/lib/mock-data";
 import { User } from "@/lib/auth";
 import { useBiens } from "@/lib/annonces";

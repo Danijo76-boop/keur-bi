@@ -1,6 +1,6 @@
 "use client";
 import { ReactNode, useState } from "react";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "@/components/icones";
 import Modal from "./Modal";
 import { Bien } from "@/lib/mock-data";
 import { exporterPDF } from "@/lib/export";

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { MapPin, Star } from "lucide-react";
+import { MapPin, Star } from "@/components/icones";
 import { NOTAIRES } from "@/lib/notaires";
 import { texteNote } from "@/lib/moderation";
 
