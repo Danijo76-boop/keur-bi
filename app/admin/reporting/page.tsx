@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { Download, FileSpreadsheet, Printer } from "lucide-react";
+import { FileSpreadsheet, FileText } from "lucide-react";
 import { ROLE_LABELS } from "@/lib/auth";
 import { useBiens, useMetasAnnonces } from "@/lib/annonces";
 import {
@@ -16,10 +16,9 @@ import {
 import { notaireParSlug } from "@/lib/notaires";
 import { calculerFrais, commissionVente, useParametres } from "@/lib/parametres";
 import { lire, ecrire, nouvelId, useStocke } from "@/lib/stockage";
-import { telecharger } from "@/lib/telechargement";
+import { exporterExcel, exporterPDF, type Tableau } from "@/lib/export";
 import { LABELS_TF, lireDemandesTF, lireOverridesTF, statutTF } from "@/lib/tf";
 import { LABELS_KYC, lireUtilisateurs } from "@/lib/utilisateurs";
-import { genererXlsx } from "@/lib/xlsx";
 
 type Valeur = string | number;
 type Ligne = { id: string; valeurs: Record<string, Valeur>; region?: string; statut?: StatutDossier; date?: string };
@@ -39,13 +38,6 @@ const COLONNES_DOSSIERS: Colonne[] = [
   ...col("💰 Financier", [["prix", "Prix vente (FCFA)", true], ["commission", "Commission (FCFA)", true], ["honoraires", "Honoraires notaire (FCFA)"], ["droits", "Droits DGID (FCFA)"], ["tva", "TVA (FCFA)"], ["cout", "Coût total acquéreur (FCFA)"], ["verse", "Versements confirmés (FCFA)"]]),
   ...col("📅 Dates clés", [["compromis", "Date compromis"], ["acte", "Date acte"], ["limite", "Limite DGID"], ["jours", "Jours restants DGID"]]),
 ];
-
-// Empêche un tableur d'interpréter comme formule une valeur saisie par un utilisateur.
-function celluleCSV(v: Valeur): string {
-  const s = String(v);
-  const sure = typeof v === "string" && /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
-  return /[";\n\r]/.test(sure) ? `"${sure.replace(/"/g, '""')}"` : sure;
-}
 
 export default function ReportingPage() {
   const biens = useBiens(true);
@@ -190,27 +182,38 @@ export default function ReportingPage() {
     setChoixColonnes((c) => ({ ...c, [rapport.id]: ids }));
   }
 
-  function nomFichier(extension: string) {
-    return `${rapport.label.replace(/[^\p{L}\p{N}]+/gu, "_")}_${new Date().toISOString().slice(0, 10)}.${extension}`;
-  }
-
   function journaliser(nom: string) {
     ecrire(CLE_HISTORIQUE, [{ id: nouvelId(), nom, date: new Date().toISOString(), lignes: lignes.length }, ...historique].slice(0, 10));
   }
 
-  function exporterCSV() {
-    const contenu = [choisies.map((c) => celluleCSV(c.label)).join(";"), ...lignes.map((l) => choisies.map((c) => celluleCSV(l.valeurs[c.id] ?? "")).join(";"))];
-    const nom = nomFichier("csv");
-    // Le BOM permet à Excel de lire correctement les accents.
-    telecharger(nom, "﻿" + contenu.join("\r\n"), "text/csv;charset=utf-8");
+  // Ce qui est exporté : les colonnes choisies et les lignes filtrées, exactement comme à l'écran.
+  const tableau = (): Tableau => ({
+    colonnes: choisies.map((c) => c.label),
+    lignes: lignes.map((l) => choisies.map((c) => l.valeurs[c.id] ?? "")),
+  });
+  const filtres = [
+    region && `Région : ${region}`,
+    statut && `Statut : ${LABELS_ETAPE[statut]}`,
+    debut && `Depuis le ${new Date(debut).toLocaleDateString("fr-FR")}`,
+    fin && `Jusqu'au ${new Date(fin).toLocaleDateString("fr-FR")}`,
+  ].filter(Boolean).join(" · ");
+
+  async function telechargerPDF() {
+    const t = tableau();
+    const nom = await exporterPDF(`Rapport_${rapport.label}`, {
+      titre: `Rapport : ${rapport.label}`,
+      sousTitre: `${lignes.length} ligne${lignes.length > 1 ? "s" : ""}${filtres ? ` · ${filtres}` : " · aucun filtre"}`,
+      paysage: t.colonnes.length > 5,
+      sections: [
+        ...(rapport.totaux ? [{ titre: "Totaux", champs: rapport.totaux.map((x) => ({ label: x.label, valeur: `${lignes.reduce((s, l) => s + Number(l.valeurs[x.id] ?? 0), 0).toLocaleString("fr-FR")} FCFA` })) }] : []),
+        { titre: "Détail", tableau: { ...t, lignes: t.lignes.map((l) => l.map((v) => (typeof v === "number" ? v.toLocaleString("fr-FR") : v))) } },
+      ],
+    });
     journaliser(nom);
   }
 
-  function exporterXlsx() {
-    const fichier = genererXlsx(choisies.map((c) => c.label), lignes.map((l) => choisies.map((c) => l.valeurs[c.id] ?? "")));
-    const nom = nomFichier("xlsx");
-    telecharger(nom, fichier.buffer as ArrayBuffer, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    journaliser(nom);
+  function telechargerExcel() {
+    journaliser(exporterExcel(`Rapport_${rapport.label}`, tableau(), rapport.label));
   }
 
   const select = "border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy bg-white";
@@ -283,9 +286,8 @@ export default function ReportingPage() {
         <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap print:hidden">
           <h2 className="font-bold text-gray-900">Prévisualisation, 5 premières lignes sur {lignes.length}</h2>
           <div className="flex gap-2 flex-wrap">
-            <button onClick={() => window.print()} className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50"><Printer size={15} /> PDF</button>
-            <button disabled={exportImpossible} onClick={exporterCSV} className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50 disabled:opacity-50"><Download size={15} /> CSV</button>
-            <button disabled={exportImpossible} onClick={exporterXlsx} className="btn-navy text-sm px-3 py-2 flex items-center gap-2 disabled:opacity-50"><FileSpreadsheet size={15} /> Excel (.xlsx)</button>
+            <button disabled={exportImpossible} onClick={telechargerPDF} className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50 disabled:opacity-50"><FileText size={15} /> PDF</button>
+            <button disabled={exportImpossible} onClick={telechargerExcel} className="btn-navy text-sm px-3 py-2 flex items-center gap-2 disabled:opacity-50"><FileSpreadsheet size={15} /> Excel (.xlsx)</button>
           </div>
         </div>
         <div className="overflow-x-auto">

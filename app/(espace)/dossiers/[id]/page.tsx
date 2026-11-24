@@ -11,7 +11,7 @@ import { calculerFrais, commissionVente, useParametres } from "@/lib/parametres"
 import { usePeut } from "@/lib/permissions";
 import { obtenirConversation } from "@/lib/messagerie";
 import { useStocke } from "@/lib/stockage";
-import { telecharger } from "@/lib/telechargement";
+import { exporterPDF } from "@/lib/export";
 import { useVerificationTF } from "@/lib/tf";
 import {
   ajouterOffre,
@@ -332,10 +332,24 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                   {d.disponible && (
                     <button
                       onClick={() =>
-                        telecharger(
-                          `${d.nom}.txt`,
-                          `DOCUMENT DE DÉMONSTRATION — sans valeur juridique\n\n${d.nom}\nDossier ${referenceDossier(dossier)}\nBien : ${bien.titre}\nPrix : ${formatFCFA(prix)}\nAcheteur : ${dossier.acheteurNom}\nVendeur : ${bien.agence}\nNotaire : ${notaire?.nom ?? "—"}\n`,
-                        )
+                        exporterPDF(`${d.nom}_${referenceDossier(dossier)}`, {
+                          titre: d.nom,
+                          sousTitre: `Dossier n° ${referenceDossier(dossier)}`,
+                          avertissement: "Document de démonstration, sans valeur juridique.",
+                          sections: [{
+                            titre: "Informations du dossier",
+                            champs: [
+                              { label: "Bien", valeur: bien.titre },
+                              { label: "Localisation", valeur: `${bien.quartier}, ${bien.ville}` },
+                              { label: "Titre Foncier", valeur: bien.tf.numero || "Non renseigné" },
+                              { label: "Prix convenu", valeur: formatFCFA(prix) },
+                              { label: "Acheteur", valeur: dossier.acheteurNom },
+                              { label: "Vendeur", valeur: bien.agence },
+                              { label: "Notaire", valeur: notaire?.nom ?? "Non désigné" },
+                              { label: "Ouvert le", valeur: new Date(dossier.dateOuverture).toLocaleDateString("fr-FR") },
+                            ],
+                          }],
+                        })
                       }
                       aria-label={`Télécharger ${d.nom}`}
                       className="text-blue hover:text-navy shrink-0"
