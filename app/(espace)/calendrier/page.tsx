@@ -125,7 +125,7 @@ function Contenu({ user }: { user: User }) {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between gap-4 flex-wrap mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-navy">Calendrier & délais</h1>
+          <h1 className="titre-page">Calendrier & délais</h1>
           <p className="text-gray-500 text-sm">Vos rendez-vous et les échéances de vos dossiers</p>
         </div>
         <div className="flex gap-2 flex-wrap print:hidden">
@@ -182,7 +182,7 @@ function Contenu({ user }: { user: User }) {
                       title={`${e.titre}${e.detail ? ` · ${e.detail}` : ""}`}
                       className={`block text-[10px] leading-tight font-semibold rounded px-1 py-0.5 mb-0.5 truncate ${COULEURS[e.type]}`}
                     >
-                      {e.type === "fait" ? "✓ " : e.type === "delai" ? "⚠ " : "📅 "}
+                      {e.type === "fait" ? "✓ " : e.type === "delai" ? "! " : ""}
                       {e.titre}
                     </Link>
                   ))}
@@ -238,8 +238,8 @@ function Contenu({ user }: { user: User }) {
             <span className="font-semibold text-gray-700 block mb-2">Légende</span>
             <div className="flex flex-col gap-1">
               <span>✓ Étape réalisée</span>
-              <span>📅 Rendez-vous</span>
-              <span>⚠ Délai légal, à {p.moisEnregistrement} mois après l&apos;acte</span>
+              <span>Rendez-vous</span>
+              <span>! Délai légal, à {p.moisEnregistrement} mois après l&apos;acte</span>
             </div>
           </div>
         </aside>

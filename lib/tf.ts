@@ -16,13 +16,6 @@ export const LABELS_TF: Record<StatutTF, string> = {
   invalide: "TF Invalide",
 };
 
-export const ICONES_TF: Record<StatutTF, string> = {
-  verifie: "✅",
-  en_verification: "⏳",
-  non_verifie: "○",
-  invalide: "❌",
-};
-
 export type DemandeTF = {
   id: string;
   bienId?: string;

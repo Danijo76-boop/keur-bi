@@ -7,6 +7,7 @@ import { NOTAIRES } from "@/lib/notaires";
 import { texteNote } from "@/lib/moderation";
 import { SimulateurCredit, SimulateurInvestisseur } from "@/components/SimulateursFinancement";
 import { BAREME_HONORAIRES, calculerFrais, commissionVente, tauxCommissionPour, useParametres } from "@/lib/parametres";
+import { IconeStatut } from "@/components/Statut";
 
 type Profil = "acheteur" | "vendeur" | "investisseur";
 const MAX_CURSEUR = 500_000_000;
@@ -44,7 +45,7 @@ function Simulateur() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-navy">Simulateur de frais</h1>
+      <h1 className="titre-page">Simulateur de frais</h1>
       <p className="text-gray-500 text-sm mb-6">Estimez le coût total avant de vous engager</p>
 
       <div className="grid lg:grid-cols-3 gap-6">
@@ -88,19 +89,19 @@ function Simulateur() {
             <h2 className="font-bold text-gray-900 mb-3">Délais clés</h2>
             <ul className="text-sm flex flex-col gap-3">
               <li>
-                <span className="font-semibold text-gray-800 block">📋 Promesse de vente</span>
+                <span className="font-semibold text-gray-800 block">Promesse de vente</span>
                 <span className="text-xs text-gray-500">Validité max. 6 mois, renouvelable</span>
               </li>
               <li>
-                <span className="font-semibold text-gray-800 block">🏛️ Enregistrement DGID</span>
+                <span className="font-semibold text-gray-800 block">Enregistrement DGID</span>
                 <span className="text-xs text-gray-500">{p.moisEnregistrement} mois après la signature de l&apos;acte</span>
               </li>
               <li>
-                <span className="font-semibold text-gray-800 block">⚠️ Pénalité de retard</span>
+                <span className="font-semibold text-gray-800 block">Pénalité de retard</span>
                 <span className="text-xs text-gray-500">+{p.penaliteRetard}% sur les droits d&apos;enregistrement</span>
               </li>
               <li>
-                <span className="font-semibold text-gray-800 block">🔖 Mutation TF</span>
+                <span className="font-semibold text-gray-800 block">Mutation TF</span>
                 <span className="text-xs text-gray-500">15–30 jours ouvrés après dépôt</span>
               </li>
             </ul>
@@ -161,7 +162,10 @@ function Simulateur() {
           {profil === "investisseur" && <SimulateurInvestisseur prix={prix} frais={f.totalFrais} />}
           {profil !== "vendeur" && (
             <div className="card p-5 bg-gold/10 border-gold/30 text-sm text-gray-700">
-              <strong className="block mb-1">⚠️ Délai d&apos;enregistrement DGID</strong>
+              <strong className="block mb-1">
+                <IconeStatut type="attention" herite />
+                Délai d&apos;enregistrement DGID
+              </strong>
               L&apos;acte doit être enregistré dans les {p.moisEnregistrement} mois suivant la signature. Au-delà, une pénalité de {p.penaliteRetard}%
               s&apos;applique sur les droits, soit +{formatFCFA(f.penaliteRetard)} dans votre cas.
             </div>
@@ -217,7 +221,7 @@ function Simulateur() {
                     <div className="text-sm font-semibold text-gray-900 group-hover:text-navy">{n.nom}</div>
                     <div className="text-xs text-gray-400">
                       {n.ville}
-                      {n.nbAvis > 0 && ` · ⭐ ${texteNote(n.note, n.nbAvis)}`}
+                      {n.nbAvis > 0 && ` · ${texteNote(n.note, n.nbAvis)}`}
                     </div>
                   </div>
                 </Link>

@@ -23,13 +23,13 @@ const dateFr = (iso?: string) => (iso ? new Date(iso).toLocaleDateString("fr-FR"
 const col = (groupe: string, defs: [string, string, boolean?][]): Colonne[] => defs.map(([id, label, defaut]) => ({ id, label, groupe, defaut }));
 
 const COLONNES_DOSSIERS: Colonne[] = [
-  ...col("📋 Identification", [
+  ...col("Identification", [
     ["ref", "N° Dossier", true],
     ["ouverture", "Date ouverture", true],
     ["statut", "Statut contrat", true],
     ["notaire", "Notaire assigné"],
   ]),
-  ...col("🏡 Bien", [
+  ...col("Bien", [
     ["adresse", "Localité", true],
     ["region", "Région", true],
     ["superficie", "Superficie (m²)"],
@@ -37,12 +37,12 @@ const COLONNES_DOSSIERS: Colonne[] = [
     ["statutTF", "Statut TF"],
     ["type", "Type de bien"],
   ]),
-  ...col("👤 Parties", [
+  ...col("Parties", [
     ["acheteur", "Acheteur", true],
     ["emailAcheteur", "Email acheteur"],
     ["vendeur", "Vendeur", true],
   ]),
-  ...col("💰 Financier", [
+  ...col("Financier", [
     ["prix", "Prix vente (FCFA)", true],
     ["commission", "Commission (FCFA)", true],
     ["honoraires", "Honoraires notaire (FCFA)"],
@@ -51,7 +51,7 @@ const COLONNES_DOSSIERS: Colonne[] = [
     ["cout", "Coût total acquéreur (FCFA)"],
     ["verse", "Versements confirmés (FCFA)"],
   ]),
-  ...col("📅 Dates clés", [
+  ...col("Dates clés", [
     ["compromis", "Date compromis"],
     ["acte", "Date acte"],
     ["limite", "Limite DGID"],
@@ -130,7 +130,7 @@ export default function ReportingPage() {
       {
         id: "annonces",
         label: "Annonces publiées",
-        colonnes: col("🏡 Annonce", [
+        colonnes: col("Annonce", [
           ["ref", "Référence", true],
           ["titre", "Titre", true],
           ["type", "Type", true],
@@ -168,7 +168,7 @@ export default function ReportingPage() {
       {
         id: "utilisateurs",
         label: "Utilisateurs",
-        colonnes: col("👤 Utilisateur", [
+        colonnes: col("Utilisateur", [
           ["nom", "Nom", true],
           ["email", "Email", true],
           ["telephone", "Téléphone"],
@@ -207,7 +207,7 @@ export default function ReportingPage() {
       {
         id: "tf",
         label: "TF & DGID",
-        colonnes: col("📜 Vérification", [
+        colonnes: col("Vérification", [
           ["numero", "N° TF", true],
           ["region", "Région", true],
           ["proprietaire", "Propriétaire déclaré", true],
@@ -324,7 +324,7 @@ export default function ReportingPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy mb-1">Reporting · {rapport.label}</h1>
+      <h1 className="titre-page mb-1">Reporting · {rapport.label}</h1>
       <p className="text-sm text-gray-500 mb-4 print:hidden">Sélectionnez les colonnes, prévisualisez, puis téléchargez.</p>
 
       <div className="flex gap-2 flex-wrap mb-4 print:hidden" role="group" aria-label="Rapports disponibles">

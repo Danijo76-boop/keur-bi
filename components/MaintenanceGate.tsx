@@ -14,7 +14,7 @@ export default function MaintenanceGate({ children }: { children: ReactNode }) {
     return (
       <div className="max-w-lg mx-auto px-4 py-24 text-center">
         <Wrench size={36} className="text-gold mx-auto mb-4" />
-        <h1 className="text-2xl font-bold text-navy mb-2">Maintenance en cours</h1>
+        <h1 className="titre-page mb-2">Maintenance en cours</h1>
         <p className="text-gray-500 text-sm">KEUR BI revient très vite. Merci de votre patience.</p>
       </div>
     );

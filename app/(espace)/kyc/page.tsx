@@ -7,6 +7,7 @@ import { DossierKYC, majUtilisateur, soumettreKYC, trouverUtilisateur } from "@/
 import { useParametres } from "@/lib/parametres";
 import BandeauDemo from "@/components/BandeauDemo";
 import Protege from "@/components/Protege";
+import { IconeStatut } from "@/components/Statut";
 
 const champ = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mt-1 font-normal";
 const libelle = "text-sm font-semibold text-gray-700";
@@ -36,7 +37,7 @@ function ChampFichier({
     >
       <span className="block text-sm font-semibold text-gray-700">{label}</span>
       <span className="block text-xs text-gray-400 mt-1 break-all">
-        {valeur ? `✅ ${valeur}` : "Cliquez pour choisir un fichier (JPG, PNG, PDF, max 5 Mo)"}
+        {valeur ? `Fichier choisi : ${valeur}` : "Cliquez pour choisir un fichier (JPG, PNG, PDF, max 5 Mo)"}
       </span>
       <input
         type="file"
@@ -86,7 +87,10 @@ function Parcours({ user }: { user: User }) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16">
         <div className="card p-8 text-center">
-          <p className="text-green font-semibold text-lg mb-1">✅ Identité vérifiée</p>
+          <p className="text-green font-semibold text-lg mb-1">
+            <IconeStatut type="ok" />
+            Identité vérifiée
+          </p>
           <p className="text-sm text-gray-500 mb-4">Vous avez accès à toutes les fonctions de la plateforme.</p>
           <Link href="/profil" className="btn-navy text-sm inline-block">
             Voir mon profil
@@ -100,7 +104,10 @@ function Parcours({ user }: { user: User }) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16">
         <div className="card p-8 text-center">
-          <p className="text-navy font-semibold text-lg mb-1">⏳ Dossier en cours de revue</p>
+          <p className="text-navy font-semibold text-lg mb-1">
+            <IconeStatut type="attente" />
+            Dossier en cours de revue
+          </p>
           <p className="text-sm text-gray-500 mb-4">
             Traitement habituel sous {p.delaiKYC} heures. Vous pouvez déjà soumettre des offres si votre score le permet.
           </p>
@@ -114,7 +121,7 @@ function Parcours({ user }: { user: User }) {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-navy mb-1">Vérification de votre identité</h1>
+      <h1 className="titre-page mb-1">Vérification de votre identité</h1>
       <p className="text-sm text-gray-500 mb-4">
         Cette étape protège acheteurs et vendeurs. Pièces demandées : {estCoteVendeur(user.role) ? p.docsVendeur : p.docsAcheteur}.
       </p>

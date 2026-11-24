@@ -5,7 +5,7 @@ import { popup } from "./popup";
 export type StatutVisite = "demandee" | "confirmee" | "refusee" | "annulee";
 
 export const LABELS_VISITE: Record<StatutVisite, string> = {
-  demandee: "⏳ À confirmer",
+  demandee: "À confirmer",
   confirmee: "✓ Confirmée",
   refusee: "✗ Refusée",
   annulee: "Annulée",

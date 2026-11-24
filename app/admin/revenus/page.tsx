@@ -48,7 +48,7 @@ export default function RevenusPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy mb-1">Revenus</h1>
+      <h1 className="titre-page mb-1">Revenus</h1>
       <p className="text-gray-500 text-sm mb-6">
         Estimation à partir de l&apos;activité enregistrée dans ce navigateur : aucun encaissement réel dans cette démo.
       </p>

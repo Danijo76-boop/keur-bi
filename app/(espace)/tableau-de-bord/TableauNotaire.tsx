@@ -5,7 +5,7 @@ import { CalendarDays, ShieldAlert, ShieldCheck, FileClock, TriangleAlert } from
 import { lireRendezVous } from "@/lib/preferences";
 import { Bien, formatPrix } from "@/lib/mock-data";
 import { useBiens } from "@/lib/annonces";
-import { lireOverridesTF, lireDemandesTF, basculerVerificationTF, statutTF, ICONES_TF, LABELS_TF } from "@/lib/tf";
+import { lireOverridesTF, lireDemandesTF, basculerVerificationTF, statutTF, LABELS_TF } from "@/lib/tf";
 import { lireDossiers, joursRestantsDGID, LABELS_ETAPE, prixRetenu, referenceDossier } from "@/lib/dossiers";
 import { useParametres } from "@/lib/parametres";
 import { useStocke } from "@/lib/stockage";
@@ -203,7 +203,7 @@ export default function TableauNotaire() {
             ) : (
               <div className="flex flex-col gap-2">
                 {aVerifier.map((b) => (
-                  <LigneTF key={b.id} bien={b} verifie={false} libelle={`${ICONES_TF[statutDe(b)]} ${LABELS_TF[statutDe(b)]}`} onToggle={basculerTF} />
+                  <LigneTF key={b.id} bien={b} verifie={false} libelle={LABELS_TF[statutDe(b)]} onToggle={basculerTF} />
                 ))}
               </div>
             )}
@@ -215,7 +215,7 @@ export default function TableauNotaire() {
             </h2>
             <div className="flex flex-col gap-2">
               {verifies.map((b) => (
-                <LigneTF key={b.id} bien={b} verifie libelle="✅ Vérifié" onToggle={basculerTF} />
+                <LigneTF key={b.id} bien={b} verifie libelle="Vérifié" onToggle={basculerTF} />
               ))}
             </div>
           </section>

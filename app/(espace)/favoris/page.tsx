@@ -48,7 +48,7 @@ export default function FavorisPage() {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-navy">Mes favoris</h1>
+              <h1 className="titre-page">Mes favoris</h1>
               <p className="text-gray-500 text-sm">
                 {mesFavoris.length} biens sauvegardés · {mesFavoris.filter((b) => b.prix_baisser).length} avec prix en baisse
               </p>

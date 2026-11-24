@@ -5,7 +5,8 @@ import { formatFCFA } from "@/lib/mock-data";
 import { lireSignalements, traiterSignalements } from "@/lib/moderation";
 import { journaliser } from "@/lib/journal";
 import { useStocke } from "@/lib/stockage";
-import { lireDemandesTF, statutTF, lireOverridesTF, ICONES_TF, LABELS_TF } from "@/lib/tf";
+import { lireDemandesTF, statutTF, lireOverridesTF, LABELS_TF } from "@/lib/tf";
+import { IconeTF } from "@/components/Statut";
 
 export default function ModerationPage() {
   const biens = useBiens(true);
@@ -43,7 +44,7 @@ export default function ModerationPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy mb-1">Modération</h1>
+      <h1 className="titre-page mb-1">Modération</h1>
       <p className="text-gray-500 text-sm mb-6">{ouverts.length} signalement(s) à traiter</p>
 
       <section className="mb-8">
@@ -110,7 +111,7 @@ export default function ModerationPage() {
                       {b.titre}
                     </Link>
                     <div className="text-xs text-gray-400">
-                      {b.agence} · {ICONES_TF[s]} {LABELS_TF[s]}
+                      {b.agence} · <IconeTF statut={s} /> {LABELS_TF[s]}
                       {metas[b.id]?.depublie && " · Retirée"}
                     </div>
                   </div>

@@ -14,6 +14,7 @@ import { useStocke } from "@/lib/stockage";
 import BarresHorizontales from "@/components/BarresHorizontales";
 import Protege from "@/components/Protege";
 import TFBadge from "@/components/TFBadge";
+import { IconeStatut } from "@/components/Statut";
 
 const LABEL_STATUT = { en_attente: "En attente", acceptee: "✓ Acceptée", refusee: "Refusée", retiree: "Retirée" };
 
@@ -49,21 +50,26 @@ function Gestion({ bien, user }: { bien: Bien; user: User }) {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="card p-5 mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">{bien.titre}</h1>
+          <h1 className="titre-page">{bien.titre}</h1>
           <p className="text-sm text-gray-400 mb-2">
             {bien.superficie.toLocaleString("fr-FR")} m² · {bien.ville} · Réf {bien.reference}
           </p>
           <div className="flex items-center gap-2 flex-wrap">
             <TFBadge bien={bien} />
             {meta.depublie && <span className="bg-gray-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Dépubliée</span>}
-            {boostEnCours && <span className="bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">⭐ Boostée</span>}
+            {boostEnCours && (
+              <span className="bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">
+                <IconeStatut type="vedette" taille={12} />
+                Boostée
+              </span>
+            )}
           </div>
         </div>
         <div className="text-right">
           <div className="text-xl font-bold text-navy">{formatFCFA(bien.prix)}</div>
           {peutModifier && (
             <div className="flex gap-2 mt-2 justify-end flex-wrap">
-              <Link href={`/annonces/${bien.id}`} className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-gray-50">
+              <Link href={`/annonces/${bien.id}`} className="border border-gray-200 rounded-xl px-3 py-1.5 text-sm font-medium hover:bg-gray-50">
                 Voir
               </Link>
               <button onClick={() => setEdition(!edition)} className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-gray-50">
@@ -198,7 +204,7 @@ function Gestion({ bien, user }: { bien: Bien; user: User }) {
 
           {p.flags.boost && peutBooster && (
             <div className="card p-5 bg-navy text-white">
-              <h2 className="font-bold mb-1">⚡ Booster l&apos;annonce</h2>
+              <h2 className="font-bold mb-1">Booster l&apos;annonce</h2>
               <p className="text-white/70 text-sm mb-3">Badge « En vedette » pendant 30 jours.</p>
               {boostEnCours ? (
                 <p className="text-sm text-gold font-semibold">Actif jusqu&apos;au {new Date(meta.boostJusquau!).toLocaleDateString("fr-FR")}</p>

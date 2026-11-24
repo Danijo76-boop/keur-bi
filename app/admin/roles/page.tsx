@@ -58,7 +58,7 @@ export default function RolesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy mb-6">Rôles & habilitations</h1>
+      <h1 className="titre-page mb-6">Rôles & habilitations</h1>
 
       <div className="grid xl:grid-cols-[18rem_1fr] gap-6 items-start">
         <div className="flex flex-col gap-4">

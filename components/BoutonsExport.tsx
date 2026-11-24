@@ -45,7 +45,7 @@ export function BoutonPDF({
       disabled={disabled || encours}
       title={titre}
       aria-label={titre}
-      className={`${BASE} ${TAILLES[taille]} bg-[#C0392B] hover:bg-[#A93226] focus-visible:outline-[#C0392B]`}
+      className={`${BASE} ${TAILLES[taille]} bg-red hover:bg-[#931D13] focus-visible:outline-red`}
     >
       {encours ? <Loader2 size={icone} className="animate-spin" aria-hidden /> : <FileText size={icone} aria-hidden />}
       {encours ? "Préparation…" : libelle}

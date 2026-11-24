@@ -10,7 +10,7 @@ import { notaireSuggere } from "@/lib/notaires";
 import { calculerFrais, useParametres } from "@/lib/parametres";
 import { basculerComparaison, definirComparaison, lireComparaison, MAX_COMPARAISON } from "@/lib/preferences";
 import { useStocke } from "@/lib/stockage";
-import { ICONES_TF, LABELS_TF, lireDemandesTF, lireOverridesTF, statutTF } from "@/lib/tf";
+import { LABELS_TF, lireDemandesTF, lireOverridesTF, statutTF } from "@/lib/tf";
 import SiActif from "@/components/SiActif";
 
 export default function ComparerPage() {
@@ -65,7 +65,7 @@ export default function ComparerPage() {
       label: "Titre Foncier",
       rendu: (b) => {
         const s = statutTF(b, overrides, demandes);
-        return `${ICONES_TF[s]} ${LABELS_TF[s]}`;
+        return LABELS_TF[s];
       },
     },
     { label: "Conservation", rendu: (b) => b.tf.conservation ?? "—" },
@@ -126,13 +126,13 @@ export default function ComparerPage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-navy">Comparateur de biens</h1>
+            <h1 className="titre-page">Comparateur de biens</h1>
             <p className="text-gray-500 text-sm">Comparez jusqu&apos;à {MAX_COMPARAISON} biens côte à côte</p>
           </div>
           {compares.length > 0 && (
             <button
               onClick={partager}
-              className="flex items-center gap-2 border border-gray-200 bg-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50"
+              className="flex items-center gap-2 border border-gray-200 bg-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-50"
             >
               <Share2 size={16} /> {copie ? "Lien copié ✓" : "Partager la comparaison"}
             </button>

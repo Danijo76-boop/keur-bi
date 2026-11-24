@@ -53,7 +53,7 @@ export default function TableauAgence({ user }: { user: User }) {
 
       {offresAttente.length > 0 && (
         <section>
-          <h2 className="text-lg font-bold text-gray-900 mb-4">🔔 Offres en attente de réponse</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Offres en attente de réponse</h2>
           <div className="flex flex-col gap-2">
             {offresAttente.map(({ o, d, bien }) => (
               <div key={o.id} className="card p-4 flex items-center justify-between gap-4 flex-wrap border-l-4 border-gold">
@@ -69,7 +69,7 @@ export default function TableauAgence({ user }: { user: User }) {
                   </button>
                   <Link
                     href={`/dossiers/${d.id}`}
-                    className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
+                    className="text-xs font-semibold px-3 py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50"
                   >
                     Contre-offre
                   </Link>
@@ -175,13 +175,13 @@ export default function TableauAgence({ user }: { user: User }) {
                 ➕ Publier une nouvelle annonce
               </Link>
               <Link href="/profil" className="text-blue hover:underline">
-                👤 Compléter mon profil vendeur
+                Compléter mon profil vendeur
               </Link>
               <Link href="/frais" className="text-blue hover:underline">
-                🧮 Simuler les frais de vente
+                Simuler les frais de vente
               </Link>
               <Link href="/tarifs" className="text-blue hover:underline">
-                ⭐ Voir les abonnements
+                Voir les abonnements
               </Link>
             </div>
           </div>

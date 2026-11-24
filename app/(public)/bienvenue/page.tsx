@@ -1,4 +1,5 @@
 "use client";
+import { Home, KeyRound, Handshake, Landmark } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { useBiens } from "@/lib/annonces";
@@ -7,10 +8,10 @@ import { useStocke } from "@/lib/stockage";
 import { lireDemandesTF, lireOverridesTF, statutTF } from "@/lib/tf";
 
 const PROFILS = [
-  { role: "acheteur", icone: "🏠", titre: "Acheteur", desc: "Je cherche un terrain" },
-  { role: "vendeur", icone: "🔑", titre: "Vendeur particulier", desc: "Je vends mon propre bien" },
-  { role: "agence", icone: "🤝", titre: "Agence ou promoteur", desc: "Je vends pour des clients" },
-  { role: "notaire", icone: "🏛", titre: "Notaire", desc: "Je gère des dossiers" },
+  { role: "acheteur", icone: Home, titre: "Acheteur", desc: "Je cherche un terrain" },
+  { role: "vendeur", icone: KeyRound, titre: "Vendeur particulier", desc: "Je vends mon propre bien" },
+  { role: "agence", icone: Handshake, titre: "Agence ou promoteur", desc: "Je vends pour des clients" },
+  { role: "notaire", icone: Landmark, titre: "Notaire", desc: "Je gère des dossiers" },
 ];
 
 export default function BienvenuePage() {
@@ -31,7 +32,7 @@ export default function BienvenuePage() {
       style={{ background: "linear-gradient(135deg, #1B2A4A 0%, #1B4F72 60%, #2E86AB 100%)" }}
     >
       <div className="w-full max-w-md text-white text-center">
-        <h1 className="text-4xl font-extrabold">
+        <h1 className="titre-page text-white md:text-4xl">
           KEUR<span className="text-gold">BI</span>
         </h1>
         <p className="text-white/70 mb-6">Votre maison, au Sénégal</p>
@@ -53,9 +54,7 @@ export default function BienvenuePage() {
               onClick={() => setRole(p.role)}
               className={`flex items-center gap-3 text-left rounded-xl p-4 border-2 transition-colors ${role === p.role ? "bg-white text-navy-dark border-gold" : "bg-white/5 border-white/20 hover:bg-white/10"}`}
             >
-              <span className="text-2xl" aria-hidden>
-                {p.icone}
-              </span>
+              <p.icone size={26} aria-hidden className="shrink-0" />
               <span>
                 <span className="block font-bold">{p.titre}</span>
                 <span className={`block text-sm ${role === p.role ? "text-gray-500" : "text-white/60"}`}>{p.desc}</span>

@@ -41,8 +41,9 @@ import { Bien } from "@/lib/mock-data";
 import ParcoursContrat from "@/components/ParcoursContrat";
 import { popup } from "@/lib/popup";
 import LaisserAvis from "@/components/LaisserAvis";
+import { IconeStatut } from "@/components/Statut";
 
-const INCIDENTS = { litigieux: "⚠ Dossier en litige", resilie: "Dossier résilié" };
+const INCIDENTS = { litigieux: "Dossier en litige", resilie: "Dossier résilié" };
 
 export default function DossierPage() {
   const { id } = useParams<{ id: string }>();
@@ -157,7 +158,7 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
 
       <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-navy">Dossier #{referenceDossier(dossier)}</h1>
+          <h1 className="titre-page">Dossier #{referenceDossier(dossier)}</h1>
           <p className="text-gray-500 text-sm">
             {bien.titre} · {formatFCFA(prix)} · Ouvert le {new Date(dossier.dateOuverture).toLocaleDateString("fr-FR")}
           </p>
@@ -175,7 +176,7 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
           )}
           <Link
             href="/calendrier"
-            className="border border-gray-200 bg-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50 flex items-center gap-2"
+            className="border border-gray-200 bg-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-50 flex items-center gap-2"
           >
             <CalendarDays size={15} /> Calendrier
           </Link>
@@ -271,7 +272,10 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                         {o.conditions}
                       </p>
                       {coteVendeur && decote > p.decoteMax && (
-                        <p className="text-xs text-red font-semibold mt-1">⚠ Décote de {decote.toFixed(1)} % par rapport au prix affiché</p>
+                        <p className="text-xs text-red font-semibold mt-1">
+                          <IconeStatut type="attention" herite />
+                          Décote de {decote.toFixed(1)} % par rapport au prix affiché
+                        </p>
                       )}
                       {o.message && <p className="text-sm text-gray-600 mt-1">{o.message}</p>}
                       {peutRepondre && (
@@ -309,7 +313,10 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
             )}
 
             {accord ? (
-              <p className="text-sm font-semibold text-green border-t border-gray-100 pt-4">✅ Accord trouvé à {formatFCFA(prix)}.</p>
+              <p className="text-sm font-semibold text-green border-t border-gray-100 pt-4">
+                <IconeStatut type="ok" />
+                Accord trouvé à {formatFCFA(prix)}.
+              </p>
             ) : limiteAtteinte ? (
               <p className="text-sm text-gray-500 border-t border-gray-100 pt-4">
                 Limite de {p.maxContreOffres} contre-offres atteinte : acceptez ou refusez la dernière offre.
@@ -392,7 +399,7 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                 <div key={d.nom} className="flex items-center justify-between gap-3 text-sm bg-gray-50 rounded-lg px-3 py-2">
                   <div className="min-w-0">
                     <div className="font-semibold text-gray-800">
-                      {d.disponible ? "✅" : "⏳"} {d.nom}
+                      <IconeStatut type={d.disponible ? "ok" : "attente"} /> {d.nom}
                     </div>
                     <div className="text-xs text-gray-400">{d.detail}</div>
                   </div>
@@ -429,7 +436,7 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
               ))}
               {(dossier.pieces ?? []).map((f) => (
                 <div key={f.id} className="text-sm bg-gray-50 rounded-lg px-3 py-2">
-                  <div className="font-semibold text-gray-800 break-all">📎 {f.nom}</div>
+                  <div className="font-semibold text-gray-800 break-all">{f.nom}</div>
                   <div className="text-xs text-gray-400">
                     {f.auteur} · {new Date(f.date).toLocaleDateString("fr-FR")} · nom du fichier seulement, non transmis dans cette démo
                   </div>
@@ -628,7 +635,7 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
               {(dossier.paiements ?? []).map((x) => (
                 <div key={x.id} className="text-xs bg-gray-50 rounded-lg p-2">
                   <div className="font-semibold text-gray-800">
-                    {formatFCFA(x.montant)} · {x.statut === "confirme" ? "✓ Confirmé" : "⏳ À confirmer"}
+                    {formatFCFA(x.montant)} · {x.statut === "confirme" ? "✓ Confirmé" : "À confirmer"}
                   </div>
                   <div className="text-gray-400 break-all">
                     {LABELS_MOYEN[x.moyen]} · {x.reference}

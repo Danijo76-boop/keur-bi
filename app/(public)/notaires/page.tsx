@@ -13,7 +13,7 @@ export default function NotairesPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-navy">Notaires partenaires</h1>
+      <h1 className="titre-page">Notaires partenaires</h1>
       <p className="text-gray-500 text-sm mb-5">Le notaire est le garant légal de votre transaction</p>
       <div className="flex gap-2 flex-wrap mb-6">
         {REGIONS.map((r) => (

@@ -59,7 +59,7 @@ export default function FaqPage() {
   const cadastre = useParametres().flags.cadastre;
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-navy mb-1">Questions fréquentes</h1>
+      <h1 className="titre-page mb-1">Questions fréquentes</h1>
       <p className="text-gray-500 text-sm mb-6">Tout ce qu&apos;il faut savoir avant de vous lancer</p>
       {SECTIONS.map((s) => (
         <section key={s.titre} className="mb-6">

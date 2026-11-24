@@ -12,6 +12,7 @@ import { lireSignalements } from "@/lib/moderation";
 import { ROLE_LABELS, ROLES } from "@/lib/auth";
 import BarresHorizontales from "@/components/BarresHorizontales";
 import EtatSecurite from "@/components/EtatSecurite";
+import { IconeStatut } from "@/components/Statut";
 
 export default function AdminPage() {
   const biens = useBiens();
@@ -67,7 +68,7 @@ export default function AdminPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy mb-1">Vue d&apos;ensemble</h1>
+      <h1 className="titre-page mb-1">Vue d&apos;ensemble</h1>
       <p className="text-gray-500 text-sm mb-6">Données calculées à partir de ce navigateur (démo)</p>
 
       <EtatSecurite />
@@ -116,7 +117,7 @@ export default function AdminPage() {
             {alertes.map((a) => (
               <li key={a.texte} className="flex items-center justify-between gap-3">
                 <span className={a.n > 0 ? "text-gray-800" : "text-gray-400"}>
-                  {a.n > 0 ? "⚠" : "✓"} {a.n} {a.texte}
+                  <IconeStatut type={a.n > 0 ? "attention" : "ok"} herite /> {a.n} {a.texte}
                 </span>
                 {a.n > 0 && (
                   <Link href={a.lien} className="text-blue font-medium hover:underline shrink-0">

@@ -15,7 +15,7 @@ export type StatutKYC = "non_soumis" | "en_attente" | "verifie" | "rejete";
 
 export const LABELS_KYC: Record<StatutKYC, string> = {
   non_soumis: "Non soumis",
-  en_attente: "⏳ En attente",
+  en_attente: "En attente",
   verifie: "✓ Vérifié",
   rejete: "✗ Rejeté",
 };

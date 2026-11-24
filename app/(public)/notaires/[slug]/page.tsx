@@ -9,6 +9,7 @@ import { obtenirConversation } from "@/lib/messagerie";
 import { ajouterRendezVous, lireRendezVous } from "@/lib/preferences";
 import { useStocke } from "@/lib/stockage";
 import { lireAvis, noteAgregee } from "@/lib/moderation";
+import { IconeStatut } from "@/components/Statut";
 
 export default function NotairePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -72,7 +73,7 @@ export default function NotairePage() {
       <div className="card p-6 mb-6 flex flex-col md:flex-row gap-5 items-start">
         <div className="w-20 h-20 rounded-2xl bg-navy text-gold font-bold text-2xl flex items-center justify-center shrink-0">{notaire.initiales}</div>
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold text-gray-900">{notaire.nom}</h1>
+          <h1 className="titre-page">{notaire.nom}</h1>
           <p className="text-sm text-gray-500 mb-2">
             Notaire · {notaire.etude} · {notaire.ville} · Agréé depuis {notaire.agreeDepuis}
           </p>
@@ -95,7 +96,7 @@ export default function NotairePage() {
             </a>
           </div>
         </div>
-        <button onClick={ecrire} className="border border-navy text-navy font-semibold px-5 py-2.5 rounded-lg hover:bg-navy/5 text-sm shrink-0">
+        <button onClick={ecrire} className="border border-navy text-navy font-semibold px-5 py-2.5 rounded-xl hover:bg-navy/5 text-sm shrink-0">
           Envoyer un message
         </button>
       </div>
@@ -148,7 +149,10 @@ export default function NotairePage() {
             <h2 className="font-bold text-gray-900 mb-3">Prendre rendez-vous</h2>
             {confirme ? (
               <div className="text-sm">
-                <p className="text-green font-semibold mb-2">✅ Rendez-vous enregistré</p>
+                <p className="text-green font-semibold mb-2">
+                  <IconeStatut type="ok" />
+                  Rendez-vous enregistré
+                </p>
                 <Link href="/calendrier" className="text-blue hover:underline block mb-2">
                   Voir dans le calendrier
                 </Link>

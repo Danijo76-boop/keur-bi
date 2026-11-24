@@ -8,6 +8,7 @@ import BoutonComparer from "@/components/BoutonComparer";
 import BadgeVente from "@/components/BadgeVente";
 import TFBadge from "@/components/TFBadge";
 import BadgeDemande from "@/components/BadgeDemande";
+import { IconeStatut } from "@/components/Statut";
 
 export default function PropertyCard({ bien, className }: { bien: Bien; className?: string }) {
   return (
@@ -35,7 +36,12 @@ export default function PropertyCard({ bien, className }: { bien: Bien; classNam
               </>
             )}
             <BadgeDemande bien={bien} />
-            {bien.is_featured && <span className="bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">⭐ En vedette</span>}
+            {bien.is_featured && (
+              <span className="bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">
+                <IconeStatut type="vedette" taille={12} />
+                En vedette
+              </span>
+            )}
             {bien.prix_baisser && (
               <span className="bg-red text-white text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
                 <TrendingDown size={11} /> Prix baissé

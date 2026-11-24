@@ -57,7 +57,7 @@ export default function JournalTechniquePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy mb-1">Journal technique</h1>
+      <h1 className="titre-page mb-1">Journal technique</h1>
       <p className="text-gray-500 text-sm mb-5">
         Erreurs, avertissements et actions d&apos;administration. Pour retrouver un bug signalé, saisissez son code ou sa référence.
       </p>

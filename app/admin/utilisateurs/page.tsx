@@ -41,7 +41,7 @@ export default function UtilisateursPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy mb-4">Utilisateurs & KYC</h1>
+      <h1 className="titre-page mb-4">Utilisateurs & KYC</h1>
       <div className="flex gap-2 flex-wrap mb-4">
         <input
           aria-label="Rechercher un utilisateur"

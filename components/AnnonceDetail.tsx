@@ -32,6 +32,7 @@ import HistoriqueAnnonce from "@/components/HistoriqueAnnonce";
 import NoteBien from "@/components/NoteBien";
 import CommanderService from "@/components/CommanderService";
 import PropertyCard from "@/components/PropertyCard";
+import { IconeStatut } from "@/components/Statut";
 
 const CarteLeaflet = dynamic(() => import("@/components/CarteLeaflet"), { ssr: false });
 const sansEffet = () => {};
@@ -116,7 +117,12 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
                 texte="TF Vérifié DGID"
                 className="bg-green text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1"
               />
-              {bien.is_featured && <span className="bg-gold text-navy-dark text-xs font-semibold px-3 py-1 rounded-full">⭐ En vedette</span>}
+              {bien.is_featured && (
+                <span className="bg-gold text-navy-dark text-xs font-semibold px-3 py-1 rounded-full">
+                  <IconeStatut type="vedette" taille={12} />
+                  En vedette
+                </span>
+              )}
             </div>
             <div className="absolute bottom-3 right-3 flex gap-2">
               <FavoriButton id={bien.id} size={18} className="bg-white/90 hover:bg-white p-2 rounded-lg shadow-sm" />
@@ -131,7 +137,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
           {/* Titre & info */}
           <div className="mb-6">
             <div className="flex items-start justify-between gap-4 mb-2">
-              <h1 className="text-2xl font-bold text-gray-900">{bien.titre}</h1>
+              <h1 className="titre-page">{bien.titre}</h1>
               <div className="text-right shrink-0">
                 <div className="text-2xl font-bold text-navy">{prixAffiche(bien)}</div>
                 {bien.prix_baisser && bien.ancien_prix && <div className="text-sm text-gray-400 line-through">{formatPrix(bien.ancien_prix)}</div>}
@@ -248,7 +254,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
                 <div className="grid grid-cols-2 gap-2">
                   <a
                     href={`tel:${bien.telephone}`}
-                    className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 font-semibold text-sm px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 font-semibold text-sm px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
                   >
                     <Phone size={15} /> Appeler
                   </a>
@@ -256,7 +262,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
                     href={`https://wa.me/${bien.telephone.replace(/\D/g, "")}?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par votre annonce KEUR BI : ${bien.titre} (réf. ${bien.reference}).`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 font-semibold text-sm px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 font-semibold text-sm px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
                   >
                     <MessageCircle size={15} /> WhatsApp
                   </a>
@@ -265,7 +271,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
               {peutGerer && (
                 <Link
                   href={`/mes-annonces/${bien.id}`}
-                  className="flex items-center justify-center gap-2 w-full border border-gray-200 text-gray-700 font-semibold px-5 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-center gap-2 w-full border border-gray-200 text-gray-700 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
                 >
                   <Settings2 size={16} /> Gérer cette annonce
                 </Link>
@@ -352,7 +358,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
                 <div className="font-semibold text-sm text-gray-900 group-hover:text-navy">{notaire.nom}</div>
                 <div className="text-xs text-gray-400">
                   {notaire.ville}
-                  {notaire.nbAvis > 0 && ` · ⭐ ${notaire.note.toLocaleString("fr-FR")}`}
+                  {notaire.nbAvis > 0 && ` · ${notaire.note.toLocaleString("fr-FR")}/5`}
                 </div>
               </div>
             </Link>

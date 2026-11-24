@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { formatFCFA } from "@/lib/mock-data";
+import { IconeStatut } from "@/components/Statut";
 
 const champ = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mt-1 font-normal";
 const SEUIL_ENDETTEMENT = 33;
@@ -63,7 +64,8 @@ export function SimulateurCredit({ prix }: { prix: number }) {
       </dl>
       {endettement !== null && (
         <p className={`text-sm font-semibold mt-3 rounded-lg px-3 py-2 ${endettement > SEUIL_ENDETTEMENT ? "bg-red/10 text-red" : "bg-green/10 text-green"}`}>
-          {endettement > SEUIL_ENDETTEMENT ? "⚠" : "✓"} Mensualité égale à {endettement} % de votre revenu (repère courant : {SEUIL_ENDETTEMENT} % maximum).
+          <IconeStatut type={endettement > SEUIL_ENDETTEMENT ? "attention" : "ok"} herite /> Mensualité égale à {endettement} % de votre revenu (repère courant
+          : {SEUIL_ENDETTEMENT} % maximum).
         </p>
       )}
       <p className="text-xs text-gray-400 mt-3">

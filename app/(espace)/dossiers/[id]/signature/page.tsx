@@ -14,6 +14,7 @@ import { Bien } from "@/lib/mock-data";
 import BandeauDemo from "@/components/BandeauDemo";
 import Protege from "@/components/Protege";
 import SiActif from "@/components/SiActif";
+import { IconeStatut } from "@/components/Statut";
 
 const LABELS: Record<Signataire, string> = { notaire: "Notaire", acheteur: "Acheteur", vendeur: "Vendeur" };
 
@@ -128,7 +129,7 @@ function Formulaire({ id, bien, user }: { id: string; bien: Bien; user: User }) 
       <Link href={`/dossiers/${id}`} className="text-sm text-blue hover:underline mb-4 inline-block">
         ← Retour au dossier
       </Link>
-      <h1 className="text-2xl font-bold text-navy mb-1">Signature de l&apos;acte</h1>
+      <h1 className="titre-page mb-1">Signature de l&apos;acte</h1>
       <p className="text-gray-500 text-sm mb-4">Dossier #{referenceDossier(dossier)} · Toutes les parties doivent signer pour finaliser la transaction.</p>
       <BandeauDemo>
         Parcours de démonstration : cette signature n&apos;a aucune valeur juridique. L&apos;acte authentique reste à signer devant le notaire.
@@ -194,7 +195,7 @@ function Formulaire({ id, bien, user }: { id: string; bien: Bien; user: User }) 
             <ul className="text-sm flex flex-col gap-2">
               {conditions.map((c) => (
                 <li key={c.label} className={c.ok ? "text-green" : "text-gray-500"}>
-                  {c.ok ? "✓" : "⏳"} {c.label}
+                  <IconeStatut type={c.ok ? "ok" : "attente"} /> {c.label}
                 </li>
               ))}
             </ul>
@@ -203,7 +204,10 @@ function Formulaire({ id, bien, user }: { id: string; bien: Bien; user: User }) 
           {!quiConnecte ? (
             <div className="card p-5 text-sm text-gray-500">Votre rôle ne signe pas cet acte.</div>
           ) : dejaSigne ? (
-            <div className="card p-5 text-sm font-semibold text-green">✅ Vous avez signé cet acte.</div>
+            <div className="card p-5 text-sm font-semibold text-green">
+              <IconeStatut type="ok" />
+              Vous avez signé cet acte.
+            </div>
           ) : !pret ? (
             <div className="card p-5 text-sm text-gray-500">La signature s&apos;ouvrira quand toutes les conditions seront remplies.</div>
           ) : (
@@ -240,7 +244,7 @@ function Formulaire({ id, bien, user }: { id: string; bien: Bien; user: User }) 
                   />
                   {erreur && <p className="text-red text-xs">{erreur}</p>}
                   <button type="submit" className="btn-primary text-sm">
-                    🔐 Signer & valider
+                    Signer et valider
                   </button>
                 </>
               )}

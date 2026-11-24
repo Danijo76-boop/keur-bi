@@ -6,8 +6,9 @@ import type { LatLngBounds } from "leaflet";
 import { coordonnees, useBiens } from "@/lib/annonces";
 import { formatFCFA, estLocation } from "@/lib/mock-data";
 import { useStocke } from "@/lib/stockage";
-import { ICONES_TF, LABELS_TF, lireDemandesTF, lireOverridesTF, statutTF, StatutTF } from "@/lib/tf";
+import { LABELS_TF, lireDemandesTF, lireOverridesTF, statutTF, StatutTF } from "@/lib/tf";
 import SiActif from "@/components/SiActif";
+import { IconeTF } from "@/components/Statut";
 
 // Leaflet a besoin de window : la carte n'est rendue que côté navigateur.
 const CarteLeaflet = dynamic(() => import("@/components/CarteLeaflet"), {
@@ -52,7 +53,7 @@ export default function CartePage() {
           </button>
           {(["verifie", "en_verification"] as StatutTF[]).map((s) => (
             <button key={s} className={pastille(filtreTF === s)} onClick={() => setFiltreTF(s)}>
-              {ICONES_TF[s]} {LABELS_TF[s]}
+              <IconeTF statut={s} /> {LABELS_TF[s]}
             </button>
           ))}
           <span className="border-l border-gray-200 mx-1" />
@@ -76,7 +77,7 @@ export default function CartePage() {
               return (
                 <button key={b.id} onClick={() => setSelection(b.id)} className={`card p-3 text-left shrink-0 ${selection === b.id ? "ring-2 ring-gold" : ""}`}>
                   <div className="text-xs text-gray-500 mb-1">
-                    {ICONES_TF[s]} {LABELS_TF[s]}
+                    <IconeTF statut={s} /> {LABELS_TF[s]}
                   </div>
                   <div className="font-semibold text-sm text-gray-900">{b.titre}</div>
                   <div className="text-xs text-gray-400">
