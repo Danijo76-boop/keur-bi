@@ -47,6 +47,8 @@ model Utilisateur {
   motDePasseHash    String?
   role              Role      @default(acheteur)
   telephone         String?
+  // Numéro WhatsApp vérifié (format international, ex. +221771234567) : reçoit le code de connexion.
+  whatsapp          String?
   ville             String?
   suspendu          Boolean   @default(false)
   statutKYC         StatutKYC @default(non_soumis)
@@ -57,21 +59,22 @@ model Utilisateur {
   inscritLe         DateTime  @default(now())
   derniereConnexion DateTime?
 
-  kyc             DossierKYC?
-  biens           Bien[]
-  programmes      Programme[]
-  favoris         Favori[]
-  dossiers        Dossier[]
-  visites         Visite[]
-  rendezVous      RendezVous[]
-  alertes         Alerte[]
-  signalements    Signalement[]
-  avis            Avis[]
-  conversations   Conversation[]
-  messages        Message[]
-  lectures        LectureConversation[]
+  kyc               DossierKYC?
+  biens             Bien[]
+  programmes        Programme[]
+  favoris           Favori[]
+  dossiers          Dossier[]
+  visites           Visite[]
+  rendezVous        RendezVous[]
+  alertes           Alerte[]
+  signalements      Signalement[]
+  avis              Avis[]
+  conversations     Conversation[]
+  messages          Message[]
+  lectures          LectureConversation[]
   notificationsLues NotificationLue[]
-  sessions        Session[]
+  sessions          Session[]
+  defisOTP          DefiOTP[]
 
   @@index([role])
 }
@@ -88,10 +91,30 @@ model Session {
   @@index([utilisateurId])
 }
 
+// Connexion en deux temps : après le mot de passe, un code à 6 chiffres est envoyé par WhatsApp.
+// Le navigateur garde un jeton secret qui désigne ce défi ; la base ne garde que les empreintes du jeton et du code.
+model DefiOTP {
+  id            String      @id @default(cuid())
+  jetonHash     String      @unique
+  utilisateurId String
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  // Numéro auquel le code a été envoyé ; devient le numéro WhatsApp vérifié du compte une fois le code saisi.
+  numero        String?
+  codeHash      String?
+  envoyeLe      DateTime?
+  envois        Int         @default(0)
+  essais        Int         @default(0)
+  expireLe      DateTime
+  creeLe        DateTime    @default(now())
+
+  @@index([utilisateurId])
+  @@index([expireLe])
+}
+
 // Pièces d'identité : la base ne garde que la référence des fichiers, rangés dans un stockage séparé et protégé.
 model DossierKYC {
-  id             String    @id @default(cuid())
-  utilisateurId  String    @unique
+  id             String      @id @default(cuid())
+  utilisateurId  String      @unique
   utilisateur    Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
   dateNaissance  DateTime?
   lieuNaissance  String?
@@ -122,25 +145,25 @@ model Fichier {
 // ───────────── Annuaire ─────────────
 
 model Agence {
-  id          String  @id @default(cuid())
-  slug        String  @unique
-  nom         String
-  initiales   String
-  description String
-  fondee      Int
-  telephone   String
-  email       String
-  adresse     String
-  horaires    String
-  badges      String[]
-  ventes      Int     @default(0)
-  note        Float   @default(0)
-  nbAvis      Int     @default(0)
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  nom          String
+  initiales    String
+  description  String
+  fondee       Int
+  telephone    String
+  email        String
+  adresse      String
+  horaires     String
+  badges       String[]
+  ventes       Int      @default(0)
+  note         Float    @default(0)
+  nbAvis       Int      @default(0)
   // Témoignages de présentation : [{ auteur, date, note, texte }]
-  avisInitiaux Json   @default("[]")
+  avisInitiaux Json     @default("[]")
 
-  agents AgentAgence[]
-  biens  Bien[]
+  agents     AgentAgence[]
+  biens      Bien[]
   programmes Programme[]
 }
 
@@ -201,14 +224,14 @@ enum Transaction {
 }
 
 model Bien {
-  id          String   @id @default(cuid())
-  reference   String   @unique
+  id          String      @id @default(cuid())
+  reference   String      @unique
   titre       String
   // Vente : prix total. Location : loyer mensuel (charges à part).
   transaction Transaction @default(vente)
   charges     BigInt?
   caution     BigInt?
-  meuble      Boolean  @default(false)
+  meuble      Boolean     @default(false)
   nbPieces    Int?
   type        TypeBien
   superficie  Int
@@ -673,8 +696,8 @@ model DemandeFinancement {
 }
 
 model AbonneNewsletter {
-  email      String   @id
-  inscritLe  DateTime @default(now())
+  email     String   @id
+  inscritLe DateTime @default(now())
 }
 
 // Compteurs des encarts sponsorisés, par campagne.
@@ -704,8 +727,8 @@ model JournalReglages {
 
 // Un programme d'un promoteur regroupe plusieurs lots (appartements, villas, bureaux…) vendus sur plan ou en construction.
 model Programme {
-  id          String   @id @default(cuid())
-  slug        String   @unique
+  id          String       @id @default(cuid())
+  slug        String       @unique
   nom         String
   promoteur   String
   agenceId    String?
@@ -723,8 +746,8 @@ model Programme {
   avancement  String
   lat         Float?
   lng         Float?
-  publie      Boolean  @default(true)
-  creeLe      DateTime @default(now())
+  publie      Boolean      @default(true)
+  creeLe      DateTime     @default(now())
 
   lots LotProgramme[]
 

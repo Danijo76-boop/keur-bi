@@ -111,6 +111,7 @@ export default function UtilisateursPage() {
               <dl className="text-sm flex flex-col gap-1 mb-3">
                 <div className="flex justify-between"><dt className="text-gray-500">Dossiers</dt><dd className="font-semibold">{dossiersActif.length}</dd></div>
                 <div className="flex justify-between"><dt className="text-gray-500">Offres soumises</dt><dd className="font-semibold">{dossiersActif.reduce((s, d) => s + d.offres.filter((o) => o.auteur === "acheteur").length, 0)}</dd></div>
+                <div className="flex justify-between"><dt className="text-gray-500">WhatsApp</dt><dd className="font-semibold">{actif.whatsapp ?? "—"}</dd></div>
                 <div className="flex justify-between"><dt className="text-gray-500">Dernière connexion</dt><dd className="font-semibold">{actif.derniereConnexion ? new Date(actif.derniereConnexion).toLocaleDateString("fr-FR") : "—"}</dd></div>
               </dl>
               <button
@@ -123,6 +124,19 @@ export default function UtilisateursPage() {
               >
                 {actif.suspendu ? "Réactiver le compte" : "Suspendre le compte"}
               </button>
+              {actif.whatsapp && (
+                <button
+                  disabled={!peutGerer || actif.email === user?.email}
+                  onClick={() => {
+                    if (!confirm(`Effacer le numéro WhatsApp de ${actif.nom} ? À sa prochaine connexion, il devra en indiquer un nouveau, vérifié par un code.`)) return;
+                    majUtilisateur(actif.email, { whatsapp: null });
+                    journaliser("compte", `Numéro WhatsApp remis à zéro : ${actif.nom}`, "/admin/utilisateurs");
+                  }}
+                  className="text-sm font-semibold px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-50 w-full mt-2"
+                >
+                  Réinitialiser le numéro WhatsApp
+                </button>
+              )}
               {actif.email === user?.email && <p className="text-xs text-gray-400 mt-1">Vous ne pouvez pas modifier votre propre compte.</p>}
               {!peutGerer && <p className="text-xs text-gray-400 mt-1">Consultation seule : votre rôle n&apos;est pas habilité à gérer les comptes.</p>}
             </div>

@@ -49,7 +49,7 @@ async function get() {
 
 // PATCH /api/utilisateurs  { email, patch } : chaque champ a ses propres règles.
 //  - soi-même : coordonnées, rattachement, relevé bancaire, abonnement, envoi du dossier d'identité ;
-//  - admin : rôle et suspension d'un autre compte ;
+//  - admin : rôle, suspension et remise à zéro du numéro WhatsApp d'un autre compte ;
 //  - admin ou modérateur : décision sur un dossier d'identité.
 async function patch(requete: Request) {
   if (!(await memeOrigine())) return refus("Requête refusée.", 403);
@@ -103,6 +103,17 @@ async function patch(requete: Request) {
       fermerSessions = true;
     }
 
+    // ── Numéro WhatsApp (codes de connexion) ──
+    // Seule action possible : l'effacer, quand la personne a perdu son téléphone. Elle en indiquera un nouveau,
+    // vérifié par un code, à sa prochaine connexion. Les sessions ouvertes sont fermées par prudence.
+    if ("whatsapp" in patch) {
+      if (moi.role !== "admin") return refus("Réservé aux administrateurs.", 403);
+      if (soi) return refus("Vous ne pouvez pas modifier votre propre numéro WhatsApp ici.", 400);
+      if (patch.whatsapp !== null) return refus("Le numéro WhatsApp ne peut qu'être remis à zéro.", 400);
+      donnees.whatsapp = null;
+      fermerSessions = true;
+    }
+
     // ── Dossier d'identité ──
     let kyc: Prisma.DossierKYCUncheckedCreateWithoutUtilisateurInput | undefined;
     if ("statutKYC" in patch) {
@@ -146,7 +157,7 @@ async function patch(requete: Request) {
       ...(fermerSessions ? [db.session.deleteMany({ where: { utilisateurId: cible.id } })] : []),
     ]);
     const champs = Object.keys(patch);
-    if (!soi || fermerSessions) log.audit("Compte modifié par l'équipe", { cible: cible.id, champs, ...("role" in patch && { role: patch.role }), ...("suspendu" in patch && { suspendu: patch.suspendu }), ...("statutKYC" in patch && { statutKYC: patch.statutKYC }) });
+    if (!soi || fermerSessions) log.audit("Compte modifié par l'équipe", { cible: cible.id, champs, ...("role" in patch && { role: patch.role }), ...("suspendu" in patch && { suspendu: patch.suspendu }), ...("whatsapp" in patch && { whatsapp: "remis à zéro" }), ...("statutKYC" in patch && { statutKYC: patch.statutKYC }) });
     else log.info("Profil modifié", { champs });
     return NextResponse.json({ utilisateur: versUtilisateur(maj) });
   } catch (e) {

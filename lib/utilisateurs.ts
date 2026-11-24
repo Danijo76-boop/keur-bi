@@ -40,6 +40,8 @@ export type Utilisateur = {
   nom: string;
   role: Role;
   telephone?: string;
+  // Numéro WhatsApp vérifié, qui reçoit les codes de connexion. Un administrateur peut le remettre à zéro (null).
+  whatsapp?: string | null;
   ville?: string;
   suspendu?: boolean;
   statutKYC: StatutKYC;

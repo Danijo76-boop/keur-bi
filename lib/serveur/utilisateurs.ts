@@ -29,6 +29,7 @@ export function versUtilisateur(u: LigneAvecKYC): Utilisateur {
     nom: u.nom,
     role: u.role,
     telephone: u.telephone ?? undefined,
+    whatsapp: u.whatsapp ?? undefined,
     ville: u.ville ?? undefined,
     suspendu: u.suspendu || undefined,
     statutKYC: u.statutKYC,

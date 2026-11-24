@@ -1,9 +1,9 @@
 "use client";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Mail, Lock, User as UserIcon, Phone } from "lucide-react";
+import { Mail, Lock, User as UserIcon, Phone, MessageCircle } from "lucide-react";
 import { suiteSure } from "@/lib/acces";
-import { useAuth, ROLE_LABELS, Role, ROLES_INSCRIPTION, ROLE_DESCRIPTIONS, LONGUEUR_MIN_MOT_DE_PASSE } from "@/lib/auth";
+import { useAuth, ROLE_LABELS, Role, ROLES_INSCRIPTION, ROLE_DESCRIPTIONS, LONGUEUR_MIN_MOT_DE_PASSE, type EtapeOTP } from "@/lib/auth";
 
 
 export default function ConnexionPage() {
@@ -26,11 +26,18 @@ function Formulaire() {
   const suite = suiteSure(params.get("suite"));
   const [erreur, setErreur] = useState("");
   const [envoi, setEnvoi] = useState(false);
+  // Deuxième temps de la connexion : code reçu par WhatsApp.
+  const [otp, setOtp] = useState<EtapeOTP | null>(null);
+
+  // Retour à la page demandée avant la connexion ; sinon vérification d'identité (nouveau compte) ou tableau de bord.
+  // Chargement complet plutôt que navigation interne : le navigateur garde en mémoire le renvoi vers la connexion
+  // reçu avant d'être identifié, et y retomberait.
+  const entrer = () => window.location.assign(suite ?? (mode === "inscription" ? "/kyc" : "/tableau-de-bord"));
 
   async function soumettre(e: React.FormEvent) {
     e.preventDefault();
     if (envoi) return;
-    if (!email.trim() || !motDePasse || (mode === "inscription" && !nom.trim())) {
+    if (!email.trim() || !motDePasse || (mode === "inscription" && (!nom.trim() || !telephone.trim()))) {
       setErreur("Merci de remplir tous les champs.");
       return;
     }
@@ -45,14 +52,27 @@ function Formulaire() {
         ? await inscription({ nom: nom.trim(), email: email.trim(), motDePasse, role, telephone: telephone.trim() || undefined })
         : await connexion(email.trim(), motDePasse);
     setEnvoi(false);
-    if (!resultat.ok) {
+    if (resultat.ok === false) {
       setErreur(resultat.erreur);
       return;
     }
-    // Retour à la page demandée avant la connexion ; sinon vérification d'identité (nouveau compte) ou tableau de bord.
-    // Chargement complet plutôt que navigation interne : le navigateur garde en mémoire le renvoi vers la connexion
-    // reçu avant d'être identifié, et y retomberait.
-    window.location.assign(suite ?? (mode === "inscription" ? "/kyc" : "/tableau-de-bord"));
+    if (resultat.ok === "otp") {
+      setOtp(resultat.otp);
+      return;
+    }
+    entrer();
+  }
+
+  if (otp) {
+    return (
+      <EtapeCode
+        otp={otp}
+        numeroModifiable={mode === "inscription"}
+        onChange={setOtp}
+        onSucces={entrer}
+        onAbandon={(message) => { setOtp(null); setMotDePasse(""); setErreur(message ?? ""); if (mode === "inscription") setMode("connexion"); }}
+      />
+    );
   }
 
   return (
@@ -113,7 +133,8 @@ function Formulaire() {
                   type="tel"
                   value={telephone}
                   onChange={(e) => setTelephone(e.target.value)}
-                  placeholder="Téléphone (optionnel)"
+                  placeholder="Numéro WhatsApp (pour recevoir vos codes)"
+                  autoComplete="tel"
                   className="w-full text-sm outline-none"
                 />
               </div>
@@ -165,6 +186,150 @@ function Formulaire() {
               </button>
             </>
           )}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+const RENVOI_S = 30;
+
+// Deuxième temps de la connexion : saisie du numéro WhatsApp (première fois) puis du code reçu.
+function EtapeCode({ otp, numeroModifiable, onChange, onSucces, onAbandon }: {
+  otp: EtapeOTP;
+  numeroModifiable: boolean;
+  onChange: (o: EtapeOTP) => void;
+  onSucces: () => void;
+  onAbandon: (message?: string) => void;
+}) {
+  const { envoyerCode, verifierCode } = useAuth();
+  const [numero, setNumero] = useState("");
+  const [code, setCode] = useState("");
+  const [changerNumero, setChangerNumero] = useState(false);
+  const [erreur, setErreur] = useState("");
+  const [info, setInfo] = useState("");
+  const [envoi, setEnvoi] = useState(false);
+  const [attente, setAttente] = useState(otp.etape === "code" ? RENVOI_S : 0);
+
+  useEffect(() => {
+    if (attente <= 0) return;
+    const t = setTimeout(() => setAttente((a) => a - 1), 1000);
+    return () => clearTimeout(t);
+  }, [attente]);
+
+  async function demanderCode(numeroSaisi?: string) {
+    if (envoi) return;
+    setErreur("");
+    setInfo("");
+    setEnvoi(true);
+    const r = await envoyerCode(otp.defi, numeroSaisi);
+    setEnvoi(false);
+    if (!r.ok) {
+      if (r.expire) return onAbandon(r.erreur);
+      return setErreur(r.erreur);
+    }
+    onChange(r.otp);
+    setCode("");
+    setChangerNumero(false);
+    setAttente(RENVOI_S);
+    if (numeroSaisi === undefined) setInfo("Un nouveau code vous a été envoyé.");
+  }
+
+  async function valider(e: React.FormEvent) {
+    e.preventDefault();
+    if (envoi) return;
+    if (!/^\d{6}$/.test(code.trim())) return setErreur("Saisissez les 6 chiffres du code.");
+    setErreur("");
+    setEnvoi(true);
+    const r = await verifierCode(otp.defi, code.trim());
+    setEnvoi(false);
+    if (r.ok === true) return onSucces();
+    if (r.ok === false) {
+      if (r.expire || /Reconnectez-vous/.test(r.erreur)) return onAbandon(r.erreur);
+      setErreur(r.erreur);
+      setCode("");
+    }
+  }
+
+  const saisieNumero = otp.etape === "numero" || changerNumero;
+
+  return (
+    <div className="max-w-md mx-auto px-4 py-16">
+      <div className="card p-8">
+        <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-[#25D366]/15 text-[#128C7E] flex items-center justify-center">
+          <MessageCircle size={24} />
+        </div>
+        <h1 className="text-2xl font-bold text-navy mb-1 text-center">Vérification WhatsApp</h1>
+
+        {saisieNumero ? (
+          <form onSubmit={(e) => { e.preventDefault(); if (numero.trim()) demanderCode(numero.trim()); else setErreur("Indiquez votre numéro WhatsApp."); }} className="flex flex-col gap-3">
+            <p className="text-gray-500 text-sm text-center mb-3">
+              Pour sécuriser votre compte, chaque connexion est confirmée par un code envoyé sur WhatsApp. Indiquez votre numéro.
+            </p>
+            <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 focus-within:border-navy">
+              <Phone size={16} className="text-gray-400 shrink-0" />
+              <input
+                type="tel"
+                value={numero}
+                onChange={(e) => setNumero(e.target.value)}
+                placeholder="77 123 45 67 ou +33 6 12 34 56 78"
+                autoComplete="tel"
+                autoFocus
+                className="w-full text-sm outline-none"
+              />
+            </div>
+            {erreur && <p role="alert" className="text-red text-xs">{erreur}</p>}
+            <button type="submit" disabled={envoi} className="btn-navy w-full mt-2 disabled:opacity-60">
+              {envoi ? "Envoi…" : "Recevoir le code sur WhatsApp"}
+            </button>
+            {changerNumero && (
+              <button type="button" onClick={() => { setChangerNumero(false); setErreur(""); }} className="text-sm text-blue font-medium hover:underline">
+                Garder le numéro précédent
+              </button>
+            )}
+          </form>
+        ) : (
+          <form onSubmit={valider} className="flex flex-col gap-3">
+            <p className="text-gray-500 text-sm text-center mb-3">
+              Saisissez le code à 6 chiffres envoyé sur WhatsApp au <span className="font-semibold text-gray-700 whitespace-nowrap">{otp.numero}</span>.
+            </p>
+            {otp.codeDemo && (
+              <p className="text-sm bg-gold/10 border border-gold/30 text-navy-dark rounded-lg px-3 py-2.5 text-center" role="status">
+                Mode démo, WhatsApp n&apos;est pas configuré : votre code est <span className="font-mono font-bold tracking-widest">{otp.codeDemo}</span>
+              </p>
+            )}
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              aria-label="Code reçu sur WhatsApp"
+              placeholder="••••••"
+              autoFocus
+              className="border border-gray-200 rounded-lg px-3 py-3 text-center text-2xl font-mono tracking-[0.5em] outline-none focus:border-navy"
+            />
+            {erreur && <p role="alert" className="text-red text-xs">{erreur}</p>}
+            {info && !erreur && <p role="status" className="text-green-700 text-xs">{info}</p>}
+            <button type="submit" disabled={envoi || code.length !== 6} className="btn-navy w-full mt-2 disabled:opacity-60">
+              {envoi ? "Vérification…" : "Valider"}
+            </button>
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm">
+              <button type="button" disabled={attente > 0 || envoi} onClick={() => demanderCode()} className="text-blue font-medium hover:underline disabled:text-gray-400 disabled:no-underline">
+                {attente > 0 ? `Renvoyer le code (${attente} s)` : "Renvoyer le code"}
+              </button>
+              {numeroModifiable && (
+                <button type="button" onClick={() => { setChangerNumero(true); setErreur(""); setInfo(""); }} className="text-blue font-medium hover:underline">
+                  Changer de numéro
+                </button>
+              )}
+            </div>
+          </form>
+        )}
+
+        <p className="text-sm text-gray-500 text-center mt-5">
+          <button type="button" onClick={() => onAbandon()} className="text-blue font-medium hover:underline">
+            Annuler et revenir à la connexion
+          </button>
         </p>
       </div>
     </div>

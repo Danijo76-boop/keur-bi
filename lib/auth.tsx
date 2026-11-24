@@ -60,7 +60,13 @@ export const estCoteVendeur = (role: Role | undefined) => famille(role) === "ven
 export const estNotariat = (role: Role | undefined) => famille(role) === "notariat";
 export const estPlateforme = (role: Role | undefined) => famille(role) === "plateforme";
 
-export type ResultatAuth = { ok: true } | { ok: false; erreur: string };
+// Connexion en deux temps : après le mot de passe, le serveur demande un code reçu par WhatsApp.
+// « numero » : le compte n'a pas encore de numéro WhatsApp, il faut le saisir. « code » : un code a été envoyé.
+export type EtapeOTP =
+  | { etape: "numero"; defi: string }
+  | { etape: "code"; defi: string; numero: string; codeDemo?: string };
+export type ResultatAuth = { ok: true } | { ok: false; erreur: string } | { ok: "otp"; otp: EtapeOTP };
+export type ResultatEnvoiCode = { ok: true; otp: EtapeOTP } | { ok: false; erreur: string; expire?: boolean };
 export type DonneesInscription = { nom: string; email: string; motDePasse: string; role: Role; telephone?: string };
 
 type AuthContextValue = {
@@ -68,6 +74,8 @@ type AuthContextValue = {
   pret: boolean;
   connexion: (email: string, motDePasse: string) => Promise<ResultatAuth>;
   inscription: (d: DonneesInscription) => Promise<ResultatAuth>;
+  envoyerCode: (defi: string, numero?: string) => Promise<ResultatEnvoiCode>;
+  verifierCode: (defi: string, code: string) => Promise<ResultatAuth & { expire?: boolean }>;
   majProfil: (patch: { nom?: string; telephone?: string; ville?: string }) => Promise<ResultatAuth>;
   logout: () => Promise<void>;
 };
@@ -77,12 +85,12 @@ type AuthContextValue = {
 const STORAGE_KEY = "keurbi_user";
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-async function appeler(url: string, methode: "POST" | "PATCH", corps?: unknown): Promise<{ ok: boolean; donnees: { utilisateur?: User; erreur?: string } }> {
+async function appeler(url: string, methode: "POST" | "PATCH", corps?: unknown): Promise<{ ok: boolean; statut?: number; donnees: { utilisateur?: User; erreur?: string; otp?: EtapeOTP } }> {
   try {
     const r = await fetch(url, { method: methode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(corps ?? {}) });
     const donnees = await r.json().catch(() => ({}));
     if (r.status >= 500) donnees.erreur = avecReference(donnees.erreur ?? "Le service est momentanément indisponible.", r);
-    return { ok: r.ok, donnees };
+    return { ok: r.ok, statut: r.status, donnees };
   } catch {
     return { ok: false, donnees: { erreur: "Connexion au serveur impossible. Vérifiez votre accès Internet." } };
   }
@@ -119,15 +127,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setPret(true));
   }, []);
 
-  async function ouvrir(url: string, corps: unknown): Promise<ResultatAuth> {
-    const { ok, donnees } = await appeler(url, "POST", corps);
-    if (!ok || !donnees.utilisateur) return { ok: false, erreur: donnees.erreur ?? "Une erreur est survenue. Réessayez." };
+  async function ouvrir(url: string, corps: unknown): Promise<ResultatAuth & { expire?: boolean }> {
+    const { ok, statut, donnees } = await appeler(url, "POST", corps);
+    if (ok && donnees.otp) return { ok: "otp", otp: donnees.otp };
+    if (!ok || !donnees.utilisateur) return { ok: false, erreur: donnees.erreur ?? "Une erreur est survenue. Réessayez.", expire: statut === 410 };
     appliquer(donnees.utilisateur);
     return { ok: true };
   }
 
   const connexion = (email: string, motDePasse: string) => ouvrir("/api/auth/connexion", { email, motDePasse });
   const inscription = (d: DonneesInscription) => ouvrir("/api/auth/inscription", d);
+  const verifierCode = (defi: string, code: string) => ouvrir("/api/auth/otp/verifier", { defi, code });
+
+  async function envoyerCode(defi: string, numero?: string): Promise<ResultatEnvoiCode> {
+    const { ok, statut, donnees } = await appeler("/api/auth/otp/envoyer", "POST", { defi, numero });
+    if (ok && donnees.otp) return { ok: true, otp: donnees.otp };
+    return { ok: false, erreur: donnees.erreur ?? "Une erreur est survenue. Réessayez.", expire: statut === 410 };
+  }
 
   async function majProfil(patch: { nom?: string; telephone?: string; ville?: string }): Promise<ResultatAuth> {
     const { ok, donnees } = await appeler("/api/auth/moi", "PATCH", patch);
@@ -141,7 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     appliquer(null);
   }
 
-  return <AuthContext.Provider value={{ user, pret, connexion, inscription, majProfil, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, pret, connexion, inscription, envoyerCode, verifierCode, majProfil, logout }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

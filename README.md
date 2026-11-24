@@ -65,6 +65,10 @@ Le code serveur vit dans `lib/serveur/` et ne peut pas être importé par les pa
 - La session est un cookie illisible par JavaScript ; la base n'en garde que l'empreinte. Elle dure 30 jours.
 - À l'inscription, on peut choisir acheteur, vendeur, agence, agent, notaire ou clerc. Les rôles modérateur et admin sont attribués par un administrateur.
 - Après 8 mots de passe erronés sur un compte, la connexion à ce compte est bloquée 15 minutes.
+- **Double vérification par WhatsApp** : après le mot de passe, un code à 6 chiffres est envoyé sur WhatsApp ; la session ne s'ouvre qu'une fois le code saisi. À l'inscription, le numéro WhatsApp est obligatoire et vérifié de la même façon. Un compte sans numéro (comptes anciens) en indique un à sa prochaine connexion. Code `lib/serveur/otp.ts` et `lib/serveur/whatsapp.ts`.
+  - Un code vaut 10 minutes, 5 essais au maximum ; un nouveau code peut être demandé toutes les 30 secondes, et 6 codes par heure au plus vers un même numéro.
+  - Une fois vérifié, le numéro ne peut pas être changé avec le seul mot de passe : en cas de téléphone perdu, un administrateur l'efface (Administration → Utilisateurs → « Réinitialiser le numéro WhatsApp ») et la personne en indique un nouveau à sa connexion suivante.
+  - Envoi par l'API WhatsApp de Meta (voir « Déploiement sur Vercel »). Sans elle, en local, le code s'affiche à l'écran (mode démo) ; en ligne, la double vérification est désactivée et une erreur est notée dans le journal technique. `OTP_WHATSAPP=off` la désactive partout.
 - Suspendre un compte ou changer son rôle depuis l'administration ferme ses sessions ouvertes.
 - Les pages de l'espace connecté et de l'administration renvoient vers la connexion sans session (`middleware.ts`).
 
@@ -104,6 +108,8 @@ Variables à définir dans le projet Vercel (Settings → Environment Variables)
 | `DATABASE_URL_UNPOOLED` | Adresse directe, utilisée pour les migrations (fournie aussi par Neon ; sinon `DATABASE_URL` sert) |
 | `ADMIN_EMAIL`, `ADMIN_MOT_DE_PASSE` | Premier compte administrateur |
 | `ANTHROPIC_API_KEY` | Vérification du contenu des photos envoyées (clé à créer sur console.anthropic.com) |
+| `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` | Envoi des codes de connexion par WhatsApp : jeton d'accès permanent et identifiant du numéro expéditeur (Meta Business → WhatsApp Manager) |
+| `WHATSAPP_MODELE`, `WHATSAPP_LANGUE` | Facultatif : nom et langue du modèle de message « Authentification » approuvé par Meta (par défaut `code_connexion`, `fr`) |
 | `SEED_AU_DEPLOIEMENT` | `1` au premier déploiement pour charger les données d'exemple et créer l'administrateur ; à retirer ensuite |
 
 Ne définissez pas `MOT_DE_PASSE_DEMO` en ligne : sans lui, les comptes d'exemple existent mais personne ne peut s'y connecter.
