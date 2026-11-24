@@ -184,10 +184,7 @@ export default function Navbar() {
   }, [open]);
 
   return (
-    <header
-      ref={barre}
-      className="sticky top-0 z-[60] bg-navy-dark/95 backdrop-blur-md border-b border-white/10 shadow-[0_8px_24px_-12px_rgba(27,42,74,0.6)] print:hidden"
-    >
+    <header ref={barre} className="sticky top-0 z-[60] bg-navy-dark/95 backdrop-blur-md border-b border-white/10 shadow-eleve print:hidden">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">

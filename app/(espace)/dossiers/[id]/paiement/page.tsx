@@ -1,4 +1,5 @@
 "use client";
+import { Landmark, Smartphone, Banknote, type LucideIcon } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -10,23 +11,24 @@ import { useStocke } from "@/lib/stockage";
 import { declarerPaiement, LABELS_MOYEN, lireDossiers, montantAcompte, MoyenPaiement, pourcentageAcompte, prixRetenu, referenceDossier } from "@/lib/dossiers";
 import BandeauDemo from "@/components/BandeauDemo";
 import Protege from "@/components/Protege";
+import { IconeStatut } from "@/components/Statut";
 
-const MOYENS: { id: MoyenPaiement; icone: string; detail: string; instructions: string }[] = [
+const MOYENS: { id: MoyenPaiement; icone: LucideIcon; detail: string; instructions: string }[] = [
   {
     id: "virement",
-    icone: "🏦",
+    icone: Landmark,
     detail: "IBAN · Swift",
     instructions: "Le notaire vous communique les coordonnées du compte séquestre. Effectuez le virement en indiquant la référence ci-dessous dans le libellé.",
   },
   {
     id: "mobile_money",
-    icone: "📱",
+    icone: Smartphone,
     detail: "Mobile money",
     instructions: "Le notaire vous indique le numéro marchand de l'étude. Indiquez la référence ci-dessous dans le motif du transfert.",
   },
   {
     id: "cheque",
-    icone: "💵",
+    icone: Banknote,
     detail: "Remise au notaire",
     instructions: "Remettez le chèque certifié à l'étude, à l'ordre du compte séquestre, avec la référence ci-dessous.",
   },
@@ -64,7 +66,7 @@ export default function PaiementPage() {
             <Link href={`/dossiers/${id}`} className="text-sm text-blue hover:underline mb-4 inline-block">
               ← Retour au dossier
             </Link>
-            <h1 className="text-2xl font-bold text-navy mb-1">Paiement séquestre · Dossier #{referenceDossier(dossier)}</h1>
+            <h1 className="titre-page mb-1">Paiement séquestre · Dossier #{referenceDossier(dossier)}</h1>
             <p className="text-gray-500 text-sm mb-4">Les fonds restent bloqués chez le notaire jusqu&apos;à la signature de l&apos;acte.</p>
             <BandeauDemo>
               Démonstration : aucun paiement n&apos;est traité par KEUR BI et aucun argent ne circule ici. Vous déclarez un versement, le notaire le confirme.
@@ -81,7 +83,10 @@ export default function PaiementPage() {
               </div>
             ) : envoye || montant === 0 ? (
               <div className="card p-8 text-center">
-                <p className="text-green font-semibold mb-1">✅ {montant === 0 && !envoye ? "Tous les versements sont déclarés" : "Versement déclaré"}</p>
+                <p className="text-green font-semibold mb-1">
+                  <IconeStatut type="ok" />
+                  {montant === 0 && !envoye ? "Tous les versements sont déclarés" : "Versement déclaré"}
+                </p>
                 <p className="text-sm text-gray-500 mb-4">{notaire.nom} confirmera la réception des fonds sur le dossier.</p>
                 <Link href={`/dossiers/${id}`} className="btn-navy text-sm inline-block">
                   Retour au dossier
@@ -126,7 +131,7 @@ export default function PaiementPage() {
                           onClick={() => setMoyen(m.id)}
                           className={`border rounded-lg p-3 text-left ${moyen === m.id ? "border-navy bg-navy/5" : "border-gray-200"}`}
                         >
-                          <div className="text-xl">{m.icone}</div>
+                          <m.icone size={20} className="text-navy mb-1" aria-hidden />
                           <div className="text-sm font-semibold text-gray-900">{LABELS_MOYEN[m.id]}</div>
                           <div className="text-xs text-gray-400">{m.detail}</div>
                         </button>

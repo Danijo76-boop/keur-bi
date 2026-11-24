@@ -30,7 +30,7 @@ const ETAPES = [
   {
     titre: "Enregistrement à la DGID",
     desc: "Le notaire dépose l'acte à la Direction Générale des Impôts et des Domaines dans les 3 mois et règle les droits d'enregistrement. KEUR BI envoie des alertes J-30 et J-7.",
-    tag: "⚠ Délai 3 mois",
+    tag: "Délai 3 mois",
   },
   {
     titre: "Mutation du Titre Foncier",
@@ -40,7 +40,7 @@ const ETAPES = [
   {
     titre: "Réception du nouveau TF",
     desc: "Vous recevez le Titre Foncier mis à jour à votre nom. Vous êtes officiellement propriétaire et le dossier est clôturé sur KEUR BI.",
-    tag: "🎉",
+    tag: "Fin du parcours",
   },
 ];
 
@@ -70,7 +70,7 @@ export default function GuidesPage() {
       <section className="text-white" style={{ background: "linear-gradient(135deg, #1B2A4A 0%, #1B4F72 60%, #2E86AB 100%)" }}>
         <div className="max-w-5xl mx-auto px-4 py-12">
           <span className="text-xs font-bold text-gold tracking-wide">GUIDE COMPLET</span>
-          <h1 className="text-3xl md:text-4xl font-extrabold mt-2 mb-3">Acheter un terrain au Sénégal en toute sécurité</h1>
+          <h1 className="titre-page text-white md:text-4xl mt-2 mb-3">Acheter un terrain au Sénégal en toute sécurité</h1>
           <p className="text-white/70 max-w-2xl">De la recherche à la mutation du Titre Foncier, toutes les étapes expliquées.</p>
           <p className="text-white/50 text-sm mt-3">8 étapes · 12 min de lecture</p>
         </div>
@@ -103,7 +103,7 @@ export default function GuidesPage() {
 
         <aside className="flex flex-col gap-4">
           <div className="card p-5">
-            <h2 className="font-bold text-gray-900 mb-3">📚 Lexique foncier</h2>
+            <h2 className="font-bold text-gray-900 mb-3">Lexique foncier</h2>
             <dl className="flex flex-col gap-3 text-sm">
               {LEXIQUE.map((l) => (
                 <div key={l.terme}>

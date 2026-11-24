@@ -1,6 +1,23 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Shield, FileCheck, TrendingUp, ArrowRight, CheckCircle, MapPin, Home, Wallet, Calculator, Landmark, BadgeCheck, Globe2 } from "lucide-react";
+import {
+  Shield,
+  FileCheck,
+  TrendingUp,
+  ArrowRight,
+  CheckCircle,
+  MapPin,
+  Home,
+  Wallet,
+  Calculator,
+  Landmark,
+  BadgeCheck,
+  Globe2,
+  CheckCircle2,
+  Clock,
+  Circle,
+  XCircle,
+} from "lucide-react";
 import { BIENS, REGIONS, formatPrix } from "@/lib/mock-data";
 import { ChiffresCles, NbAnnoncesRegion } from "@/components/ChiffresAccueil";
 import PropertyCard from "@/components/PropertyCard";
@@ -99,7 +116,7 @@ export default async function HomePage() {
                   </div>
                 </div>
               </Inclinaison>
-              <div className="flotte absolute -left-8 top-10 bg-white text-gray-800 rounded-2xl px-4 py-3 shadow-[0_20px_40px_-16px_rgba(0,0,0,0.45)] flex items-center gap-3">
+              <div className="flotte absolute -left-8 top-10 bg-white text-gray-800 rounded-2xl px-4 py-3 shadow-flottant flex items-center gap-3">
                 <span className="w-10 h-10 rounded-xl bg-green-light/15 flex items-center justify-center">
                   <Shield size={20} className="text-green-light" />
                 </span>
@@ -108,7 +125,7 @@ export default async function HomePage() {
                   <span className="block text-xs text-gray-500">Contrôlé par un notaire</span>
                 </span>
               </div>
-              <div className="flotte-decale absolute -right-4 top-1/2 bg-white text-gray-800 rounded-2xl px-4 py-3 shadow-[0_20px_40px_-16px_rgba(0,0,0,0.45)] flex items-center gap-3">
+              <div className="flotte-decale absolute -right-4 top-1/2 bg-white text-gray-800 rounded-2xl px-4 py-3 shadow-flottant flex items-center gap-3">
                 <span className="w-10 h-10 rounded-xl bg-gold/15 flex items-center justify-center">
                   <FileCheck size={20} className="text-gold" />
                 </span>
@@ -306,13 +323,17 @@ export default async function HomePage() {
           </div>
           <GrilleRevelee as="ul" className="grid sm:grid-cols-2 gap-3" pas={120}>
             {[
-              { icone: "✅", titre: "TF Vérifié", desc: "Titre authentifié, aucun litige ni hypothèque" },
-              { icone: "⏳", titre: "En vérification", desc: "Dossier soumis, réponse sous 3 à 7 jours ouvrés" },
-              { icone: "○", titre: "Non vérifié", desc: "Document non encore soumis : renseignez-vous avant toute offre" },
-              { icone: "❌", titre: "Invalide", desc: "Anomalie détectée : hypothèque, litige ou non-concordance" },
+              { icone: <CheckCircle2 size={16} className="text-green-light" />, titre: "TF Vérifié", desc: "Titre authentifié, aucun litige ni hypothèque" },
+              { icone: <Clock size={16} className="text-gold" />, titre: "En vérification", desc: "Dossier soumis, réponse sous 3 à 7 jours ouvrés" },
+              {
+                icone: <Circle size={16} className="text-white/60" />,
+                titre: "Non vérifié",
+                desc: "Document non encore soumis : renseignez-vous avant toute offre",
+              },
+              { icone: <XCircle size={16} className="text-[#F08A80]" />, titre: "Invalide", desc: "Anomalie détectée : hypothèque, litige ou non-concordance" },
             ].map((b) => (
               <li key={b.titre} className="bg-white/[0.06] border border-white/10 rounded-2xl p-5 backdrop-blur-sm hover:bg-white/10 transition-colors">
-                <div className="font-semibold text-sm mb-1">
+                <div className="font-semibold text-sm mb-1 flex items-center gap-1.5">
                   {b.icone} {b.titre}
                 </div>
                 <p className="text-white/60 text-xs leading-relaxed">{b.desc}</p>
@@ -333,7 +354,7 @@ export default async function HomePage() {
           <GrilleRevelee className="grid grid-cols-2 md:grid-cols-4 gap-5" pas={100}>
             {REGIONS.map((r) => (
               <Link key={r.nom} href={`/annonces?region=${r.nom}`}>
-                <div className="relative h-56 rounded-2xl overflow-hidden group cursor-pointer card-hover bg-gradient-to-br from-navy to-navy-dark shadow-[0_8px_24px_-12px_rgba(27,42,74,0.3)]">
+                <div className="relative h-56 rounded-2xl overflow-hidden group cursor-pointer card-hover bg-gradient-to-br from-navy to-navy-dark shadow-carte">
                   <Image
                     src={r.img}
                     alt={r.nom}

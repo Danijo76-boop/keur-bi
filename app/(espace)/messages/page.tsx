@@ -53,7 +53,7 @@ function Messagerie({ user }: { user: User }) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-navy mb-4">Messagerie</h1>
+      <h1 className="titre-page mb-4">Messagerie</h1>
       <BandeauDemo>
         Démo : les messages restent dans ce navigateur. Changez de rôle pour répondre et les pièces jointes ne transmettent que le nom du fichier.
       </BandeauDemo>
@@ -147,7 +147,7 @@ function Messagerie({ user }: { user: User }) {
                   <div key={m.id} className={`max-w-[80%] ${moi ? "self-end" : "self-start"}`}>
                     <div className={`rounded-xl px-3 py-2 text-sm break-words ${moi ? "bg-navy text-white" : "bg-white text-gray-800 shadow-sm"}`}>
                       {m.texte}
-                      {m.fichier && <div className={`text-xs mt-1 ${moi ? "text-white/70" : "text-gray-500"}`}>📎 {m.fichier}</div>}
+                      {m.fichier && <div className={`text-xs mt-1 ${moi ? "text-white/70" : "text-gray-500"}`}>Pièce jointe : {m.fichier}</div>}
                     </div>
                     <div className={`text-[11px] text-gray-400 mt-0.5 ${moi ? "text-right" : ""}`}>
                       {!moi && `${m.auteurNom} · `}
@@ -214,7 +214,7 @@ function Messagerie({ user }: { user: User }) {
               <div className="flex flex-col gap-1.5">
                 {dossierLie && (
                   <Link href={`/dossiers/${dossierLie.id}`} className="text-blue hover:underline">
-                    📁 Ouvrir le dossier
+                    Ouvrir le dossier
                   </Link>
                 )}
                 {dossierLie && dossierLie.statut === "en_signature" && (
@@ -224,16 +224,16 @@ function Messagerie({ user }: { user: User }) {
                 )}
                 {dossierLie && user.role === "acheteur" && dossierLie.offres.some((o) => o.statut === "acceptee") && (
                   <Link href={`/dossiers/${dossierLie.id}/paiement`} className="text-blue hover:underline">
-                    💳 Paiement séquestre
+                    Paiement séquestre
                   </Link>
                 )}
                 {notaireLie && (
                   <Link href={`/notaires/${notaireLie.slug}`} className="text-blue hover:underline">
-                    📅 Prendre rendez-vous
+                    Prendre rendez-vous
                   </Link>
                 )}
                 <Link href="/calendrier" className="text-blue hover:underline">
-                  🗓️ Voir le calendrier
+                  Voir le calendrier
                 </Link>
               </div>
             </div>
@@ -243,7 +243,7 @@ function Messagerie({ user }: { user: User }) {
               <ul className="flex flex-col gap-1">
                 {fichiers.map((m) => (
                   <li key={m.id} className="text-xs text-gray-600 break-all">
-                    📄 {m.fichier}
+                    {m.fichier}
                   </li>
                 ))}
               </ul>

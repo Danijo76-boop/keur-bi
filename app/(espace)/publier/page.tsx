@@ -15,6 +15,7 @@ import { QUOTA_ANNONCES, QUOTA_PARTICULIER, trouverUtilisateur } from "@/lib/uti
 import BandeauDemo from "@/components/BandeauDemo";
 import PositionMarche from "@/components/PositionMarche";
 import Protege from "@/components/Protege";
+import { IconeStatut } from "@/components/Statut";
 
 const champ = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mt-1 font-normal";
 const libelle = "text-sm font-semibold text-gray-700";
@@ -184,7 +185,7 @@ function Assistant({ user }: { user: User }) {
   if (!autorise) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-navy mb-2">Publier une annonce</h1>
+        <h1 className="titre-page mb-2">Publier une annonce</h1>
         <p className="text-gray-500 text-sm">La publication est réservée aux vendeurs : particulier, agence ou agent.</p>
       </div>
     );
@@ -193,7 +194,7 @@ function Assistant({ user }: { user: User }) {
   if (!publiee && estCoteVendeur(user.role) && nbPubliees >= quota) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-navy mb-2">Quota d&apos;annonces atteint</h1>
+        <h1 className="titre-page mb-2">Quota d&apos;annonces atteint</h1>
         <p className="text-gray-500 text-sm mb-4">
           {user.role === "vendeur"
             ? `Un compte particulier permet ${quota} annonces actives. Pour en publier davantage, passez à un compte Agence.`
@@ -210,7 +211,10 @@ function Assistant({ user }: { user: User }) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16">
         <div className="card p-8 text-center">
-          <p className="text-green font-semibold text-lg mb-1">✅ Annonce enregistrée</p>
+          <p className="text-green font-semibold text-lg mb-1">
+            <IconeStatut type="ok" />
+            Annonce enregistrée
+          </p>
           <p className="text-sm text-gray-500 mb-5">
             Référence {publiee.reference}.{" "}
             {p.flags.cadastre ? "Elle affiche le badge « En vérification » jusqu'à la décision du notaire." : "Elle est en ligne et visible des membres."}
@@ -219,7 +223,7 @@ function Assistant({ user }: { user: User }) {
             <Link href={`/mes-annonces/${publiee.id}`} className="btn-navy text-sm">
               Gérer l&apos;annonce
             </Link>
-            <Link href={`/annonces/${publiee.id}`} className="border border-gray-200 rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-gray-50">
+            <Link href={`/annonces/${publiee.id}`} className="border border-gray-200 rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-gray-50">
               Voir l&apos;annonce
             </Link>
           </div>
@@ -238,7 +242,7 @@ function Assistant({ user }: { user: User }) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-navy mb-4">Publier une annonce</h1>
+      <h1 className="titre-page mb-4">Publier une annonce</h1>
       <ol className="flex gap-2 flex-wrap mb-6">
         {ETAPES.map((e, i) => (
           <li
@@ -499,7 +503,7 @@ function Assistant({ user }: { user: User }) {
               ) : (
                 "Photos à ajouter"
               )}
-              <span className="absolute top-2 left-2 bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">⏳ En vérif.</span>
+              <span className="absolute top-2 left-2 bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">En vérification</span>
             </div>
             <div className="p-4">
               <div className="font-semibold text-sm text-gray-900">{titre || "Titre de l'annonce"}</div>

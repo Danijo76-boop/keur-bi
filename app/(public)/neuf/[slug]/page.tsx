@@ -48,7 +48,7 @@ export default async function ProgrammePage(ctx: { params: Promise<{ slug: strin
 
           <div className="mb-6">
             <div className="flex items-start justify-between gap-4 mb-2">
-              <h1 className="text-2xl font-bold text-gray-900">{p.nom}</h1>
+              <h1 className="titre-page">{p.nom}</h1>
               {prix && (
                 <div className="text-right shrink-0">
                   <div className="text-xs text-gray-400">À partir de</div>

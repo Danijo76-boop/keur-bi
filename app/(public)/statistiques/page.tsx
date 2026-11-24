@@ -6,9 +6,10 @@ import { mediane } from "@/lib/marche";
 import { Bien, formatFCFA, formatPrix, enVente } from "@/lib/mock-data";
 import { useStocke } from "@/lib/stockage";
 import { lireDossiers } from "@/lib/dossiers";
-import { ICONES_TF, LABELS_TF, lireDemandesTF, lireOverridesTF, statutTF, StatutTF } from "@/lib/tf";
+import { LABELS_TF, lireDemandesTF, lireOverridesTF, statutTF, StatutTF } from "@/lib/tf";
 import BarresHorizontales from "@/components/BarresHorizontales";
 import BandeauDemo from "@/components/BandeauDemo";
+import { IconeTF } from "@/components/Statut";
 
 const TYPES: { id: Bien["type"]; label: string }[] = [
   { id: "terrain", label: "Terrain" },
@@ -77,7 +78,7 @@ export default function StatistiquesPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-navy">Statistiques du marché</h1>
+      <h1 className="titre-page">Statistiques du marché</h1>
       <p className="text-gray-500 text-sm mb-4">Calculées en direct à partir des annonces de la plateforme</p>
       <BandeauDemo>Les chiffres portent sur le jeu d&apos;annonces de démonstration : ils ne décrivent pas le marché réel.</BandeauDemo>
 
@@ -134,7 +135,7 @@ export default function StatistiquesPage() {
               <li key={x.statut} className="flex items-center gap-2">
                 <span className={`w-3 h-3 rounded-sm shrink-0 ${COULEURS_TF[x.statut]}`} />
                 <span className="text-gray-600">
-                  {ICONES_TF[x.statut]} {LABELS_TF[x.statut]}
+                  <IconeTF statut={x.statut} /> {LABELS_TF[x.statut]}
                 </span>
                 <span className="font-semibold text-gray-900 ml-auto">{x.nb}</span>
               </li>
@@ -145,7 +146,7 @@ export default function StatistiquesPage() {
 
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="card p-5 overflow-x-auto">
-          <h2 className="font-bold text-gray-900 mb-3">🏆 Top annonces par vues</h2>
+          <h2 className="font-bold text-gray-900 mb-3">Annonces les plus vues</h2>
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs text-gray-400">
@@ -181,7 +182,7 @@ export default function StatistiquesPage() {
         </div>
 
         <div className="card p-5">
-          <h2 className="font-bold text-gray-900 mb-1">📈 Évolution du prix médian, Dakar centre</h2>
+          <h2 className="font-bold text-gray-900 mb-1">Évolution du prix médian, Dakar centre</h2>
           <p className="text-xs text-gray-400 mb-3">Série illustrative issue de la maquette, en FCFA / m²</p>
           <BarresHorizontales donnees={EVOLUTION_DAKAR.map((e) => ({ label: e.mois, valeur: e.prix }))} format={(v) => formatFCFA(v).replace(" FCFA", "")} />
         </div>

@@ -28,7 +28,7 @@ export default function Newsletter() {
           onChange={(e) => setEmail(e.target.value)}
           className="flex-1 min-w-0 !bg-transparent !shadow-none text-white text-sm outline-none placeholder:text-white/40"
         />
-        <button type="submit" className="bg-gold text-navy-dark text-sm font-semibold rounded-lg px-3 py-1.5 hover:bg-gold-light transition-colors shrink-0">
+        <button type="submit" className="bg-gold text-navy-dark text-sm font-semibold rounded-xl px-3 py-1.5 hover:bg-gold-light transition-colors shrink-0">
           S&apos;inscrire
         </button>
       </div>

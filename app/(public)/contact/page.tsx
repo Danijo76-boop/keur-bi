@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { ajouterMessage } from "@/lib/messages";
 import BandeauDemo from "@/components/BandeauDemo";
+import { IconeStatut } from "@/components/Statut";
 
 const champ = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mt-1 font-normal";
 
@@ -24,11 +25,14 @@ function Formulaire() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-navy mb-1">Contact</h1>
+      <h1 className="titre-page mb-1">Contact</h1>
       <p className="text-gray-500 text-sm mb-4">Une question sur la plateforme, un abonnement ou un dossier ?</p>
       <BandeauDemo>Démo : le message reste dans ce navigateur, il n&apos;est envoyé à personne.</BandeauDemo>
       {envoye ? (
-        <div className="card p-8 text-center text-green font-semibold">✅ Message enregistré</div>
+        <div className="card p-8 text-center text-green font-semibold">
+          <IconeStatut type="ok" />
+          Message enregistré
+        </div>
       ) : (
         <form onSubmit={envoyer} className="card p-6 flex flex-col gap-3">
           <label className="text-sm font-semibold text-gray-700">

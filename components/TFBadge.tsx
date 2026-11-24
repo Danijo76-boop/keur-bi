@@ -1,7 +1,8 @@
 "use client";
 import { CheckCircle } from "lucide-react";
 import { Bien } from "@/lib/mock-data";
-import { ICONES_TF, LABELS_TF, useVerificationTF } from "@/lib/tf";
+import { LABELS_TF, useVerificationTF } from "@/lib/tf";
+import { IconeTF } from "@/components/Statut";
 
 const COULEURS = {
   en_verification: "bg-gold text-navy-dark",
@@ -30,7 +31,8 @@ export default function TFBadge({
   }
   return (
     <span className={`${COULEURS[statut]} text-xs font-semibold px-2 py-0.5 rounded-full`}>
-      {ICONES_TF[statut]} {LABELS_TF[statut]}
+      <IconeTF statut={statut} herite taille={13} />
+      {LABELS_TF[statut]}
     </span>
   );
 }

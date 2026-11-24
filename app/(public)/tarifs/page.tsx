@@ -2,7 +2,7 @@
 import { popup } from "@/lib/popup";
 import { useState } from "react";
 import Link from "next/link";
-import { Check, Minus } from "lucide-react";
+import { Check, Minus, Star, Zap, FileText, Camera } from "lucide-react";
 import { formatFCFA } from "@/lib/mock-data";
 import { useParametres } from "@/lib/parametres";
 import { SERVICES } from "@/lib/revenus";
@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useStocke } from "@/lib/stockage";
 import { majUtilisateur, PlanId, trouverUtilisateur } from "@/lib/utilisateurs";
 import BandeauDemo from "@/components/BandeauDemo";
+import { IconeStatut } from "@/components/Statut";
 
 type Plan = {
   id: PlanId;
@@ -155,7 +156,12 @@ function CartePlan({ plan, annuel }: { plan: Plan; annuel: boolean }) {
 
   return (
     <div className={`card p-6 flex flex-col ${plan.populaire ? "ring-2 ring-gold" : ""}`}>
-      {plan.populaire && <span className="self-start bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full mb-2">⭐ Le plus choisi</span>}
+      {plan.populaire && (
+        <span className="self-start bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full mb-2">
+          <IconeStatut type="vedette" taille={12} />
+          Le plus choisi
+        </span>
+      )}
       <h3 className="font-bold text-gray-900 text-lg">{plan.nom}</h3>
       <div className="text-2xl font-extrabold text-navy my-1">
         {formatFCFA(prix)}
@@ -204,7 +210,7 @@ export default function TarifsPage() {
   ];
   const services = [
     {
-      icone: "⭐",
+      icone: Star,
       nom: "Boost annonce",
       desc: "Badge « En vedette » pendant 30 jours",
       prix: `${formatFCFA(p.prixBoost)} / 30 j`,
@@ -212,7 +218,7 @@ export default function TarifsPage() {
       lien: "/tableau-de-bord",
     },
     {
-      icone: "⚡",
+      icone: Zap,
       nom: "TF accéléré",
       desc: "Vérification prioritaire en 24–48h au lieu de 7 jours ouvrés",
       prix: `${formatFCFA(p.prixTFPrioritaire)} / vérif.`,
@@ -222,7 +228,7 @@ export default function TarifsPage() {
     },
     // Prix repris du catalogue des services, pour ne jamais afficher deux tarifs différents.
     ...SERVICES.filter((s) => s.id === "rapport_tf" || s.id === "photos_pro").map((s) => ({
-      icone: s.id === "rapport_tf" ? "📄" : "📸",
+      icone: s.id === "rapport_tf" ? FileText : Camera,
       nom: s.titre,
       desc: s.desc,
       prix: formatFCFA(s.prix),
@@ -234,8 +240,8 @@ export default function TarifsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-extrabold text-navy mb-2">
-          Des tarifs <span className="text-gold">transparents</span>, comme nos biens
+        <h1 className="titre-page mb-2">
+          Des tarifs <span className="text-gold-dark">transparents</span>, comme nos biens
         </h1>
         <p className="text-gray-500">Aucun frais caché. Vous savez exactement ce que vous payez avant de vous engager.</p>
         <div className="inline-flex bg-white border border-gray-200 rounded-lg p-1 mt-4" role="group" aria-label="Périodicité">
@@ -265,7 +271,7 @@ export default function TarifsPage() {
       </div>
 
       <div className="card p-6 mb-10">
-        <h2 className="font-bold text-gray-900 mb-1">📌 Commission sur vente, pour tous les plans</h2>
+        <h2 className="font-bold text-gray-900 mb-1">Commission sur vente, pour tous les plans</h2>
         <p className="text-sm text-gray-500 mb-4">Due à la signature de l&apos;acte final. Aucune commission si la vente n&apos;aboutit pas.</p>
         <div className="grid md:grid-cols-3 gap-4">
           {paliers.map((x) => (
@@ -286,7 +292,7 @@ export default function TarifsPage() {
           .filter((s) => !("cadastre" in s) || p.flags.cadastre)
           .map((s) => (
             <div key={s.nom} className="card p-5">
-              <div className="text-2xl mb-1">{s.icone}</div>
+              <s.icone size={24} className="text-navy mb-2" aria-hidden />
               <h3 className="font-bold text-sm text-gray-900">{s.nom}</h3>
               <p className="text-xs text-gray-500 mb-2">{s.desc}</p>
               <div className="text-sm font-bold text-navy mb-2">{s.prix}</div>
@@ -343,7 +349,7 @@ export default function TarifsPage() {
           </Link>
           <Link
             href="/annonces"
-            className="bg-white/10 border border-white/30 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-white/20 transition-colors"
+            className="bg-white/10 border border-white/30 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-white/20 transition-colors"
           >
             Voir les annonces
           </Link>

@@ -8,12 +8,14 @@ import { SlidersHorizontal, Map, BellPlus, Link2, ChevronDown, Columns2 } from "
 import { Bien } from "@/lib/mock-data";
 import PropertyCard from "@/components/PropertyCard";
 import EncartSponsorise from "@/components/EncartSponsorise";
-import { lireOverridesTF, lireDemandesTF, statutTF, StatutTF, LABELS_TF, ICONES_TF } from "@/lib/tf";
+import { lireOverridesTF, lireDemandesTF, statutTF, StatutTF, LABELS_TF } from "@/lib/tf";
 import { useBiens } from "@/lib/annonces";
 import { useStocke } from "@/lib/stockage";
 import { useAuth } from "@/lib/auth";
 import { useParametres } from "@/lib/parametres";
 import { creerAlerte, CriteresAlerte, resumeCriteres } from "@/lib/preferences";
+import { IconeTF } from "@/components/Statut";
+import { IconeStatut } from "@/components/Statut";
 
 // Leaflet a besoin de window : la carte n'est rendue que côté navigateur.
 const CarteLeaflet = dynamic(() => import("@/components/CarteLeaflet"), {
@@ -242,7 +244,7 @@ export default function AnnoncesContent() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-navy">Annonces immobilières</h1>
+          <h1 className="titre-page">Annonces immobilières</h1>
           <p className="text-gray-500 text-sm">{resultats.length} résultats trouvés</p>
         </div>
         <div className="flex gap-2">
@@ -254,7 +256,7 @@ export default function AnnoncesContent() {
             className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy w-48"
           />
           {flags.carte && (
-            <Link href="/carte" className="flex items-center gap-2 border border-gray-200 bg-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50">
+            <Link href="/carte" className="flex items-center gap-2 border border-gray-200 bg-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-50">
               <Map size={16} /> Carte
             </Link>
           )}
@@ -421,7 +423,7 @@ export default function AnnoncesContent() {
                   STATUTS_TF.map((s) => (
                     <label key={s} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                       <input type="checkbox" className="rounded accent-navy" checked={statutsTF.includes(s)} onChange={() => basculerStatut(s)} />
-                      {ICONES_TF[s]} {LABELS_TF[s]}
+                      <IconeTF statut={s} /> {LABELS_TF[s]}
                     </label>
                   ))}
                 <span className="text-sm font-semibold text-gray-700 mt-2">Options</span>
@@ -450,7 +452,8 @@ export default function AnnoncesContent() {
               <span className="text-sm text-gray-500">{resultats.length} annonces</span>
               {alerteCreee ? (
                 <Link href="/notifications" className="text-sm text-green font-medium hover:underline">
-                  ✅ Alerte créée, voir mes alertes
+                  <IconeStatut type="ok" />
+                  Alerte créée, voir mes alertes
                 </Link>
               ) : user ? (
                 <button onClick={enregistrerRecherche} className="flex items-center gap-1 text-sm text-blue font-medium hover:underline">

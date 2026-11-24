@@ -170,14 +170,14 @@ function Formulaire({ bien, user }: { bien: Bien; user: User }) {
             {NOTAIRES.map((n) => (
               <option key={n.slug} value={n.slug}>
                 {n.nom} · {n.ville}
-                {n.nbAvis > 0 ? ` · ⭐ ${n.note.toLocaleString("fr-FR")}` : ""}
+                {n.nbAvis > 0 ? ` · ${n.note.toLocaleString("fr-FR")}/5` : ""}
               </option>
             ))}
           </select>
         </label>
         {erreur && <p className="text-red text-xs">{erreur}</p>}
         <div className="flex justify-between gap-3 flex-wrap">
-          <Link href={`/annonces/${bien.id}`} className="border border-gray-200 rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-gray-50">
+          <Link href={`/annonces/${bien.id}`} className="border border-gray-200 rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-gray-50">
             Annuler
           </Link>
           <button type="submit" className="btn-primary text-sm">
@@ -233,7 +233,7 @@ export default function OffrePage() {
     <Protege>
       {(user) => (
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <h1 className="text-2xl font-bold text-navy mb-6">Faire une offre</h1>
+          <h1 className="titre-page mb-6">Faire une offre</h1>
           {bien ? <Formulaire bien={bien} user={user} /> : <div className="card p-8 text-center text-gray-400">Annonce introuvable.</div>}
         </div>
       )}

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Flags, lireAudit, lireParametres, Parametres, sauvegarderParametres, useParametres } from "@/lib/parametres";
 import { useStocke } from "@/lib/stockage";
+import { IconeStatut } from "@/components/Statut";
 
 type CleChamp = Exclude<keyof Parametres, "flags">;
 type Champ = { cle: CleChamp; label: string; desc: string; unite?: string; texte?: boolean };
@@ -11,7 +12,7 @@ type Section = { id: string; titre: string; champs: Champ[] };
 const SECTIONS: Section[] = [
   {
     id: "commissions",
-    titre: "💰 Commissions & tarifs",
+    titre: "Commissions et tarifs",
     champs: [
       {
         cle: "tauxCommission",
@@ -29,7 +30,7 @@ const SECTIONS: Section[] = [
   },
   {
     id: "delais",
-    titre: "📅 Délais & alertes DGID",
+    titre: "Délais et alertes DGID",
     champs: [
       {
         cle: "moisEnregistrement",
@@ -45,7 +46,7 @@ const SECTIONS: Section[] = [
   },
   {
     id: "kyc",
-    titre: "🪪 KYC & vérification d'identité",
+    titre: "Vérification d'identité (KYC)",
     champs: [
       { cle: "delaiKYC", label: "Délai de traitement KYC", desc: "Au-delà, une alerte s'affiche dans la vue d'ensemble", unite: "heures" },
       { cle: "scoreMin", label: "Score de confiance minimum, acheteur", desc: "En dessous, l'acheteur ne peut pas soumettre d'offre", unite: "/ 100" },
@@ -55,7 +56,7 @@ const SECTIONS: Section[] = [
   },
   {
     id: "offres",
-    titre: "🤝 Offres & négociation",
+    titre: "Offres et négociation",
     champs: [
       { cle: "validiteOffre", label: "Durée de validité par défaut d'une offre", desc: "Délai pour accepter, refuser ou contre-proposer", unite: "jours" },
       { cle: "acompteMin", label: "Acompte minimum", desc: "Pourcentage minimal du prix de vente", unite: "%" },
@@ -115,9 +116,14 @@ export default function ParametresPage() {
   return (
     <div>
       <div className="flex items-center justify-between gap-3 flex-wrap mb-6">
-        <h1 className="text-2xl font-bold text-navy">Paramètres plateforme</h1>
+        <h1 className="titre-page">Paramètres plateforme</h1>
         <div className="flex items-center gap-2 flex-wrap">
-          {champsModifies.length > 0 && <span className="text-sm font-semibold text-red">⚠ {champsModifies.length} champ(s) non enregistré(s)</span>}
+          {champsModifies.length > 0 && (
+            <span className="text-sm font-semibold text-red">
+              <IconeStatut type="attention" herite />
+              {champsModifies.length} champ(s) non enregistré(s)
+            </span>
+          )}
           {ok && champsModifies.length === 0 && <span className="text-sm font-semibold text-green">Enregistré</span>}
           <button
             disabled={champsModifies.length === 0}
@@ -134,7 +140,7 @@ export default function ParametresPage() {
 
       <div className="grid md:grid-cols-[13rem_1fr] gap-6 items-start">
         <nav className="card p-2 flex md:flex-col gap-1 overflow-x-auto" aria-label="Catégories">
-          {[...SECTIONS.map((s) => ({ id: s.id, titre: s.titre })), { id: "flags", titre: "🚩 Fonctionnalités" }].map((s) => (
+          {[...SECTIONS.map((s) => ({ id: s.id, titre: s.titre })), { id: "flags", titre: "Fonctionnalités" }].map((s) => (
             <button
               key={s.id}
               aria-current={section === s.id ? "true" : undefined}
@@ -176,7 +182,7 @@ export default function ParametresPage() {
 
           {section === "flags" && (
             <div className="card p-5">
-              <h2 className="font-bold text-gray-900 mb-4">🚩 Fonctionnalités</h2>
+              <h2 className="font-bold text-gray-900 mb-4">Fonctionnalités</h2>
               <div className="flex flex-col gap-4">
                 {FLAGS.map((f) => (
                   <label key={f.cle} className="flex items-center justify-between gap-4 cursor-pointer">

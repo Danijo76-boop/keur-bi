@@ -14,7 +14,7 @@ export default function ErreurPage({ error, reset }: { error: Error & { digest?:
   return (
     <div className="max-w-xl mx-auto px-4 py-16">
       <div className="card p-8 text-center">
-        <h1 className="text-xl font-bold text-navy mb-2">Une erreur est survenue</h1>
+        <h1 className="titre-page mb-2">Une erreur est survenue</h1>
         <p className="text-sm text-gray-500 mb-1">Cette page n&apos;a pas pu s&apos;afficher. L&apos;incident a été signalé à notre équipe.</p>
         <p className="text-xs text-gray-400 mb-6">
           Code de l&apos;erreur : <span className="font-mono font-semibold text-gray-600">{code}</span>
@@ -23,7 +23,7 @@ export default function ErreurPage({ error, reset }: { error: Error & { digest?:
           <button onClick={reset} className="btn-navy text-sm">
             Réessayer
           </button>
-          <Link href="/" className="border border-gray-200 rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-gray-50">
+          <Link href="/" className="border border-gray-200 rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-gray-50">
             Retour à l&apos;accueil
           </Link>
         </div>

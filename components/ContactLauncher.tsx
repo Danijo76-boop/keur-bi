@@ -4,6 +4,7 @@ import Modal from "./Modal";
 import { useAuth } from "@/lib/auth";
 import { ajouterMessage } from "@/lib/messages";
 import { envoyerMessage, obtenirConversation } from "@/lib/messagerie";
+import { IconeStatut } from "@/components/Statut";
 
 export default function ContactLauncher({
   children,
@@ -84,7 +85,10 @@ export default function ContactLauncher({
         <Modal titre={titre} sousTitre={sousTitre} onClose={fermer}>
           {envoye ? (
             <div className="text-center py-6">
-              <p className="text-green font-semibold mb-1">✅ Envoyé avec succès</p>
+              <p className="text-green font-semibold mb-1">
+                <IconeStatut type="ok" />
+                Envoyé avec succès
+              </p>
               <p className="text-sm text-gray-500">Vous serez recontacté(e) rapidement.</p>
               <button onClick={fermer} className="btn-navy mt-4 w-full">
                 Fermer

@@ -58,7 +58,7 @@ export default function JournalPage() {
     <div>
       <div className="flex items-start justify-between gap-3 flex-wrap mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-navy mb-1">Journal d&apos;activité</h1>
+          <h1 className="titre-page mb-1">Journal d&apos;activité</h1>
           <p className="text-gray-500 text-sm">{lignes.length} action(s) · tracées dans ce navigateur (démo)</p>
         </div>
         <BoutonsExport onPDF={exporterEnPDF} onExcel={exporterEnExcel} disabled={lignes.length === 0} raison="Aucune action pour ces filtres." />

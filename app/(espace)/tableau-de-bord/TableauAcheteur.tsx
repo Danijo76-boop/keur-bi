@@ -14,6 +14,7 @@ import PropertyCard from "@/components/PropertyCard";
 import ListeVisites from "@/components/ListeVisites";
 import SectionPersonnalisee from "@/components/SectionPersonnalisee";
 import ParcoursContrat from "@/components/ParcoursContrat";
+import { IconeStatut } from "@/components/Statut";
 
 export default function TableauAcheteur({ user }: { user: User }) {
   const biens = useBiens(true);
@@ -45,7 +46,7 @@ export default function TableauAcheteur({ user }: { user: User }) {
       {alertesDGID.map((d) => {
         const j = joursRestantsDGID(d)!;
         return (
-          <Link key={d.id} href={`/dossiers/${d.id}`} className="flex items-start gap-3 bg-red/10 text-red rounded-lg px-4 py-3 text-sm font-semibold">
+          <Link key={d.id} href={`/dossiers/${d.id}`} className="flex items-start gap-3 bg-red/10 text-red rounded-xl px-4 py-3 text-sm font-semibold">
             <TriangleAlert size={18} className="shrink-0" />
             {j >= 0 ? `Délai DGID J-${j}` : "Délai DGID dépassé"} sur le dossier {referenceDossier(d)}. Pénalité de +{p.penaliteRetard}% après le{" "}
             {new Date(d.dateLimiteDGID!).toLocaleDateString("fr-FR")}.
@@ -92,7 +93,10 @@ export default function TableauAcheteur({ user }: { user: User }) {
                   </div>
                   <ParcoursContrat statut={d.statut} />
                   {joursDGID !== null && joursDGID <= p.alerteDGID2 && (
-                    <p className="text-xs font-semibold text-red mt-2">{joursDGID >= 0 ? `⚠ J-${joursDGID} délai DGID` : `⚠ Délai DGID dépassé`}</p>
+                    <p className="text-xs font-semibold text-red mt-2">
+                      <IconeStatut type="attention" herite />
+                      {joursDGID >= 0 ? `J-${joursDGID} avant le délai DGID` : `Délai DGID dépassé`}
+                    </p>
                   )}
                 </Link>
               );

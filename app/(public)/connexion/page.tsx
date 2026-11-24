@@ -94,7 +94,7 @@ function Formulaire() {
   return (
     <div className="max-w-md mx-auto px-4 py-16">
       <div className="card p-8">
-        <h1 className="text-2xl font-bold text-navy mb-1 text-center">{mode === "connexion" ? "Connexion" : "Créer un compte"}</h1>
+        <h1 className="titre-page mb-1 text-center">{mode === "connexion" ? "Connexion" : "Créer un compte"}</h1>
         <p className="text-gray-500 text-sm text-center mb-6">
           {mode === "connexion" ? "Accédez à votre espace KEUR BI" : "Rejoignez KEUR BI en quelques secondes"}
         </p>
@@ -301,7 +301,7 @@ function EtapeCode({
         <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-[#25D366]/15 text-[#128C7E] flex items-center justify-center">
           <MessageCircle size={24} />
         </div>
-        <h1 className="text-2xl font-bold text-navy mb-1 text-center">{titre}</h1>
+        <h1 className="titre-page mb-1 text-center">{titre}</h1>
 
         {saisieNumero ? (
           <form

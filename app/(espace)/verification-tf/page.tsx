@@ -10,10 +10,12 @@ import { BoutonPDF } from "@/components/BoutonsExport";
 import { useParametres } from "@/lib/parametres";
 import { usePeut } from "@/lib/permissions";
 import { useStocke } from "@/lib/stockage";
-import { deciderDemandeTF, DemandeTF, ICONES_TF, LABELS_TF, lireDemandesTF, relancerDemandeTF, soumettreDemandeTF } from "@/lib/tf";
+import { deciderDemandeTF, DemandeTF, LABELS_TF, lireDemandesTF, relancerDemandeTF, soumettreDemandeTF } from "@/lib/tf";
 import BandeauDemo from "@/components/BandeauDemo";
 import Protege from "@/components/Protege";
 import SiActif from "@/components/SiActif";
+import { IconeTF } from "@/components/Statut";
+import { IconeStatut } from "@/components/Statut";
 
 const champ = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mt-1 font-normal";
 const REGIONS = ["Dakar", "Thiès", "Saint-Louis", "Ziguinchor", "Kaolack"];
@@ -90,15 +92,15 @@ function Contenu({ user }: { user: User }) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-navy">Suivi des Titres Fonciers</h1>
+      <h1 className="titre-page">Suivi des Titres Fonciers</h1>
       <p className="text-gray-500 text-sm mb-4">Vérification et traçabilité, de la demande à la décision</p>
       <BandeauDemo>Démo : aucune connexion à la DGID. Le dépôt et la décision sont saisis à la main par le compte notaire.</BandeauDemo>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[
-          { val: verifies, label: "✅ TF vérifiés" },
-          { val: enCours, label: "⏳ En cours" },
-          { val: invalides, label: "❌ Invalides" },
+          { val: verifies, label: "TF vérifiés" },
+          { val: enCours, label: "En cours" },
+          { val: invalides, label: "Invalides" },
         ].map((s) => (
           <div key={s.label} className="card p-4 text-center">
             <div className="text-2xl font-bold text-navy">{s.val}</div>
@@ -185,7 +187,7 @@ function Contenu({ user }: { user: User }) {
                     {d.region} · {new Date(d.soumisLe).toLocaleDateString("fr-FR")}
                   </div>
                   <div className="text-xs font-medium text-gray-600 mt-0.5">
-                    {ICONES_TF[d.statut]} {LABELS_TF[d.statut]}
+                    <IconeTF statut={d.statut} herite /> {LABELS_TF[d.statut]}
                     {d.prioritaire && " · Prioritaire"}
                   </div>
                 </button>
@@ -219,7 +221,7 @@ function Contenu({ user }: { user: User }) {
                     </p>
                   </div>
                   <span className="text-sm font-semibold">
-                    {ICONES_TF[active.statut]} {LABELS_TF[active.statut]}
+                    <IconeTF statut={active.statut} herite /> {LABELS_TF[active.statut]}
                   </span>
                 </div>
                 <ol className="flex gap-1 flex-wrap">
@@ -237,7 +239,8 @@ function Contenu({ user }: { user: User }) {
 
               {active.statut === "en_verification" && joursEcoules >= p.delaiDGID && (
                 <div className="card p-4 border-l-4 border-gold text-sm text-gray-700">
-                  ⚠️ Le délai habituel de {p.delaiDGID} jours est dépassé (J+{joursEcoules}). Le notaire peut déposer une relance officielle.
+                  <IconeStatut type="attention" herite />
+                  Le délai habituel de {p.delaiDGID} jours est dépassé (J+{joursEcoules}). Le notaire peut déposer une relance officielle.
                 </div>
               )}
 
@@ -351,7 +354,7 @@ function Contenu({ user }: { user: User }) {
 
               {!peutDecider && active.statut === "en_verification" && p.flags.tfPrioritaire && (
                 <div className="card p-5 text-sm text-gray-700">
-                  🚀 TF accéléré disponible pour {formatFCFA(p.prixTFPrioritaire)}.{" "}
+                  TF accéléré disponible pour {formatFCFA(p.prixTFPrioritaire)}.{" "}
                   <Link href="/contact?sujet=TF%20acc%C3%A9l%C3%A9r%C3%A9" className="text-blue hover:underline">
                     Nous contacter
                   </Link>

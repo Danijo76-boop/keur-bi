@@ -8,25 +8,25 @@ import TFReportLauncher from "./TFReportLauncher";
 
 const TEXTES: Record<StatutTF, { titre: string; desc: string; bord: string; icone: string }> = {
   verifie: {
-    titre: "Titre Foncier vérifié ✅",
+    titre: "Titre Foncier vérifié",
     desc: "Ce bien a été vérifié auprès de la DGID. Aucune hypothèque, aucun litige connu.",
     bord: "border-green",
     icone: "text-green-light",
   },
   en_verification: {
-    titre: "Titre Foncier en cours de vérification ⏳",
+    titre: "Titre Foncier en cours de vérification",
     desc: "Le dossier est en cours d'examen. Réponse habituelle sous 3 à 7 jours ouvrés.",
     bord: "border-gold",
     icone: "text-gold",
   },
   non_verifie: {
-    titre: "Titre Foncier non vérifié ○",
+    titre: "Titre Foncier non vérifié",
     desc: "Ce bien est en attente de vérification par un notaire partenaire. Renseignez-vous avant toute offre.",
     bord: "border-gray-300",
     icone: "text-gray-400",
   },
   invalide: {
-    titre: "Titre Foncier invalide ❌",
+    titre: "Titre Foncier invalide",
     desc: "Une anomalie a été détectée (hypothèque, litige ou non-concordance du propriétaire). Ne faites pas d'offre avant régularisation.",
     bord: "border-red",
     icone: "text-red",
@@ -52,10 +52,10 @@ export default function SuiviTF({ bien }: { bien: Bien }) {
           )}
           {user?.role === "notaire" && (
             <div className="mt-3 flex flex-wrap gap-2">
-              <button onClick={basculer} className="text-sm font-medium px-3 py-1.5 rounded-lg border border-navy text-navy hover:bg-navy/5">
+              <button onClick={basculer} className="text-sm font-medium px-3 py-1.5 rounded-xl border border-navy text-navy hover:bg-navy/5">
                 {verifie ? "Révoquer la vérification" : "Valider ce Titre Foncier"}
               </button>
-              <Link href="/verification-tf" className="text-sm font-medium px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+              <Link href="/verification-tf" className="text-sm font-medium px-3 py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50">
                 Soumettre à la DGID
               </Link>
             </div>

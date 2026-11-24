@@ -44,7 +44,7 @@ export default function DiasporaPage() {
           <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm mb-6">
             <Globe2 size={14} className="text-gold" /> Sénégalais de l&apos;extérieur
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-4">
+          <h1 className="titre-page text-white md:text-4xl leading-tight mb-4">
             Achetez au pays,
             <br />
             <span className="bg-gradient-to-r from-gold-light to-gold bg-clip-text text-transparent">sans prendre l&apos;avion</span>

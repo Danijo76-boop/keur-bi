@@ -102,8 +102,18 @@
       0 20px 40px -16px rgba(27, 42, 74, 0.25);
   }
   .eyebrow {
-    @apply inline-block text-xs font-bold uppercase text-gold;
+    @apply inline-block text-xs font-bold uppercase text-gold-dark;
     letter-spacing: 0.14em;
+  }
+  /* Sur un fond sombre, le sur-titre reprend l'or vif (lisible à 6,8 : 1 sur le bleu nuit). */
+  .bg-navy-dark .eyebrow,
+  .bg-navy .eyebrow {
+    @apply text-gold;
+  }
+  /* Titre principal d'une page : un seul style sur tout le site (charte graphique). */
+  .titre-page {
+    @apply font-display text-2xl md:text-3xl font-extrabold text-navy-dark tracking-tight;
+    text-wrap: balance;
   }
   .section-title {
     @apply text-2xl md:text-3xl font-extrabold text-navy-dark;
@@ -395,7 +405,11 @@
     color: #93a0b4;
   }
   html.dark .text-gray-400 {
-    color: #7b889d;
+    color: #9aa4b5;
+  }
+  html.dark .text-gold-dark,
+  html.dark .eyebrow {
+    color: #ffc940;
   }
   html.dark .text-gray-300 {
     color: #5c697e;
@@ -406,6 +420,7 @@
     color: #8ec5ea;
   }
   html.dark .text-navy-dark,
+  html.dark .titre-page,
   html.dark .section-title {
     color: #f3f6fa;
   }

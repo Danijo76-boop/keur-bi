@@ -24,7 +24,7 @@ export default function ServicesPage() {
     <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="text-center mb-8">
         <p className="eyebrow mb-2">Services à la carte</p>
-        <h1 className="text-3xl md:text-4xl font-extrabold text-navy-dark mb-2">Des experts à chaque étape</h1>
+        <h1 className="titre-page mb-2">Des experts à chaque étape</h1>
         <p className="text-gray-500 max-w-2xl mx-auto">Commandez uniquement ce dont vous avez besoin, sans abonnement. Un conseiller vous rappelle pour organiser la prestation.</p>
       </div>
 

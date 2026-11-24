@@ -92,7 +92,7 @@ function Formulaire() {
         <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-navy/10 text-navy flex items-center justify-center">
           <KeyRound size={24} />
         </div>
-        <h1 className="text-2xl font-bold text-navy mb-1 text-center">Mot de passe oublié</h1>
+        <h1 className="titre-page mb-1 text-center">Mot de passe oublié</h1>
 
         {!defi ? (
           <form onSubmit={demanderCode} className="flex flex-col gap-3">

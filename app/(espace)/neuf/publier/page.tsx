@@ -7,6 +7,7 @@ import { AVANCEMENTS, type Programme } from "@/lib/programmes";
 import { envoyerPhoto, envoyerPhotosVerifiees, reduirePhoto } from "@/lib/photos";
 import { avecReference } from "@/lib/rapport-erreurs";
 import { popup } from "@/lib/popup";
+import { IconeStatut } from "@/components/Statut";
 
 const REGIONS = ["Dakar", "Thiès", "Saint-Louis", "Ziguinchor", "Kaolack"];
 const champ = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mt-1 font-normal bg-white";
@@ -36,7 +37,7 @@ export default function PublierProgrammePage() {
   if (user && user.role !== "agence" && user.role !== "admin") {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-navy mb-2">Publier un programme neuf</h1>
+        <h1 className="titre-page mb-2">Publier un programme neuf</h1>
         <p className="text-gray-500 text-sm">La publication de programmes neufs est réservée aux comptes Agence (promoteurs).</p>
       </div>
     );
@@ -46,7 +47,10 @@ export default function PublierProgrammePage() {
     return (
       <div className="max-w-xl mx-auto px-4 py-16">
         <div className="card p-8 text-center">
-          <p className="text-green font-semibold text-lg mb-1">✅ Programme publié</p>
+          <p className="text-green font-semibold text-lg mb-1">
+            <IconeStatut type="ok" />
+            Programme publié
+          </p>
           <p className="text-sm text-gray-500 mb-5">
             {publie.nom} · {publie.lots.length} lot(s). Il est visible dans la rubrique Programmes neufs.
           </p>
@@ -128,7 +132,7 @@ export default function PublierProgrammePage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-navy mb-1">Publier un programme neuf</h1>
+      <h1 className="titre-page mb-1">Publier un programme neuf</h1>
       <p className="text-gray-500 text-sm mb-6">Présentez votre programme et la liste de ses lots avec leurs prix.</p>
 
       <form onSubmit={publier} className="card p-6 flex flex-col gap-4">

@@ -12,10 +12,10 @@ import Protege from "@/components/Protege";
 
 const ONGLETS: { id: CategorieNotif | "tout"; label: string }[] = [
   { id: "tout", label: "Tout" },
-  { id: "urgent", label: "⚠ Urgents" },
-  { id: "dossier", label: "📋 Dossiers" },
-  { id: "annonce", label: "🏠 Annonces" },
-  { id: "message", label: "💬 Messages" },
+  { id: "urgent", label: "Urgents" },
+  { id: "dossier", label: "Dossiers" },
+  { id: "annonce", label: "Annonces" },
+  { id: "message", label: "Messages" },
 ];
 
 const REGIONS = ["Dakar", "Thiès", "Saint-Louis", "Ziguinchor", "Kaolack"];
@@ -58,7 +58,7 @@ function Contenu({ user }: { user: User }) {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between gap-4 flex-wrap mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-navy">Notifications</h1>
+          <h1 className="titre-page">Notifications</h1>
           <p className="text-gray-500 text-sm">{nonLues.length} non lues</p>
         </div>
         <button onClick={() => marquerLues(notifs.map((n) => n.id))} className="text-sm text-blue font-medium hover:underline">

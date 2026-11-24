@@ -58,7 +58,7 @@ export default function QuartiersPage() {
     <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="text-center mb-8">
         <p className="eyebrow mb-2">Guide des quartiers</p>
-        <h1 className="text-3xl md:text-4xl font-extrabold text-navy-dark mb-2">Où acheter au Sénégal ?</h1>
+        <h1 className="titre-page mb-2">Où acheter au Sénégal ?</h1>
         <p className="text-gray-500 max-w-2xl mx-auto">Comparez les quartiers : prix au m², nombre d&apos;annonces et part de Titres Fonciers vérifiés.</p>
       </div>
 

@@ -50,7 +50,7 @@ function Contenu({ user }: { user: User }) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-navy">Mon profil</h1>
+      <h1 className="titre-page">Mon profil</h1>
       <p className="text-gray-500 text-sm mb-6">{ROLE_LABELS[user.role]} · Gérez vos informations et vos documents KYC</p>
 
       <div className="grid lg:grid-cols-3 gap-6">
