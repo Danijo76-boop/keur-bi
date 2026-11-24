@@ -65,7 +65,7 @@ function Assistant({ user }: { user: User }) {
   const nbPubliees = useStocke(() => tousLesBiens(true).filter((b) => b.auteurEmail === user.email && !b.depublie).length, 0, [user.email]);
   const plan = profil?.plan ?? "gratuit";
   // Particulier : quota fixe. Agence : selon son abonnement. Agent : pas de limite propre, c'est l'agence qui paie.
-  const quota = user.role === "vendeur" ? QUOTA_PARTICULIER : user.role === "agent" ? Infinity : QUOTA_ANNONCES[plan] ?? 1;
+  const quota = user.role === "vendeur" ? QUOTA_PARTICULIER : user.role === "agent" ? Infinity : (QUOTA_ANNONCES[plan] ?? 1);
 
   const [etape, setEtape] = useState(0);
   const [envoi, setEnvoi] = useState(false);
@@ -155,18 +155,24 @@ function Assistant({ user }: { user: User }) {
         ...(transaction === "location" && { charges: Number(charges) || 0, caution: Number(caution) || 0, meuble }),
         nb_pieces: Number(nbPieces) || undefined,
         proprietaire: proprietaire.trim(),
-        tf: { numero: numeroTF.trim(), conservation: numeroTF.trim() ? conservation : null, date_etablissement: dateTF || null, superficie_cadastrale: Number(superficieTF) },
+        tf: {
+          numero: numeroTF.trim(),
+          conservation: numeroTF.trim() ? conservation : null,
+          date_etablissement: dateTF || null,
+          superficie_cadastrale: Number(superficieTF),
+        },
       });
       // Module cadastre en pause : l'annonce est publiée avec son titre déclaré, sans demande de vérification.
-      if (p.flags.cadastre && transaction === "vente") soumettreDemandeTF({
-        bienId: annonce.id,
-        numero: numeroTF.trim(),
-        region,
-        proprietaire: proprietaire.trim(),
-        fichier: fichierTF,
-        prioritaire,
-        demandeur: user.nom,
-      });
+      if (p.flags.cadastre && transaction === "vente")
+        soumettreDemandeTF({
+          bienId: annonce.id,
+          numero: numeroTF.trim(),
+          region,
+          proprietaire: proprietaire.trim(),
+          fichier: fichierTF,
+          prioritaire,
+          demandeur: user.nom,
+        });
       setPubliee(annonce);
     } catch (e) {
       setErreur(e instanceof Error ? e.message : "La publication n'a pas abouti.");
@@ -188,8 +194,14 @@ function Assistant({ user }: { user: User }) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
         <h1 className="text-2xl font-bold text-navy mb-2">Quota d&apos;annonces atteint</h1>
-        <p className="text-gray-500 text-sm mb-4">{user.role === "vendeur" ? `Un compte particulier permet ${quota} annonces actives. Pour en publier davantage, passez à un compte Agence.` : `Votre plan permet ${quota} annonce${quota > 1 ? "s" : ""} active${quota > 1 ? "s" : ""}. Passez à un plan supérieur pour en publier davantage.`}</p>
-        <Link href="/tarifs" className="btn-navy text-sm inline-block">Voir les abonnements</Link>
+        <p className="text-gray-500 text-sm mb-4">
+          {user.role === "vendeur"
+            ? `Un compte particulier permet ${quota} annonces actives. Pour en publier davantage, passez à un compte Agence.`
+            : `Votre plan permet ${quota} annonce${quota > 1 ? "s" : ""} active${quota > 1 ? "s" : ""}. Passez à un plan supérieur pour en publier davantage.`}
+        </p>
+        <Link href="/tarifs" className="btn-navy text-sm inline-block">
+          Voir les abonnements
+        </Link>
       </div>
     );
   }
@@ -199,10 +211,17 @@ function Assistant({ user }: { user: User }) {
       <div className="max-w-xl mx-auto px-4 py-16">
         <div className="card p-8 text-center">
           <p className="text-green font-semibold text-lg mb-1">✅ Annonce enregistrée</p>
-          <p className="text-sm text-gray-500 mb-5">Référence {publiee.reference}. {p.flags.cadastre ? "Elle affiche le badge « En vérification » jusqu'à la décision du notaire." : "Elle est en ligne et visible des membres."}</p>
+          <p className="text-sm text-gray-500 mb-5">
+            Référence {publiee.reference}.{" "}
+            {p.flags.cadastre ? "Elle affiche le badge « En vérification » jusqu'à la décision du notaire." : "Elle est en ligne et visible des membres."}
+          </p>
           <div className="flex gap-2 justify-center flex-wrap">
-            <Link href={`/mes-annonces/${publiee.id}`} className="btn-navy text-sm">Gérer l&apos;annonce</Link>
-            <Link href={`/annonces/${publiee.id}`} className="border border-gray-200 rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-gray-50">Voir l&apos;annonce</Link>
+            <Link href={`/mes-annonces/${publiee.id}`} className="btn-navy text-sm">
+              Gérer l&apos;annonce
+            </Link>
+            <Link href={`/annonces/${publiee.id}`} className="border border-gray-200 rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-gray-50">
+              Voir l&apos;annonce
+            </Link>
           </div>
         </div>
       </div>
@@ -222,7 +241,11 @@ function Assistant({ user }: { user: User }) {
       <h1 className="text-2xl font-bold text-navy mb-4">Publier une annonce</h1>
       <ol className="flex gap-2 flex-wrap mb-6">
         {ETAPES.map((e, i) => (
-          <li key={e} aria-current={i === etape ? "step" : undefined} className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${i < etape ? "bg-green/10 text-green" : i === etape ? "bg-navy text-white" : "bg-gray-100 text-gray-400"}`}>
+          <li
+            key={e}
+            aria-current={i === etape ? "step" : undefined}
+            className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${i < etape ? "bg-green/10 text-green" : i === etape ? "bg-navy text-white" : "bg-gray-100 text-gray-400"}`}
+          >
             {i + 1} · {e}
           </li>
         ))}
@@ -230,7 +253,10 @@ function Assistant({ user }: { user: User }) {
 
       {profil?.statutKYC === "non_soumis" && (
         <BandeauDemo>
-          Pièces normalement exigées d&apos;un vendeur : {p.docsVendeur}. <Link href="/kyc" className="underline font-semibold">Vérifier mon identité</Link>
+          Pièces normalement exigées d&apos;un vendeur : {p.docsVendeur}.{" "}
+          <Link href="/kyc" className="underline font-semibold">
+            Vérifier mon identité
+          </Link>
         </BandeauDemo>
       )}
 
@@ -239,15 +265,19 @@ function Assistant({ user }: { user: User }) {
           {etape === 0 && (
             <>
               <h2 className="font-bold text-gray-900">Informations du bien</h2>
-              <label className={libelle}>Type d&apos;annonce *
+              <label className={libelle}>
+                Type d&apos;annonce *
                 <select value={transaction} onChange={(e) => setTransaction(e.target.value as "vente" | "location")} className={champ}>
                   <option value="vente">À vendre</option>
                   <option value="location">À louer</option>
                 </select>
               </label>
-              <label className={libelle}>Titre *<input value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="ex. Terrain résidentiel — Almadies" className={champ} /></label>
+              <label className={libelle}>
+                Titre *<input value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="ex. Terrain résidentiel — Almadies" className={champ} />
+              </label>
               <div className="grid sm:grid-cols-2 gap-4">
-                <label className={libelle}>Type de bien *
+                <label className={libelle}>
+                  Type de bien *
                   <select value={type} onChange={(e) => setType(e.target.value as Bien["type"])} className={champ}>
                     <option value="terrain">Terrain</option>
                     <option value="villa">Villa</option>
@@ -255,25 +285,55 @@ function Assistant({ user }: { user: User }) {
                     <option value="bureau">Bureau</option>
                   </select>
                 </label>
-                <label className={libelle}>Région *
-                  <select value={region} onChange={(e) => setRegion(e.target.value)} className={champ}>{REGIONS.map((r) => <option key={r}>{r}</option>)}</select>
+                <label className={libelle}>
+                  Région *
+                  <select value={region} onChange={(e) => setRegion(e.target.value)} className={champ}>
+                    {REGIONS.map((r) => (
+                      <option key={r}>{r}</option>
+                    ))}
+                  </select>
                 </label>
-                <label className={libelle}>Ville *<input value={ville} onChange={(e) => setVille(e.target.value)} className={champ} /></label>
-                <label className={libelle}>Quartier *<input value={quartier} onChange={(e) => setQuartier(e.target.value)} className={champ} /></label>
-                <label className={libelle}>Superficie (m²) *<input type="number" min={1} value={superficie} onChange={(e) => setSuperficie(e.target.value)} className={champ} /></label>
-                <label className={libelle}>{transaction === "location" ? "Loyer mensuel (FCFA) *" : "Prix (FCFA) *"}<input type="number" min={1} value={prix} onChange={(e) => setPrix(e.target.value)} className={champ} /></label>
-                <label className={libelle}>Nombre de pièces<input type="number" min={1} max={50} value={nbPieces} onChange={(e) => setNbPieces(e.target.value)} className={champ} /></label>
+                <label className={libelle}>
+                  Ville *<input value={ville} onChange={(e) => setVille(e.target.value)} className={champ} />
+                </label>
+                <label className={libelle}>
+                  Quartier *<input value={quartier} onChange={(e) => setQuartier(e.target.value)} className={champ} />
+                </label>
+                <label className={libelle}>
+                  Superficie (m²) *<input type="number" min={1} value={superficie} onChange={(e) => setSuperficie(e.target.value)} className={champ} />
+                </label>
+                <label className={libelle}>
+                  {transaction === "location" ? "Loyer mensuel (FCFA) *" : "Prix (FCFA) *"}
+                  <input type="number" min={1} value={prix} onChange={(e) => setPrix(e.target.value)} className={champ} />
+                </label>
+                <label className={libelle}>
+                  Nombre de pièces
+                  <input type="number" min={1} max={50} value={nbPieces} onChange={(e) => setNbPieces(e.target.value)} className={champ} />
+                </label>
                 {transaction === "location" && (
                   <>
-                    <label className={libelle}>Charges mensuelles (FCFA)<input type="number" min={0} value={charges} onChange={(e) => setCharges(e.target.value)} className={champ} /></label>
-                    <label className={libelle}>Caution (FCFA)<input type="number" min={0} value={caution} onChange={(e) => setCaution(e.target.value)} className={champ} /></label>
-                    <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer sm:col-span-2"><input type="checkbox" className="accent-navy" checked={meuble} onChange={(e) => setMeuble(e.target.checked)} /> Logement meublé</label>
+                    <label className={libelle}>
+                      Charges mensuelles (FCFA)
+                      <input type="number" min={0} value={charges} onChange={(e) => setCharges(e.target.value)} className={champ} />
+                    </label>
+                    <label className={libelle}>
+                      Caution (FCFA)
+                      <input type="number" min={0} value={caution} onChange={(e) => setCaution(e.target.value)} className={champ} />
+                    </label>
+                    <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer sm:col-span-2">
+                      <input type="checkbox" className="accent-navy" checked={meuble} onChange={(e) => setMeuble(e.target.checked)} /> Logement meublé
+                    </label>
                   </>
                 )}
               </div>
               <PositionMarche bien={{ type, region, prix: Number(prix) || 0, superficie: Number(superficie) || 0, transaction }} />
-              <label className={libelle}>Téléphone de contact<input type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} className={champ} /></label>
-              <label className={libelle}>Description *<textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className={`${champ} resize-none`} /></label>
+              <label className={libelle}>
+                Téléphone de contact
+                <input type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} className={champ} />
+              </label>
+              <label className={libelle}>
+                Description *<textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className={`${champ} resize-none`} />
+              </label>
             </>
           )}
 
@@ -284,15 +344,31 @@ function Assistant({ user }: { user: User }) {
                 <p className="text-sm text-gray-500">Un notaire partenaire vérifiera votre TF avant validation.</p>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
-                <label className={libelle}>Numéro TF *<input value={numeroTF} onChange={(e) => setNumeroTF(e.target.value)} placeholder="ex. 12 847" className={champ} /></label>
-                <label className={libelle}>Conservation foncière *
-                  <select value={conservation} onChange={(e) => setConservation(e.target.value)} className={champ}>{CONSERVATIONS.map((c) => <option key={c}>{c}</option>)}</select>
+                <label className={libelle}>
+                  Numéro TF *<input value={numeroTF} onChange={(e) => setNumeroTF(e.target.value)} placeholder="ex. 12 847" className={champ} />
                 </label>
-                <label className={libelle}>Date d&apos;établissement<input type="date" value={dateTF} onChange={(e) => setDateTF(e.target.value)} className={champ} /></label>
-                <label className={libelle}>Superficie cadastrale (m²) *<input type="number" min={1} value={superficieTF} onChange={(e) => setSuperficieTF(e.target.value)} className={champ} /></label>
+                <label className={libelle}>
+                  Conservation foncière *
+                  <select value={conservation} onChange={(e) => setConservation(e.target.value)} className={champ}>
+                    {CONSERVATIONS.map((c) => (
+                      <option key={c}>{c}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className={libelle}>
+                  Date d&apos;établissement
+                  <input type="date" value={dateTF} onChange={(e) => setDateTF(e.target.value)} className={champ} />
+                </label>
+                <label className={libelle}>
+                  Superficie cadastrale (m²) *
+                  <input type="number" min={1} value={superficieTF} onChange={(e) => setSuperficieTF(e.target.value)} className={champ} />
+                </label>
               </div>
-              <label className={libelle}>Propriétaire actuel (nom sur le TF) *<input value={proprietaire} onChange={(e) => setProprietaire(e.target.value)} className={champ} /></label>
-              <label className={libelle}>Copie du Titre Foncier * (PDF, JPG ou PNG)
+              <label className={libelle}>
+                Propriétaire actuel (nom sur le TF) *<input value={proprietaire} onChange={(e) => setProprietaire(e.target.value)} className={champ} />
+              </label>
+              <label className={libelle}>
+                Copie du Titre Foncier * (PDF, JPG ou PNG)
                 <input type="file" accept=".pdf,image/*" onChange={(e) => setFichierTF(e.target.files?.[0]?.name ?? "")} className={champ} />
                 {fichierTF && <span className="text-xs font-normal text-green">✓ {fichierTF}</span>}
               </label>
@@ -305,13 +381,32 @@ function Assistant({ user }: { user: User }) {
                 <h2 className="font-bold text-gray-900">Photos</h2>
                 <p className="text-sm text-gray-500">Au moins {MIN_PHOTOS} photos, la première sert de couverture.</p>
               </div>
-              <input type="file" accept="image/*" multiple aria-label="Ajouter des photos" onChange={ajouterPhotos} disabled={verification || photos.length >= 8} className="text-sm" />
-              {verification && <p className="text-sm text-gray-500" role="status">Vérification des photos en cours…</p>}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                aria-label="Ajouter des photos"
+                onChange={ajouterPhotos}
+                disabled={verification || photos.length >= 8}
+                className="text-sm"
+              />
+              {verification && (
+                <p className="text-sm text-gray-500" role="status">
+                  Vérification des photos en cours…
+                </p>
+              )}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {photos.map((src, i) => (
                   <div key={i} className="relative h-24 rounded-lg overflow-hidden bg-gray-100">
                     <Image src={src} alt={`Photo ${i + 1}`} fill className="object-cover" unoptimized />
-                    <button type="button" aria-label={`Retirer la photo ${i + 1}`} onClick={() => setPhotos(photos.filter((_, j) => j !== i))} className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 text-xs">✕</button>
+                    <button
+                      type="button"
+                      aria-label={`Retirer la photo ${i + 1}`}
+                      onClick={() => setPhotos(photos.filter((_, j) => j !== i))}
+                      className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 text-xs"
+                    >
+                      ✕
+                    </button>
                   </div>
                 ))}
               </div>
@@ -329,12 +424,37 @@ function Assistant({ user }: { user: User }) {
             <>
               <h2 className="font-bold text-gray-900">Vérification & publication</h2>
               <dl className="text-sm grid sm:grid-cols-2 gap-3">
-                <div><dt className="text-xs text-gray-400">Bien</dt><dd className="font-semibold">{titre}</dd></div>
-                <div><dt className="text-xs text-gray-400">Zone</dt><dd className="font-semibold">{quartier}, {ville}</dd></div>
-                <div><dt className="text-xs text-gray-400">Surface</dt><dd className="font-semibold">{surface.toLocaleString("fr-FR")} m²</dd></div>
-                <div><dt className="text-xs text-gray-400">{transaction === "location" ? "Loyer" : "Prix"}</dt><dd className="font-semibold">{formatFCFA(prixNombre)}{transaction === "location" ? " / mois" : ""}</dd></div>
-                <div><dt className="text-xs text-gray-400">TF</dt><dd className="font-semibold">{numeroTF} · {conservation}</dd></div>
-                <div><dt className="text-xs text-gray-400">Photos</dt><dd className="font-semibold">{photos.length}</dd></div>
+                <div>
+                  <dt className="text-xs text-gray-400">Bien</dt>
+                  <dd className="font-semibold">{titre}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-gray-400">Zone</dt>
+                  <dd className="font-semibold">
+                    {quartier}, {ville}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-gray-400">Surface</dt>
+                  <dd className="font-semibold">{surface.toLocaleString("fr-FR")} m²</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-gray-400">{transaction === "location" ? "Loyer" : "Prix"}</dt>
+                  <dd className="font-semibold">
+                    {formatFCFA(prixNombre)}
+                    {transaction === "location" ? " / mois" : ""}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-gray-400">TF</dt>
+                  <dd className="font-semibold">
+                    {numeroTF} · {conservation}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-gray-400">Photos</dt>
+                  <dd className="font-semibold">{photos.length}</dd>
+                </div>
               </dl>
               {p.flags.cadastre && p.flags.tfPrioritaire && (
                 <label className="flex items-start gap-2 text-sm text-gray-700 cursor-pointer bg-gray-50 rounded-lg p-3">
@@ -348,13 +468,25 @@ function Assistant({ user }: { user: User }) {
 
           {erreur && <p className="text-red text-xs">{erreur}</p>}
           <div className="flex justify-between gap-3 flex-wrap">
-            <button type="button" disabled={etape === 0} onClick={() => { setErreur(""); setEtape(etape - 1); }} className="border border-gray-200 rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-gray-50 disabled:opacity-40">
+            <button
+              type="button"
+              disabled={etape === 0}
+              onClick={() => {
+                setErreur("");
+                setEtape(etape - 1);
+              }}
+              className="border border-gray-200 rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-gray-50 disabled:opacity-40"
+            >
               ← Étape précédente
             </button>
             {etape < ETAPES.length - 1 ? (
-              <button type="button" onClick={suivant} className="btn-navy text-sm">Étape suivante →</button>
+              <button type="button" onClick={suivant} className="btn-navy text-sm">
+                Étape suivante →
+              </button>
             ) : (
-              <button type="button" onClick={publier} className="btn-primary text-sm">Publier l&apos;annonce</button>
+              <button type="button" onClick={publier} className="btn-primary text-sm">
+                Publier l&apos;annonce
+              </button>
             )}
           </div>
         </div>
@@ -362,12 +494,18 @@ function Assistant({ user }: { user: User }) {
         <aside className="flex flex-col gap-4">
           <div className="card">
             <div className="relative h-36 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
-              {photos[0] ? <Image src={photos[0]} alt="Aperçu" fill className="object-cover" unoptimized={!photos[0].startsWith("http")} /> : "Photos à ajouter"}
+              {photos[0] ? (
+                <Image src={photos[0]} alt="Aperçu" fill className="object-cover" unoptimized={!photos[0].startsWith("http")} />
+              ) : (
+                "Photos à ajouter"
+              )}
               <span className="absolute top-2 left-2 bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">⏳ En vérif.</span>
             </div>
             <div className="p-4">
               <div className="font-semibold text-sm text-gray-900">{titre || "Titre de l'annonce"}</div>
-              <div className="text-xs text-gray-400 mb-2">{quartier || "Quartier"}, {ville || "Ville"} · {surface.toLocaleString("fr-FR")} m²</div>
+              <div className="text-xs text-gray-400 mb-2">
+                {quartier || "Quartier"}, {ville || "Ville"} · {surface.toLocaleString("fr-FR")} m²
+              </div>
               <div className="font-bold text-navy">{formatFCFA(prixNombre)}</div>
               {surface > 0 && prixNombre > 0 && <div className="text-xs text-gray-400">{formatFCFA(prixNombre / surface)} / m²</div>}
             </div>
@@ -385,7 +523,9 @@ function Assistant({ user }: { user: User }) {
           <div className="card p-5 text-sm text-gray-600">
             <h3 className="font-bold text-gray-900 mb-1">Besoin d&apos;aide ?</h3>
             Notre équipe vous accompagne pour préparer votre dossier de vente.{" "}
-            <Link href="/contact" className="text-blue hover:underline">Contacter le support</Link>
+            <Link href="/contact" className="text-blue hover:underline">
+              Contacter le support
+            </Link>
           </div>
         </aside>
       </div>

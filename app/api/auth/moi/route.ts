@@ -31,7 +31,11 @@ async function patch(requete: Request) {
     const ville = texte(corps?.ville, 80);
     const maj = await db.utilisateur.update({
       where: { id: compte.id },
-      data: { ...(nom !== undefined && { nom }), ...(telephone !== undefined && { telephone: telephone || null }), ...(ville !== undefined && { ville: ville || null }) },
+      data: {
+        ...(nom !== undefined && { nom }),
+        ...(telephone !== undefined && { telephone: telephone || null }),
+        ...(ville !== undefined && { ville: ville || null }),
+      },
     });
     return NextResponse.json({ utilisateur: versSession(maj) });
   } catch (e) {

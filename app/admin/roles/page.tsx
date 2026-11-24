@@ -40,7 +40,14 @@ export default function RolesPage() {
     const adresse = email.trim();
     if (trouverUtilisateur(adresse)) return setErreur("Un compte existe déjà avec cet email.");
     const kyc: StatutKYC = statut === "attente" ? "en_attente" : "non_soumis";
-    const cree = await ajouterUtilisateur({ email: adresse, nom: nom.trim(), role, telephone: telephone.trim() || undefined, statutKYC: kyc, suspendu: statut === "suspendu" });
+    const cree = await ajouterUtilisateur({
+      email: adresse,
+      nom: nom.trim(),
+      role,
+      telephone: telephone.trim() || undefined,
+      statutKYC: kyc,
+      suspendu: statut === "suspendu",
+    });
     if (!cree) return;
     journaliser("compte", `Compte créé : ${nom.trim()} (${ROLE_LABELS[role]})`, "/admin/utilisateurs");
     setErreur("");
@@ -57,13 +64,30 @@ export default function RolesPage() {
         <div className="flex flex-col gap-4">
           <form onSubmit={creer} className="card p-5 flex flex-col gap-3">
             <h2 className="font-bold text-gray-900">Ajouter un utilisateur</h2>
-            <label className={lib}>Nom complet<input required value={nom} onChange={(e) => setNom(e.target.value)} className={champ} /></label>
-            <label className={lib}>Email<input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={champ} /></label>
-            <label className={lib}>Téléphone<input type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} className={champ} /></label>
-            <label className={lib}>Rôle principal
-              <select value={role} onChange={(e) => setRole(e.target.value as Role)} className={champ}>{ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}</select>
+            <label className={lib}>
+              Nom complet
+              <input required value={nom} onChange={(e) => setNom(e.target.value)} className={champ} />
             </label>
-            <label className={lib}>Statut initial
+            <label className={lib}>
+              Email
+              <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={champ} />
+            </label>
+            <label className={lib}>
+              Téléphone
+              <input type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} className={champ} />
+            </label>
+            <label className={lib}>
+              Rôle principal
+              <select value={role} onChange={(e) => setRole(e.target.value as Role)} className={champ}>
+                {ROLES.map((r) => (
+                  <option key={r} value={r}>
+                    {ROLE_LABELS[r]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={lib}>
+              Statut initial
               <select value={statut} onChange={(e) => setStatut(e.target.value as typeof statut)} className={champ}>
                 <option value="actif">Actif</option>
                 <option value="attente">En attente KYC</option>
@@ -71,7 +95,9 @@ export default function RolesPage() {
               </select>
             </label>
             {erreur && <p className="text-red text-xs">{erreur}</p>}
-            <button type="submit" className="btn-navy text-sm">Créer l&apos;utilisateur</button>
+            <button type="submit" className="btn-navy text-sm">
+              Créer l&apos;utilisateur
+            </button>
           </form>
           <div className="card p-5">
             <h2 className="font-bold text-gray-900 mb-3">Utilisateurs récents</h2>
@@ -79,7 +105,9 @@ export default function RolesPage() {
               {utilisateurs.slice(0, 5).map((u) => (
                 <li key={u.email} className="min-w-0">
                   <div className="font-semibold text-gray-800 truncate">{u.nom}</div>
-                  <div className="text-xs text-gray-400 truncate">{ROLE_LABELS[u.role]} · {u.email}</div>
+                  <div className="text-xs text-gray-400 truncate">
+                    {ROLE_LABELS[u.role]} · {u.email}
+                  </div>
                 </li>
               ))}
             </ul>
@@ -91,11 +119,20 @@ export default function RolesPage() {
             <div>
               <h2 className="font-bold text-gray-900">Matrice des habilitations</h2>
               <p className="text-xs text-gray-500 xl:hidden">Faites défiler le tableau vers la droite pour voir tous les rôles.</p>
-              <p className="text-xs text-gray-500">« Bloquant » : la permission contrôle réellement l&apos;action dans cette démo. Les autres sont indicatives. Une permission d&apos;administration accordée à un autre rôle lui ouvre la section correspondante.</p>
+              <p className="text-xs text-gray-500">
+                « Bloquant » : la permission contrôle réellement l&apos;action dans cette démo. Les autres sont indicatives. Une permission
+                d&apos;administration accordée à un autre rôle lui ouvre la section correspondante.
+              </p>
             </div>
             <div className="flex items-center gap-2">
               {ok && <span className="text-sm text-green font-semibold">Enregistrée</span>}
-              <button disabled={!modifie} onClick={() => setMatrice(enregistree)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50 disabled:opacity-40">Annuler</button>
+              <button
+                disabled={!modifie}
+                onClick={() => setMatrice(enregistree)}
+                className="border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50 disabled:opacity-40"
+              >
+                Annuler
+              </button>
               <button
                 disabled={!modifie}
                 onClick={() => {
@@ -118,13 +155,23 @@ export default function RolesPage() {
             <table className="w-full text-sm min-w-[960px]">
               <thead>
                 <tr className="text-xs text-gray-500 border-b border-gray-100">
-                  <th scope="col" className="p-3 text-left font-semibold sticky left-0 bg-white z-10 w-72">Permission</th>
-                  {ROLES.map((r) => <th scope="col" key={r} className="p-2 font-semibold text-center normal-case tracking-normal">{ROLE_LABELS[r]}</th>)}
+                  <th scope="col" className="p-3 text-left font-semibold sticky left-0 bg-white z-10 w-72">
+                    Permission
+                  </th>
+                  {ROLES.map((r) => (
+                    <th scope="col" key={r} className="p-2 font-semibold text-center normal-case tracking-normal">
+                      {ROLE_LABELS[r]}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               {GROUPES.map((g) => (
                 <tbody key={g}>
-                  <tr><th scope="colgroup" colSpan={ROLES.length + 1} className="bg-gray-50 px-3 py-2 text-left text-xs font-bold text-navy uppercase">{g}</th></tr>
+                  <tr>
+                    <th scope="colgroup" colSpan={ROLES.length + 1} className="bg-gray-50 px-3 py-2 text-left text-xs font-bold text-navy uppercase">
+                      {g}
+                    </th>
+                  </tr>
                   {PERMISSIONS.filter((p) => p.groupe === g).map((p) => (
                     <tr key={p.id} className="border-b border-gray-50">
                       <th scope="row" className="p-3 text-left font-normal sticky left-0 bg-white z-10 w-72 shadow-[1px_0_0_rgba(27,42,74,0.08)]">

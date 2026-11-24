@@ -38,15 +38,15 @@ const enTetesSecurite = [
 
 const nextConfig = {
   // Dossier de compilation : modifiable pour compiler une version de production sans gêner le serveur de développement.
-  distDir: process.env.NEXT_DIST_DIR || '.next',
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   // Racine du projet : évite que Next.js confonde ce dossier avec un projet parent.
   outputFileTracingRoot: dirname(fileURLToPath(import.meta.url)),
   // N'annonce pas la technologie utilisée.
   poweredByHeader: false,
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: 'picsum.photos' },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "picsum.photos" },
     ],
   },
   async headers() {

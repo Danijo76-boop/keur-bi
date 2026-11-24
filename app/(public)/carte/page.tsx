@@ -47,13 +47,19 @@ export default function CartePage() {
     <SiActif flag="carte">
       <div className="flex flex-col h-[calc(100vh-4rem)] -mb-16">
         <div className="bg-white border-b border-gray-100 px-4 py-2 flex gap-2 overflow-x-auto">
-          <button className={pastille(!filtreTF)} onClick={() => setFiltreTF("")}>Tous</button>
+          <button className={pastille(!filtreTF)} onClick={() => setFiltreTF("")}>
+            Tous
+          </button>
           {(["verifie", "en_verification"] as StatutTF[]).map((s) => (
-            <button key={s} className={pastille(filtreTF === s)} onClick={() => setFiltreTF(s)}>{ICONES_TF[s]} {LABELS_TF[s]}</button>
+            <button key={s} className={pastille(filtreTF === s)} onClick={() => setFiltreTF(s)}>
+              {ICONES_TF[s]} {LABELS_TF[s]}
+            </button>
           ))}
           <span className="border-l border-gray-200 mx-1" />
           {TYPES.map((t) => (
-            <button key={t} className={pastille(filtreType === t)} onClick={() => setFiltreType(filtreType === t ? "" : t)}>{t}</button>
+            <button key={t} className={pastille(filtreType === t)} onClick={() => setFiltreType(filtreType === t ? "" : t)}>
+              {t}
+            </button>
           ))}
         </div>
         <div className="flex-1 flex flex-col-reverse md:flex-row min-h-0">
@@ -68,17 +74,19 @@ export default function CartePage() {
             {liste.map((b) => {
               const s = statutTF(b, overrides, demandes);
               return (
-                <button
-                  key={b.id}
-                  onClick={() => setSelection(b.id)}
-                  className={`card p-3 text-left shrink-0 ${selection === b.id ? "ring-2 ring-gold" : ""}`}
-                >
-                  <div className="text-xs text-gray-500 mb-1">{ICONES_TF[s]} {LABELS_TF[s]}</div>
+                <button key={b.id} onClick={() => setSelection(b.id)} className={`card p-3 text-left shrink-0 ${selection === b.id ? "ring-2 ring-gold" : ""}`}>
+                  <div className="text-xs text-gray-500 mb-1">
+                    {ICONES_TF[s]} {LABELS_TF[s]}
+                  </div>
                   <div className="font-semibold text-sm text-gray-900">{b.titre}</div>
-                  <div className="text-xs text-gray-400">{b.ville} · {b.superficie.toLocaleString("fr-FR")} m²</div>
+                  <div className="text-xs text-gray-400">
+                    {b.ville} · {b.superficie.toLocaleString("fr-FR")} m²
+                  </div>
                   <div className="text-navy font-bold text-sm mt-1">{estLocation(b) ? `${formatFCFA(b.prix)} / mois` : formatFCFA(b.prix)}</div>
                   {selection === b.id && (
-                    <Link href={`/annonces/${b.id}`} className="text-xs text-blue font-medium hover:underline mt-1 inline-block">Voir le détail →</Link>
+                    <Link href={`/annonces/${b.id}`} className="text-xs text-blue font-medium hover:underline mt-1 inline-block">
+                      Voir le détail →
+                    </Link>
                   )}
                 </button>
               );

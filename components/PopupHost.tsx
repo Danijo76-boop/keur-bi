@@ -64,11 +64,20 @@ export default function PopupHost() {
         <span className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${s.pastille}`}>
           <s.icone size={32} />
         </span>
-        <h2 id="popup-titre" className="text-lg font-bold text-gray-900">{courant.titre}</h2>
-        {courant.message && <p id="popup-message" className="text-sm text-gray-500 mt-1.5 break-words">{courant.message}</p>}
+        <h2 id="popup-titre" className="text-lg font-bold text-gray-900">
+          {courant.titre}
+        </h2>
+        {courant.message && (
+          <p id="popup-message" className="text-sm text-gray-500 mt-1.5 break-words">
+            {courant.message}
+          </p>
+        )}
         <div className="flex gap-3 mt-6">
           {question && (
-            <button onClick={() => fermer(false)} className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">
+            <button
+              onClick={() => fermer(false)}
+              className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+            >
               Annuler
             </button>
           )}
@@ -81,7 +90,11 @@ export default function PopupHost() {
           </button>
         </div>
         {courant.type === "succes" && (
-          <span key={courant.id} className="absolute left-0 bottom-0 h-1 bg-green-light/70" style={{ animation: `decompte ${DUREE_SUCCES}ms linear forwards` }} />
+          <span
+            key={courant.id}
+            className="absolute left-0 bottom-0 h-1 bg-green-light/70"
+            style={{ animation: `decompte ${DUREE_SUCCES}ms linear forwards` }}
+          />
         )}
       </div>
     </div>

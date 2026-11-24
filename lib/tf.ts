@@ -111,5 +111,8 @@ export function deciderDemandeTF(id: string, statut: "verifie" | "invalide", mot
 
 export function relancerDemandeTF(id: string) {
   popup.succes("Relance envoyée");
-  ecrire(CLE_DEMANDES, lireDemandesTF().map((d) => (d.id === id ? { ...d, relances: d.relances + 1 } : d)));
+  ecrire(
+    CLE_DEMANDES,
+    lireDemandesTF().map((d) => (d.id === id ? { ...d, relances: d.relances + 1 } : d)),
+  );
 }

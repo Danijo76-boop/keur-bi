@@ -13,7 +13,12 @@ const SECTIONS: Section[] = [
     id: "commissions",
     titre: "💰 Commissions & tarifs",
     champs: [
-      { cle: "tauxCommission", label: "Taux de commission de référence", desc: "Tranche 50–200 M FCFA ; ±0,5 point en dessous et au-dessus. À la charge du vendeur.", unite: "%" },
+      {
+        cle: "tauxCommission",
+        label: "Taux de commission de référence",
+        desc: "Tranche 50–200 M FCFA ; ±0,5 point en dessous et au-dessus. À la charge du vendeur.",
+        unite: "%",
+      },
       { cle: "prixBoost", label: "Prix du boost annonce (30 jours)", desc: "Montant affiché au vendeur pour la mise en avant", unite: "FCFA" },
       { cle: "prixTFPrioritaire", label: "Prix de la vérification TF prioritaire", desc: "Option accélérée, réponse en 24–48h", unite: "FCFA" },
       { cle: "tvaHonoraires", label: "TVA sur honoraires notaire", desc: "Appliquée aux honoraires du barème", unite: "%" },
@@ -26,7 +31,12 @@ const SECTIONS: Section[] = [
     id: "delais",
     titre: "📅 Délais & alertes DGID",
     champs: [
-      { cle: "moisEnregistrement", label: "Fenêtre d'enregistrement DGID", desc: "Mois après la signature de l'acte pour déposer sans pénalité", unite: "mois" },
+      {
+        cle: "moisEnregistrement",
+        label: "Fenêtre d'enregistrement DGID",
+        desc: "Mois après la signature de l'acte pour déposer sans pénalité",
+        unite: "mois",
+      },
       { cle: "penaliteRetard", label: "Pénalité de retard", desc: "Majoration des droits si le délai est dépassé", unite: "%" },
       { cle: "alerteDGID1", label: "Premier rappel (J−)", desc: "Jours avant expiration du délai", unite: "jours" },
       { cle: "alerteDGID2", label: "Rappel urgent (J−)", desc: "Rappel critique avant la date limite", unite: "jours" },
@@ -59,7 +69,11 @@ const FLAGS: { cle: keyof Flags; label: string; desc: string }[] = [
   { cle: "comparateur", label: "Comparateur de biens", desc: "Comparer jusqu'à 3 biens côte à côte" },
   { cle: "carte", label: "Carte interactive", desc: "Vue carte des annonces" },
   { cle: "boost", label: "Boost annonce payant", desc: "Option de mise en avant pour les vendeurs" },
-  { cle: "cadastre", label: "Vérification cadastrale des Titres Fonciers", desc: "Demandes, suivi et décisions de vérification. En pause tant que les données du cadastre ne sont pas réunies" },
+  {
+    cle: "cadastre",
+    label: "Vérification cadastrale des Titres Fonciers",
+    desc: "Demandes, suivi et décisions de vérification. En pause tant que les données du cadastre ne sont pas réunies",
+  },
   { cle: "publicite", label: "Publicité partenaires", desc: "Encarts sponsorisés sur les résultats de recherche et les fiches" },
   { cle: "tfPrioritaire", label: "Vérification TF prioritaire", desc: "Option accélérée contre supplément" },
   { cle: "signature", label: "Signature électronique", desc: "Module de signature des actes" },
@@ -82,7 +96,9 @@ export default function ParametresPage() {
   }, [version]);
 
   const champsModifies = [
-    ...SECTIONS.flatMap((s) => s.champs).filter((c) => form[c.cle] !== enregistres[c.cle]).map((c) => c.label),
+    ...SECTIONS.flatMap((s) => s.champs)
+      .filter((c) => form[c.cle] !== enregistres[c.cle])
+      .map((c) => c.label),
     ...FLAGS.filter((f) => form.flags[f.cle] !== enregistres.flags[f.cle]).map((f) => f.label),
   ];
 
@@ -103,15 +119,30 @@ export default function ParametresPage() {
         <div className="flex items-center gap-2 flex-wrap">
           {champsModifies.length > 0 && <span className="text-sm font-semibold text-red">⚠ {champsModifies.length} champ(s) non enregistré(s)</span>}
           {ok && champsModifies.length === 0 && <span className="text-sm font-semibold text-green">Enregistré</span>}
-          <button disabled={champsModifies.length === 0} onClick={() => setForm(enregistres)} className="border border-gray-200 bg-white rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50 disabled:opacity-40">Annuler</button>
-          <button disabled={champsModifies.length === 0} onClick={enregistrer} className="btn-navy text-sm px-3 py-2 disabled:opacity-40">Enregistrer les modifications</button>
+          <button
+            disabled={champsModifies.length === 0}
+            onClick={() => setForm(enregistres)}
+            className="border border-gray-200 bg-white rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50 disabled:opacity-40"
+          >
+            Annuler
+          </button>
+          <button disabled={champsModifies.length === 0} onClick={enregistrer} className="btn-navy text-sm px-3 py-2 disabled:opacity-40">
+            Enregistrer les modifications
+          </button>
         </div>
       </div>
 
       <div className="grid md:grid-cols-[13rem_1fr] gap-6 items-start">
         <nav className="card p-2 flex md:flex-col gap-1 overflow-x-auto" aria-label="Catégories">
           {[...SECTIONS.map((s) => ({ id: s.id, titre: s.titre })), { id: "flags", titre: "🚩 Fonctionnalités" }].map((s) => (
-            <button key={s.id} aria-current={section === s.id ? "true" : undefined} onClick={() => setSection(s.id)} className={`text-left px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${section === s.id ? "bg-navy text-white" : "text-gray-600 hover:bg-gray-50"}`}>{s.titre}</button>
+            <button
+              key={s.id}
+              aria-current={section === s.id ? "true" : undefined}
+              onClick={() => setSection(s.id)}
+              className={`text-left px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${section === s.id ? "bg-navy text-white" : "text-gray-600 hover:bg-gray-50"}`}
+            >
+              {s.titre}
+            </button>
           ))}
         </nav>
 
@@ -154,7 +185,9 @@ export default function ParametresPage() {
                       <span className="block text-xs text-gray-400">{f.desc}</span>
                     </span>
                     <span className="flex items-center gap-2 shrink-0">
-                      <span className={`text-xs font-semibold ${form.flags[f.cle] ? "text-green" : "text-gray-400"}`}>{form.flags[f.cle] ? "Actif" : "Inactif"}</span>
+                      <span className={`text-xs font-semibold ${form.flags[f.cle] ? "text-green" : "text-gray-400"}`}>
+                        {form.flags[f.cle] ? "Actif" : "Inactif"}
+                      </span>
                       <input
                         type="checkbox"
                         className="accent-navy w-4 h-4"
@@ -180,7 +213,9 @@ export default function ParametresPage() {
                 {audit.length === 0 && <li className="text-gray-400">Aucune modification.</li>}
                 {audit.map((a) => (
                   <li key={a.id} className="bg-gray-50 rounded-lg p-2">
-                    <span className="font-semibold text-gray-800">{new Date(a.date).toLocaleString("fr-FR")} · {a.auteur}</span>
+                    <span className="font-semibold text-gray-800">
+                      {new Date(a.date).toLocaleString("fr-FR")} · {a.auteur}
+                    </span>
                     <span className="block text-gray-500">{a.detail}</span>
                   </li>
                 ))}

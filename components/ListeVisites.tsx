@@ -27,25 +27,41 @@ export default function ListeVisites({ user }: { user: User }) {
         {triees.map((v) => {
           const aVenir = new Date(v.date).getTime() > Date.now();
           return (
-            <div key={v.id} className={`card p-4 flex items-center justify-between gap-4 flex-wrap ${vendeur && v.statut === "demandee" ? "border-l-4 border-gold" : ""}`}>
+            <div
+              key={v.id}
+              className={`card p-4 flex items-center justify-between gap-4 flex-wrap ${vendeur && v.statut === "demandee" ? "border-l-4 border-gold" : ""}`}
+            >
               <div className="min-w-0">
-                <Link href={`/annonces/${v.bienId}`} className="font-semibold text-sm text-gray-900 hover:text-navy">{v.bienTitre}</Link>
+                <Link href={`/annonces/${v.bienId}`} className="font-semibold text-sm text-gray-900 hover:text-navy">
+                  {v.bienTitre}
+                </Link>
                 <div className="text-xs text-gray-500 capitalize">
                   {new Date(v.date).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                 </div>
-                {vendeur && <div className="text-xs text-gray-500">{v.acheteurNom}{v.telephone && ` · ${v.telephone}`}</div>}
+                {vendeur && (
+                  <div className="text-xs text-gray-500">
+                    {v.acheteurNom}
+                    {v.telephone && ` · ${v.telephone}`}
+                  </div>
+                )}
                 {v.message && <p className="text-sm text-gray-600 break-words mt-1">« {v.message} »</p>}
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <span className="text-xs font-semibold text-gray-600">{libelleStatut(v)}</span>
                 {vendeur && v.statut === "demandee" && aVenir && (
                   <>
-                    <button onClick={() => changerStatutVisite(v.id, "confirmee")} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-green text-white">Confirmer</button>
-                    <button onClick={() => changerStatutVisite(v.id, "refusee")} className={bouton}>Refuser</button>
+                    <button onClick={() => changerStatutVisite(v.id, "confirmee")} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-green text-white">
+                      Confirmer
+                    </button>
+                    <button onClick={() => changerStatutVisite(v.id, "refusee")} className={bouton}>
+                      Refuser
+                    </button>
                   </>
                 )}
                 {!vendeur && (v.statut === "demandee" || v.statut === "confirmee") && aVenir && (
-                  <button onClick={() => changerStatutVisite(v.id, "annulee")} className={bouton}>Annuler</button>
+                  <button onClick={() => changerStatutVisite(v.id, "annulee")} className={bouton}>
+                    Annuler
+                  </button>
                 )}
               </div>
             </div>

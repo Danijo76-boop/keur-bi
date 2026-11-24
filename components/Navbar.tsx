@@ -133,11 +133,7 @@ export default function Navbar() {
   const { flags } = useParametres();
   const notifs = useNotifications(user);
   const nonLuesNotifs = notifs.filter((n) => !n.lue).length;
-  const messagesNonLus = useStocke(
-    () => (user ? conversationsDe(user).reduce((s, c) => s + nonLus(c, user.email), 0) : 0),
-    0,
-    [user?.email, user?.role],
-  );
+  const messagesNonLus = useStocke(() => (user ? conversationsDe(user).reduce((s, c) => s + nonLus(c, user.email), 0) : 0), 0, [user?.email, user?.role]);
 
   const rubriques = RUBRIQUES.map((r) => ({ ...r, entrees: r.entrees.filter((e) => !e.flag || flags[e.flag]) }));
   // L'administration s'ouvre à tout rôle habilité sur au moins une de ses sections.
@@ -188,7 +184,10 @@ export default function Navbar() {
   }, [open]);
 
   return (
-    <header ref={barre} className="sticky top-0 z-[60] bg-navy-dark/95 backdrop-blur-md border-b border-white/10 shadow-[0_8px_24px_-12px_rgba(27,42,74,0.6)] print:hidden">
+    <header
+      ref={barre}
+      className="sticky top-0 z-[60] bg-navy-dark/95 backdrop-blur-md border-b border-white/10 shadow-[0_8px_24px_-12px_rgba(27,42,74,0.6)] print:hidden"
+    >
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
@@ -220,7 +219,9 @@ export default function Navbar() {
                 {ouverte && (
                   // Le pt-3 garde la souris « dans » le menu entre le bouton et le panneau.
                   <div className={`absolute top-full pt-3 z-50 ${r.entrees.length > 4 ? "left-0" : "left-1/2 -translate-x-1/2"}`}>
-                    <div className={`bg-white rounded-2xl border border-gray-100 shadow-[0_24px_48px_-16px_rgba(27,42,74,0.45)] p-2 grid gap-0.5 animate-[apparition_0.15s_ease-out] ${r.entrees.length > 4 ? "grid-cols-2 w-[34rem]" : "w-72"}`}>
+                    <div
+                      className={`bg-white rounded-2xl border border-gray-100 shadow-[0_24px_48px_-16px_rgba(27,42,74,0.45)] p-2 grid gap-0.5 animate-[apparition_0.15s_ease-out] ${r.entrees.length > 4 ? "grid-cols-2 w-[34rem]" : "w-72"}`}
+                    >
                       {r.entrees.map((e) => (
                         <Link
                           key={e.href}
@@ -252,7 +253,9 @@ export default function Navbar() {
             <Link href="/messages" aria-label={`Messagerie, ${messagesNonLus} non lus`} className="relative text-white/70 hover:text-white p-2">
               <MessageSquare size={20} />
               {messagesNonLus > 0 && (
-                <span className="absolute top-0 right-0 min-w-4 h-4 px-1 bg-gold text-navy-dark text-[10px] font-bold rounded-full flex items-center justify-center">{messagesNonLus}</span>
+                <span className="absolute top-0 right-0 min-w-4 h-4 px-1 bg-gold text-navy-dark text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {messagesNonLus}
+                </span>
               )}
             </Link>
           )}
@@ -263,7 +266,9 @@ export default function Navbar() {
           >
             <Bell size={20} />
             {nonLuesNotifs > 0 && (
-              <span className="absolute top-0 right-0 min-w-4 h-4 px-1 bg-gold text-navy-dark text-[10px] font-bold rounded-full flex items-center justify-center">{nonLuesNotifs}</span>
+              <span className="absolute top-0 right-0 min-w-4 h-4 px-1 bg-gold text-navy-dark text-[10px] font-bold rounded-full flex items-center justify-center">
+                {nonLuesNotifs}
+              </span>
             )}
           </Link>
           {user ? (
@@ -307,7 +312,10 @@ export default function Navbar() {
               )}
             </div>
           ) : (
-            <Link href="/connexion" className="flex items-center gap-1.5 text-sm font-medium text-white/80 hover:text-white px-3 py-1.5 rounded-full hover:bg-white/10">
+            <Link
+              href="/connexion"
+              className="flex items-center gap-1.5 text-sm font-medium text-white/80 hover:text-white px-3 py-1.5 rounded-full hover:bg-white/10"
+            >
               <User size={18} /> Connexion
             </Link>
           )}
@@ -322,7 +330,9 @@ export default function Navbar() {
             <Link href="/notifications" aria-label={`Notifications, ${nonLuesNotifs} non lues`} className="relative text-white/80 p-2">
               <Bell size={22} />
               {nonLuesNotifs > 0 && (
-                <span className="absolute top-0.5 right-0.5 min-w-4 h-4 px-1 bg-gold text-navy-dark text-[10px] font-bold rounded-full flex items-center justify-center">{nonLuesNotifs}</span>
+                <span className="absolute top-0.5 right-0.5 min-w-4 h-4 px-1 bg-gold text-navy-dark text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {nonLuesNotifs}
+                </span>
               )}
             </Link>
           )}
@@ -337,7 +347,9 @@ export default function Navbar() {
         <div className="lg:hidden bg-navy-dark border-t border-white/10 px-4 pt-2 pb-6 text-white h-[calc(100dvh-4rem)] overflow-y-auto">
           {user && (
             <div className="flex items-center gap-3 py-3 border-b border-white/10">
-              <span className="w-10 h-10 rounded-full bg-gold text-navy-dark font-bold flex items-center justify-center shrink-0">{user.nom[0]?.toUpperCase()}</span>
+              <span className="w-10 h-10 rounded-full bg-gold text-navy-dark font-bold flex items-center justify-center shrink-0">
+                {user.nom[0]?.toUpperCase()}
+              </span>
               <span className="min-w-0">
                 <span className="block font-semibold truncate">{user.nom}</span>
                 <span className="block text-xs text-white/50 truncate">{user.email}</span>
@@ -361,7 +373,12 @@ export default function Navbar() {
                 {ouverte && (
                   <div className="flex flex-col pb-3">
                     {r.entrees.map((e) => (
-                      <Link key={e.href} href={e.href} onClick={() => setOpen(false)} className="flex items-center gap-3 py-2.5 pl-1 text-white/85 hover:text-gold">
+                      <Link
+                        key={e.href}
+                        href={e.href}
+                        onClick={() => setOpen(false)}
+                        className="flex items-center gap-3 py-2.5 pl-1 text-white/85 hover:text-gold"
+                      >
                         <e.icone size={18} className="text-gold shrink-0" />
                         <span>{e.label}</span>
                       </Link>
@@ -380,14 +397,18 @@ export default function Navbar() {
                 onClick={() => setRubriqueMobile(rubriqueMobile === "compte" ? null : "compte")}
                 className="w-full flex items-center justify-between py-3.5 font-semibold text-left"
               >
-                <span>Mon espace{messagesNonLus > 0 && <span className="ml-2 bg-gold text-navy-dark text-xs font-bold rounded-full px-1.5 py-0.5">{messagesNonLus}</span>}</span>
+                <span>
+                  Mon espace
+                  {messagesNonLus > 0 && <span className="ml-2 bg-gold text-navy-dark text-xs font-bold rounded-full px-1.5 py-0.5">{messagesNonLus}</span>}
+                </span>
                 <ChevronDown size={18} className={`text-white/60 transition-transform ${rubriqueMobile === "compte" ? "rotate-180" : ""}`} />
               </button>
               {rubriqueMobile === "compte" && (
                 <div className="flex flex-col pb-3">
                   {liensCompte.map((l) => (
                     <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="py-2.5 pl-1 text-white/85 hover:text-gold">
-                      {l.label}{l.href === "/messages" && messagesNonLus > 0 && ` (${messagesNonLus})`}
+                      {l.label}
+                      {l.href === "/messages" && messagesNonLus > 0 && ` (${messagesNonLus})`}
                     </Link>
                   ))}
                 </div>
@@ -408,9 +429,17 @@ export default function Navbar() {
                 <LogOut size={20} /> Déconnexion
               </button>
             ) : (
-              <Link href="/connexion" onClick={() => setOpen(false)} className="border border-white/30 rounded-xl text-center font-semibold py-2.5 hover:bg-white/10">Connexion</Link>
+              <Link
+                href="/connexion"
+                onClick={() => setOpen(false)}
+                className="border border-white/30 rounded-xl text-center font-semibold py-2.5 hover:bg-white/10"
+              >
+                Connexion
+              </Link>
             )}
-            <Link href="/publier" className="btn-primary text-center" onClick={() => setOpen(false)}>Publier une annonce</Link>
+            <Link href="/publier" className="btn-primary text-center" onClick={() => setOpen(false)}>
+              Publier une annonce
+            </Link>
           </div>
         </div>
       )}

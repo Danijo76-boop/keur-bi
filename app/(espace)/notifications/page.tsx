@@ -4,17 +4,7 @@ import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { User } from "@/lib/auth";
 import { CategorieNotif, useNotifications } from "@/lib/notifications";
-import {
-  Canaux,
-  creerAlerte,
-  ecrireCanaux,
-  lireAlertes,
-  lireCanaux,
-  marquerLues,
-  resumeCriteres,
-  supprimerAlerte,
-  urlRecherche,
-} from "@/lib/preferences";
+import { Canaux, creerAlerte, ecrireCanaux, lireAlertes, lireCanaux, marquerLues, resumeCriteres, supprimerAlerte, urlRecherche } from "@/lib/preferences";
 import { useStocke } from "@/lib/stockage";
 import { trouverUtilisateur } from "@/lib/utilisateurs";
 import BandeauDemo from "@/components/BandeauDemo";
@@ -47,7 +37,11 @@ function Contenu({ user }: { user: User }) {
 
   function creer(e: React.FormEvent) {
     e.preventDefault();
-    const criteres = { transaction: transaction === "location" ? ("location" as const) : undefined, region: region || undefined, prixMax: prixMax ? Number(prixMax) : undefined };
+    const criteres = {
+      transaction: transaction === "location" ? ("location" as const) : undefined,
+      region: region || undefined,
+      prixMax: prixMax ? Number(prixMax) : undefined,
+    };
     creerAlerte(user.email, resumeCriteres(criteres), criteres, frequence);
     setCreation(false);
     setRegion("");
@@ -105,7 +99,9 @@ function Contenu({ user }: { user: User }) {
                       </div>
                     </div>
                     {!n.lue && (
-                      <button onClick={() => marquerLues([n.id])} className="text-xs text-gray-400 hover:text-navy shrink-0">Marquer lu</button>
+                      <button onClick={() => marquerLues([n.id])} className="text-xs text-gray-400 hover:text-navy shrink-0">
+                        Marquer lu
+                      </button>
                     )}
                   </div>
                 </div>
@@ -124,7 +120,10 @@ function Contenu({ user }: { user: User }) {
                   <div className="min-w-0">
                     <div className="text-sm font-semibold text-gray-800 break-words">{a.nom}</div>
                     <div className="text-xs text-gray-400">
-                      {a.frequence} · <Link href={urlRecherche(a.criteres)} className="text-blue font-medium hover:underline">Voir les annonces</Link>
+                      {a.frequence} ·{" "}
+                      <Link href={urlRecherche(a.criteres)} className="text-blue font-medium hover:underline">
+                        Voir les annonces
+                      </Link>
                     </div>
                   </div>
                   <button onClick={() => supprimerAlerte(a.id)} aria-label={`Supprimer l'alerte ${a.nom}`} className="text-gray-400 hover:text-red shrink-0">
@@ -135,23 +134,48 @@ function Contenu({ user }: { user: User }) {
             </div>
             {creation ? (
               <form onSubmit={creer} className="flex flex-col gap-2">
-                <select aria-label="Achat ou location" value={transaction} onChange={(e) => setTransaction(e.target.value as typeof transaction)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy">
+                <select
+                  aria-label="Achat ou location"
+                  value={transaction}
+                  onChange={(e) => setTransaction(e.target.value as typeof transaction)}
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                >
                   <option value="vente">Acheter</option>
                   <option value="location">Louer</option>
                 </select>
-                <select value={region} onChange={(e) => setRegion(e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy">
+                <select
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                >
                   <option value="">Toutes les régions</option>
-                  {REGIONS.map((r) => <option key={r}>{r}</option>)}
+                  {REGIONS.map((r) => (
+                    <option key={r}>{r}</option>
+                  ))}
                 </select>
-                <input type="number" placeholder={transaction === "location" ? "Loyer max (FCFA)" : "Budget max (FCFA)"} value={prixMax} onChange={(e) => setPrixMax(e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy" />
-                <select value={frequence} onChange={(e) => setFrequence(e.target.value as typeof frequence)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy">
+                <input
+                  type="number"
+                  placeholder={transaction === "location" ? "Loyer max (FCFA)" : "Budget max (FCFA)"}
+                  value={prixMax}
+                  onChange={(e) => setPrixMax(e.target.value)}
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                />
+                <select
+                  value={frequence}
+                  onChange={(e) => setFrequence(e.target.value as typeof frequence)}
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                >
                   <option>Quotidien</option>
                   <option>Hebdomadaire</option>
                 </select>
-                <button type="submit" className="btn-navy text-sm">Créer l&apos;alerte</button>
+                <button type="submit" className="btn-navy text-sm">
+                  Créer l&apos;alerte
+                </button>
               </form>
             ) : (
-              <button onClick={() => setCreation(true)} className="text-sm text-blue font-medium hover:underline">+ Créer une alerte</button>
+              <button onClick={() => setCreation(true)} className="text-sm text-blue font-medium hover:underline">
+                + Créer une alerte
+              </button>
             )}
           </div>
 

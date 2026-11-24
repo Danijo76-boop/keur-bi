@@ -85,7 +85,9 @@ export default function FavorisPage() {
           {mesFavoris.length === 0 ? (
             <div className="card p-12 text-center text-gray-400">
               <p>Aucun favori pour le moment.</p>
-              <Link href="/annonces" className="text-blue text-sm mt-2 block hover:underline">Parcourir les annonces</Link>
+              <Link href="/annonces" className="text-blue text-sm mt-2 block hover:underline">
+                Parcourir les annonces
+              </Link>
             </div>
           ) : (
             <>
@@ -110,14 +112,18 @@ export default function FavorisPage() {
                           <input type="checkbox" className="accent-navy" checked={selection.includes(b.id)} onChange={() => basculerSelection(b.id)} />
                           Sélectionner
                         </label>
-                      ) : <span />}
-                      {b.prix_baisser && b.ancien_prix && (
-                        <span className="text-green font-semibold">↓ −{formatPrix(b.ancien_prix - b.prix)}</span>
-                      )}
-                      {statutVente(b.id, dossiers) === "disponible" ? (
-                        <Link href={`/annonces/${b.id}/offre`} className="text-blue font-medium hover:underline">Faire une offre</Link>
                       ) : (
-                        <Link href={`/annonces?type=${b.type}`} className="text-blue font-medium hover:underline">Similaires</Link>
+                        <span />
+                      )}
+                      {b.prix_baisser && b.ancien_prix && <span className="text-green font-semibold">↓ −{formatPrix(b.ancien_prix - b.prix)}</span>}
+                      {statutVente(b.id, dossiers) === "disponible" ? (
+                        <Link href={`/annonces/${b.id}/offre`} className="text-blue font-medium hover:underline">
+                          Faire une offre
+                        </Link>
+                      ) : (
+                        <Link href={`/annonces?type=${b.type}`} className="text-blue font-medium hover:underline">
+                          Similaires
+                        </Link>
                       )}
                     </div>
                     <NoteBien id={b.id} className="mt-2 px-1" />

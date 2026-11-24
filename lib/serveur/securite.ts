@@ -90,7 +90,34 @@ export async function lireJson(requete: Request, tailleMax = 50_000): Promise<Re
 }
 
 // Mots de passe trop courants, refusés même s'ils respectent les autres règles.
-const COURANTS = new Set(["12345678", "123456789", "1234567890", "password", "motdepasse", "azertyuiop", "qwertyuiop", "11111111", "00000000", "senegal123", "keurbi123", "password1", "iloveyou", "abcd1234", "admin123", "dakar2024", "dakar2025", "dakar2026", "password123", "motdepasse1", "azerty1234", "senegal2026", "keurbi2026", "bienvenue1", "1234abcd", "qwerty1234"]);
+const COURANTS = new Set([
+  "12345678",
+  "123456789",
+  "1234567890",
+  "password",
+  "motdepasse",
+  "azertyuiop",
+  "qwertyuiop",
+  "11111111",
+  "00000000",
+  "senegal123",
+  "keurbi123",
+  "password1",
+  "iloveyou",
+  "abcd1234",
+  "admin123",
+  "dakar2024",
+  "dakar2025",
+  "dakar2026",
+  "password123",
+  "motdepasse1",
+  "azerty1234",
+  "senegal2026",
+  "keurbi2026",
+  "bienvenue1",
+  "1234abcd",
+  "qwerty1234",
+]);
 
 export const LONGUEUR_MIN_MOT_DE_PASSE = 10;
 

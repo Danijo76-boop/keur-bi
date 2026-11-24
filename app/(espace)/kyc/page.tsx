@@ -17,11 +17,27 @@ const ETAPES = [
   { titre: "Validation", desc: "Revue par notre équipe" },
 ];
 
-function ChampFichier({ label, valeur, onChange, accept = "image/*,.pdf", camera }: { label: string; valeur?: string; onChange: (nom: string) => void; accept?: string; camera?: boolean }) {
+function ChampFichier({
+  label,
+  valeur,
+  onChange,
+  accept = "image/*,.pdf",
+  camera,
+}: {
+  label: string;
+  valeur?: string;
+  onChange: (nom: string) => void;
+  accept?: string;
+  camera?: boolean;
+}) {
   return (
-    <label className={`block border-2 border-dashed rounded-lg p-4 text-center cursor-pointer ${valeur ? "border-green-light bg-green/5" : "border-gray-200 hover:border-navy"}`}>
+    <label
+      className={`block border-2 border-dashed rounded-lg p-4 text-center cursor-pointer ${valeur ? "border-green-light bg-green/5" : "border-gray-200 hover:border-navy"}`}
+    >
       <span className="block text-sm font-semibold text-gray-700">{label}</span>
-      <span className="block text-xs text-gray-400 mt-1 break-all">{valeur ? `✅ ${valeur}` : "Cliquez pour choisir un fichier (JPG, PNG, PDF, max 5 Mo)"}</span>
+      <span className="block text-xs text-gray-400 mt-1 break-all">
+        {valeur ? `✅ ${valeur}` : "Cliquez pour choisir un fichier (JPG, PNG, PDF, max 5 Mo)"}
+      </span>
       <input
         type="file"
         accept={accept}
@@ -72,7 +88,9 @@ function Parcours({ user }: { user: User }) {
         <div className="card p-8 text-center">
           <p className="text-green font-semibold text-lg mb-1">✅ Identité vérifiée</p>
           <p className="text-sm text-gray-500 mb-4">Vous avez accès à toutes les fonctions de la plateforme.</p>
-          <Link href="/profil" className="btn-navy text-sm inline-block">Voir mon profil</Link>
+          <Link href="/profil" className="btn-navy text-sm inline-block">
+            Voir mon profil
+          </Link>
         </div>
       </div>
     );
@@ -83,8 +101,12 @@ function Parcours({ user }: { user: User }) {
       <div className="max-w-xl mx-auto px-4 py-16">
         <div className="card p-8 text-center">
           <p className="text-navy font-semibold text-lg mb-1">⏳ Dossier en cours de revue</p>
-          <p className="text-sm text-gray-500 mb-4">Traitement habituel sous {p.delaiKYC} heures. Vous pouvez déjà soumettre des offres si votre score le permet.</p>
-          <Link href="/tableau-de-bord" className="btn-navy text-sm inline-block">Retour au tableau de bord</Link>
+          <p className="text-sm text-gray-500 mb-4">
+            Traitement habituel sous {p.delaiKYC} heures. Vous pouvez déjà soumettre des offres si votre score le permet.
+          </p>
+          <Link href="/tableau-de-bord" className="btn-navy text-sm inline-block">
+            Retour au tableau de bord
+          </Link>
         </div>
       </div>
     );
@@ -93,17 +115,27 @@ function Parcours({ user }: { user: User }) {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold text-navy mb-1">Vérification de votre identité</h1>
-      <p className="text-sm text-gray-500 mb-4">Cette étape protège acheteurs et vendeurs. Pièces demandées : {estCoteVendeur(user.role) ? p.docsVendeur : p.docsAcheteur}.</p>
-      <BandeauDemo>Démo : aucune pièce n&apos;est envoyée ni conservée, seul le nom du fichier est enregistré dans ce navigateur. N&apos;utilisez pas de vrais documents.</BandeauDemo>
+      <p className="text-sm text-gray-500 mb-4">
+        Cette étape protège acheteurs et vendeurs. Pièces demandées : {estCoteVendeur(user.role) ? p.docsVendeur : p.docsAcheteur}.
+      </p>
+      <BandeauDemo>
+        Démo : aucune pièce n&apos;est envoyée ni conservée, seul le nom du fichier est enregistré dans ce navigateur. N&apos;utilisez pas de vrais documents.
+      </BandeauDemo>
       {profil?.statutKYC === "rejete" && (
-        <p className="text-sm font-semibold text-red bg-red/10 rounded-lg px-3 py-2 mb-4">Dossier précédent rejeté{profil.kyc?.motifRejet ? ` : ${profil.kyc.motifRejet}` : ""}. Merci de le soumettre à nouveau.</p>
+        <p className="text-sm font-semibold text-red bg-red/10 rounded-lg px-3 py-2 mb-4">
+          Dossier précédent rejeté{profil.kyc?.motifRejet ? ` : ${profil.kyc.motifRejet}` : ""}. Merci de le soumettre à nouveau.
+        </p>
       )}
 
       <div className="grid md:grid-cols-[15rem_1fr] gap-6">
         <ol className="card p-4 flex flex-col gap-3 h-fit">
           {ETAPES.map((e, i) => (
             <li key={e.titre} aria-current={i === etape ? "step" : undefined} className="flex items-start gap-3">
-              <span className={`w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center shrink-0 ${i < etape ? "bg-green text-white" : i === etape ? "bg-navy text-white" : "bg-gray-100 text-gray-400"}`}>{i < etape ? "✓" : i + 1}</span>
+              <span
+                className={`w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center shrink-0 ${i < etape ? "bg-green text-white" : i === etape ? "bg-navy text-white" : "bg-gray-100 text-gray-400"}`}
+              >
+                {i < etape ? "✓" : i + 1}
+              </span>
               <span>
                 <span className="block text-sm font-semibold text-gray-800">{e.titre}</span>
                 <span className="block text-xs text-gray-400">{e.desc}</span>
@@ -116,20 +148,41 @@ function Parcours({ user }: { user: User }) {
           {etape === 0 && (
             <>
               <div className="grid sm:grid-cols-2 gap-4">
-                <label className={libelle}>Date de naissance *<input type="date" value={form.dateNaissance ?? ""} onChange={(e) => maj({ dateNaissance: e.target.value })} className={champ} /></label>
-                <label className={libelle}>Lieu de naissance *<input value={form.lieuNaissance ?? ""} onChange={(e) => maj({ lieuNaissance: e.target.value })} placeholder="Dakar, Sénégal" className={champ} /></label>
-                <label className={libelle}>Nationalité
-                  <select value={form.nationalite} onChange={(e) => maj({ nationalite: e.target.value })} className={champ}><option>Sénégalaise</option><option>Autre</option></select>
+                <label className={libelle}>
+                  Date de naissance *
+                  <input type="date" value={form.dateNaissance ?? ""} onChange={(e) => maj({ dateNaissance: e.target.value })} className={champ} />
                 </label>
-                <label className={libelle}>Téléphone *<input type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} placeholder="+221 77 000 00 00" className={champ} /></label>
-                <label className={libelle}>Type de document
+                <label className={libelle}>
+                  Lieu de naissance *
+                  <input
+                    value={form.lieuNaissance ?? ""}
+                    onChange={(e) => maj({ lieuNaissance: e.target.value })}
+                    placeholder="Dakar, Sénégal"
+                    className={champ}
+                  />
+                </label>
+                <label className={libelle}>
+                  Nationalité
+                  <select value={form.nationalite} onChange={(e) => maj({ nationalite: e.target.value })} className={champ}>
+                    <option>Sénégalaise</option>
+                    <option>Autre</option>
+                  </select>
+                </label>
+                <label className={libelle}>
+                  Téléphone *
+                  <input type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} placeholder="+221 77 000 00 00" className={champ} />
+                </label>
+                <label className={libelle}>
+                  Type de document
                   <select value={form.typeDocument} onChange={(e) => maj({ typeDocument: e.target.value })} className={champ}>
                     <option>Carte Nationale d&apos;Identité</option>
                     <option>Passeport biométrique</option>
                     <option>Titre de séjour</option>
                   </select>
                 </label>
-                <label className={libelle}>Numéro de document *<input value={form.numeroDocument ?? ""} onChange={(e) => maj({ numeroDocument: e.target.value })} className={champ} /></label>
+                <label className={libelle}>
+                  Numéro de document *<input value={form.numeroDocument ?? ""} onChange={(e) => maj({ numeroDocument: e.target.value })} className={champ} />
+                </label>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <ChampFichier label="Recto *" valeur={form.recto} onChange={(n) => maj({ recto: n })} />
@@ -158,8 +211,17 @@ function Parcours({ user }: { user: User }) {
           )}
           {erreur && <p className="text-red text-xs">{erreur}</p>}
           <div className="flex justify-between gap-3">
-            <button type="button" disabled={etape === 0} onClick={() => setEtape(etape - 1)} className="border border-gray-200 rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-gray-50 disabled:opacity-40">← Retour</button>
-            <button type="button" onClick={suivant} className="btn-navy text-sm">{etape === 2 ? "Soumettre mon dossier" : "Continuer →"}</button>
+            <button
+              type="button"
+              disabled={etape === 0}
+              onClick={() => setEtape(etape - 1)}
+              className="border border-gray-200 rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-gray-50 disabled:opacity-40"
+            >
+              ← Retour
+            </button>
+            <button type="button" onClick={suivant} className="btn-navy text-sm">
+              {etape === 2 ? "Soumettre mon dossier" : "Continuer →"}
+            </button>
           </div>
         </div>
       </div>

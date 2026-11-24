@@ -22,7 +22,9 @@ export function ChiffresCles() {
     <>
       {chiffres.map((s) => (
         <div key={s.label} className="px-4 py-6 text-center">
-          <div className="font-display text-navy-dark font-extrabold text-2xl md:text-3xl tabular-nums"><Compteur valeur={s.val} format={s.format} /></div>
+          <div className="font-display text-navy-dark font-extrabold text-2xl md:text-3xl tabular-nums">
+            <Compteur valeur={s.val} format={s.format} />
+          </div>
           <div className="text-gray-500 text-xs md:text-sm mt-1">{s.label}</div>
         </div>
       ))}

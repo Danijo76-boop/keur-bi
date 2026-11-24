@@ -3,15 +3,7 @@ import { Heart } from "lucide-react";
 import { basculerFavori, lireFavoris } from "@/lib/preferences";
 import { useStocke } from "@/lib/stockage";
 
-export default function FavoriButton({
-  id,
-  className,
-  size = 15,
-}: {
-  id: string;
-  className?: string;
-  size?: number;
-}) {
+export default function FavoriButton({ id, className, size = 15 }: { id: string; className?: string; size?: number }) {
   const actif = useStocke(() => lireFavoris().includes(id), false, [id]);
 
   function toggle(e: React.MouseEvent) {

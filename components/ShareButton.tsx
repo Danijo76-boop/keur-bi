@@ -20,7 +20,7 @@ export default function ShareButton({ titre, className }: { titre: string; class
     }
     await navigator.clipboard.writeText(url);
     setCopie(true);
-      popup.succes("Lien copié", "Vous pouvez le coller où vous voulez.");
+    popup.succes("Lien copié", "Vous pouvez le coller où vous voulez.");
     setTimeout(() => setCopie(false), 2000);
   }
 

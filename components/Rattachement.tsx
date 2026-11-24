@@ -6,8 +6,16 @@ import { useStocke } from "@/lib/stockage";
 import { majUtilisateur, trouverUtilisateur } from "@/lib/utilisateurs";
 
 const TEXTES: Partial<Record<Role, { titre: string; libelle: string; aide: string }>> = {
-  agent: { titre: "Mon agence", libelle: "Agence de rattachement", aide: "Vos annonces et vos dossiers sont suivis par le responsable de l'agence, qui signe les actes." },
-  clerc: { titre: "Mon étude", libelle: "Étude notariale de rattachement", aide: "Vous préparez les dossiers ; seul le notaire fait avancer les étapes et signe." },
+  agent: {
+    titre: "Mon agence",
+    libelle: "Agence de rattachement",
+    aide: "Vos annonces et vos dossiers sont suivis par le responsable de l'agence, qui signe les actes.",
+  },
+  clerc: {
+    titre: "Mon étude",
+    libelle: "Étude notariale de rattachement",
+    aide: "Vous préparez les dossiers ; seul le notaire fait avancer les étapes et signe.",
+  },
 };
 
 // Lien entre un collaborateur (agent, clerc) et la structure pour laquelle il travaille.
@@ -34,10 +42,17 @@ export default function Rattachement({ email, role }: { email: string; role: Rol
       <h2 className="font-bold text-gray-900 mb-2">{textes.titre}</h2>
       <label className="text-xs font-semibold text-gray-600 block">
         {textes.libelle}
-        <input value={valeur} onChange={(e) => setValeur(e.target.value)} placeholder="Nom de la structure" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-normal mt-1 outline-none focus:border-navy" />
+        <input
+          value={valeur}
+          onChange={(e) => setValeur(e.target.value)}
+          placeholder="Nom de la structure"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-normal mt-1 outline-none focus:border-navy"
+        />
       </label>
       <p className="text-xs text-gray-400 mt-2">{textes.aide}</p>
-      <button type="submit" disabled={valeur.trim() === enregistre} className="btn-navy text-sm mt-3 disabled:opacity-40">Enregistrer</button>
+      <button type="submit" disabled={valeur.trim() === enregistre} className="btn-navy text-sm mt-3 disabled:opacity-40">
+        Enregistrer
+      </button>
     </form>
   );
 }

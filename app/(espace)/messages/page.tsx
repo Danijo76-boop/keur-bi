@@ -54,23 +54,39 @@ function Messagerie({ user }: { user: User }) {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold text-navy mb-4">Messagerie</h1>
-      <BandeauDemo>Démo : les messages restent dans ce navigateur. Changez de rôle pour répondre et les pièces jointes ne transmettent que le nom du fichier.</BandeauDemo>
+      <BandeauDemo>
+        Démo : les messages restent dans ce navigateur. Changez de rôle pour répondre et les pièces jointes ne transmettent que le nom du fichier.
+      </BandeauDemo>
       <div className="card grid md:grid-cols-[20rem_1fr] xl:grid-cols-[18rem_1fr_16rem] h-[70vh]">
         <aside className={`border-r border-gray-100 flex-col min-h-0 ${active ? "hidden md:flex" : "flex"}`}>
           <div className="p-3 border-b border-gray-100">
             <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 mb-2">
               <Search size={14} className="text-gray-400 shrink-0" />
-              <input aria-label="Rechercher une conversation" value={recherche} onChange={(e) => setRecherche(e.target.value)} placeholder="Rechercher…" className="w-full text-sm outline-none" />
+              <input
+                aria-label="Rechercher une conversation"
+                value={recherche}
+                onChange={(e) => setRecherche(e.target.value)}
+                placeholder="Rechercher…"
+                className="w-full text-sm outline-none"
+              />
             </div>
             <div className="flex gap-1">
               {(["tous", "dossiers", "notaires"] as const).map((f) => (
-                <button key={f} onClick={() => setFiltre(f)} className={`text-xs font-medium px-3 py-1 rounded-full capitalize ${filtre === f ? "bg-navy text-white" : "text-gray-500 hover:bg-gray-50"}`}>{f}</button>
+                <button
+                  key={f}
+                  onClick={() => setFiltre(f)}
+                  className={`text-xs font-medium px-3 py-1 rounded-full capitalize ${filtre === f ? "bg-navy text-white" : "text-gray-500 hover:bg-gray-50"}`}
+                >
+                  {f}
+                </button>
               ))}
             </div>
           </div>
           <div className="overflow-y-auto flex-1">
             {visibles.length === 0 && (
-              <p className="text-sm text-gray-400 p-6 text-center">Aucune conversation. Contactez un vendeur depuis une annonce ou un notaire depuis un dossier.</p>
+              <p className="text-sm text-gray-400 p-6 text-center">
+                Aucune conversation. Contactez un vendeur depuis une annonce ou un notaire depuis un dossier.
+              </p>
             )}
             {visibles.map((c) => {
               const dernier = c.messages[c.messages.length - 1];
@@ -83,7 +99,11 @@ function Messagerie({ user }: { user: User }) {
                 >
                   <div className="flex justify-between gap-2">
                     <span className="font-semibold text-sm text-gray-900 truncate">{nomAffiche(c)}</span>
-                    {n > 0 && <span className="min-w-5 h-5 px-1 bg-gold text-navy-dark text-[11px] font-bold rounded-full flex items-center justify-center shrink-0">{n}</span>}
+                    {n > 0 && (
+                      <span className="min-w-5 h-5 px-1 bg-gold text-navy-dark text-[11px] font-bold rounded-full flex items-center justify-center shrink-0">
+                        {n}
+                      </span>
+                    )}
                   </div>
                   <div className="text-xs text-gray-400 truncate">{c.sujet}</div>
                   <div className="text-xs text-gray-500 truncate">{dernier?.texte ?? "Nouvelle conversation"}</div>
@@ -97,14 +117,26 @@ function Messagerie({ user }: { user: User }) {
           <section className="flex flex-col min-h-0">
             <header className="p-3 border-b border-gray-100 flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <button onClick={() => router.replace("/messages")} className="md:hidden text-xs text-blue mb-1">← Conversations</button>
+                <button onClick={() => router.replace("/messages")} className="md:hidden text-xs text-blue mb-1">
+                  ← Conversations
+                </button>
                 <div className="font-bold text-sm text-gray-900 truncate">{nomAffiche(active)}</div>
                 <div className="text-xs text-gray-400 truncate">{active.sujet}</div>
               </div>
               <div className="flex gap-3 text-xs font-medium shrink-0">
-                {active.dossierId && <Link href={`/dossiers/${active.dossierId}`} className="text-blue hover:underline">Dossier</Link>}
-                {!active.dossierId && active.bienId && <Link href={`/annonces/${active.bienId}`} className="text-blue hover:underline">Annonce</Link>}
-                <Link href="/calendrier" className="text-blue hover:underline">Calendrier</Link>
+                {active.dossierId && (
+                  <Link href={`/dossiers/${active.dossierId}`} className="text-blue hover:underline">
+                    Dossier
+                  </Link>
+                )}
+                {!active.dossierId && active.bienId && (
+                  <Link href={`/annonces/${active.bienId}`} className="text-blue hover:underline">
+                    Annonce
+                  </Link>
+                )}
+                <Link href="/calendrier" className="text-blue hover:underline">
+                  Calendrier
+                </Link>
               </div>
             </header>
             <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 bg-gray-50" aria-live="polite">
@@ -118,7 +150,8 @@ function Messagerie({ user }: { user: User }) {
                       {m.fichier && <div className={`text-xs mt-1 ${moi ? "text-white/70" : "text-gray-500"}`}>📎 {m.fichier}</div>}
                     </div>
                     <div className={`text-[11px] text-gray-400 mt-0.5 ${moi ? "text-right" : ""}`}>
-                      {!moi && `${m.auteurNom} · `}{new Date(m.date).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}
+                      {!moi && `${m.auteurNom} · `}
+                      {new Date(m.date).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}
                     </div>
                   </div>
                 );
@@ -144,7 +177,9 @@ function Messagerie({ user }: { user: User }) {
                 placeholder="Écrire un message…"
                 className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
               />
-              <button type="submit" aria-label="Envoyer" disabled={!texte.trim()} className="btn-navy px-3 py-2 disabled:opacity-50"><Send size={16} /></button>
+              <button type="submit" aria-label="Envoyer" disabled={!texte.trim()} className="btn-navy px-3 py-2 disabled:opacity-50">
+                <Send size={16} />
+              </button>
             </form>
           </section>
         ) : (
@@ -156,31 +191,61 @@ function Messagerie({ user }: { user: User }) {
               <div>
                 <h3 className="text-xs font-bold text-gray-500 uppercase mb-2">{dossierLie ? "Dossier lié" : "Annonce liée"}</h3>
                 <div className="font-semibold text-gray-900">{bienLie?.titre}</div>
-                {dossierLie && <div className="text-xs text-gray-400">#{referenceDossier(dossierLie)} · {LABELS_ETAPE[dossierLie.statut]}</div>}
+                {dossierLie && (
+                  <div className="text-xs text-gray-400">
+                    #{referenceDossier(dossierLie)} · {LABELS_ETAPE[dossierLie.statut]}
+                  </div>
+                )}
               </div>
             )}
             <div>
               <h3 className="text-xs font-bold text-gray-500 uppercase mb-2">Participants</h3>
               <ul className="flex flex-col gap-1">
-                <li className="text-gray-800">{active.acheteurNom} <span className="text-xs text-gray-400">· Acheteur</span></li>
-                <li className="text-gray-800">{active.interlocuteurNom} <span className="text-xs text-gray-400">· {active.avec === "notaire" ? "Notaire" : "Vendeur"}</span></li>
+                <li className="text-gray-800">
+                  {active.acheteurNom} <span className="text-xs text-gray-400">· Acheteur</span>
+                </li>
+                <li className="text-gray-800">
+                  {active.interlocuteurNom} <span className="text-xs text-gray-400">· {active.avec === "notaire" ? "Notaire" : "Vendeur"}</span>
+                </li>
               </ul>
             </div>
             <div>
               <h3 className="text-xs font-bold text-gray-500 uppercase mb-2">Actions rapides</h3>
               <div className="flex flex-col gap-1.5">
-                {dossierLie && <Link href={`/dossiers/${dossierLie.id}`} className="text-blue hover:underline">📁 Ouvrir le dossier</Link>}
-                {dossierLie && dossierLie.statut === "en_signature" && <Link href={`/dossiers/${dossierLie.id}/signature`} className="text-blue hover:underline">✍️ Signer l&apos;acte</Link>}
-                {dossierLie && user.role === "acheteur" && dossierLie.offres.some((o) => o.statut === "acceptee") && <Link href={`/dossiers/${dossierLie.id}/paiement`} className="text-blue hover:underline">💳 Paiement séquestre</Link>}
-                {notaireLie && <Link href={`/notaires/${notaireLie.slug}`} className="text-blue hover:underline">📅 Prendre rendez-vous</Link>}
-                <Link href="/calendrier" className="text-blue hover:underline">🗓️ Voir le calendrier</Link>
+                {dossierLie && (
+                  <Link href={`/dossiers/${dossierLie.id}`} className="text-blue hover:underline">
+                    📁 Ouvrir le dossier
+                  </Link>
+                )}
+                {dossierLie && dossierLie.statut === "en_signature" && (
+                  <Link href={`/dossiers/${dossierLie.id}/signature`} className="text-blue hover:underline">
+                    ✍️ Signer l&apos;acte
+                  </Link>
+                )}
+                {dossierLie && user.role === "acheteur" && dossierLie.offres.some((o) => o.statut === "acceptee") && (
+                  <Link href={`/dossiers/${dossierLie.id}/paiement`} className="text-blue hover:underline">
+                    💳 Paiement séquestre
+                  </Link>
+                )}
+                {notaireLie && (
+                  <Link href={`/notaires/${notaireLie.slug}`} className="text-blue hover:underline">
+                    📅 Prendre rendez-vous
+                  </Link>
+                )}
+                <Link href="/calendrier" className="text-blue hover:underline">
+                  🗓️ Voir le calendrier
+                </Link>
               </div>
             </div>
             <div>
               <h3 className="text-xs font-bold text-gray-500 uppercase mb-2">Fichiers partagés ({fichiers.length})</h3>
               {fichiers.length === 0 && <p className="text-xs text-gray-400">Aucun fichier.</p>}
               <ul className="flex flex-col gap-1">
-                {fichiers.map((m) => <li key={m.id} className="text-xs text-gray-600 break-all">📄 {m.fichier}</li>)}
+                {fichiers.map((m) => (
+                  <li key={m.id} className="text-xs text-gray-600 break-all">
+                    📄 {m.fichier}
+                  </li>
+                ))}
               </ul>
             </div>
           </aside>

@@ -20,7 +20,8 @@ export function smsConfigure(numero?: string): boolean {
   return orangeConfigure() && (!numero || numero.startsWith("+221"));
 }
 
-const texteSMS = (code: string) => `KEUR BI : votre code de vérification est ${code}. Il expire dans 10 minutes. Ne le communiquez à personne, même à un agent KEUR BI.`;
+const texteSMS = (code: string) =>
+  `KEUR BI : votre code de vérification est ${code}. Il expire dans 10 minutes. Ne le communiquez à personne, même à un agent KEUR BI.`;
 
 export type ResultatSMS = { ok: true } | { ok: false; raison: string };
 
@@ -33,7 +34,11 @@ export async function envoyerSMS(numero: string, texte: string, objet = "message
   try {
     const r = viaOrange ? await viaOrangeSMS(numero, texte) : await viaTwilio(numero, texte);
     if (!r.ok) {
-      log.warn(`SMS : ${objet} refusé par ${viaOrange ? "Orange" : "Twilio"}`, { statut: r.status, reponse: (await r.text()).slice(0, 400), numero: masquerNumero(numero) });
+      log.warn(`SMS : ${objet} refusé par ${viaOrange ? "Orange" : "Twilio"}`, {
+        statut: r.status,
+        reponse: (await r.text()).slice(0, 400),
+        numero: masquerNumero(numero),
+      });
       return { ok: false, raison: `http_${r.status}` };
     }
     log.info(`SMS : ${objet} envoyé`, { fournisseur: viaOrange ? "orange" : "twilio", numero: masquerNumero(numero) });

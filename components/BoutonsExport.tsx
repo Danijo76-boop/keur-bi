@@ -11,9 +11,16 @@ const TAILLES: Record<Taille, string> = {
   normal: "px-4 py-2.5 text-sm gap-2",
   petit: "px-3 py-1.5 text-xs gap-1.5",
 };
-const BASE = "inline-flex items-center justify-center font-semibold rounded-xl text-white shadow-sm transition-all hover:-translate-y-px hover:shadow-md active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
+const BASE =
+  "inline-flex items-center justify-center font-semibold rounded-xl text-white shadow-sm transition-all hover:-translate-y-px hover:shadow-md active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
 
-export function BoutonPDF({ onClick, disabled, libelle = "Télécharger en PDF", taille = "normal", titre }: {
+export function BoutonPDF({
+  onClick,
+  disabled,
+  libelle = "Télécharger en PDF",
+  taille = "normal",
+  titre,
+}: {
   onClick: () => unknown | Promise<unknown>;
   disabled?: boolean;
   libelle?: string;
@@ -46,7 +53,12 @@ export function BoutonPDF({ onClick, disabled, libelle = "Télécharger en PDF",
   );
 }
 
-export function BoutonExcel({ onClick, disabled, libelle = "Télécharger en Excel", taille = "normal" }: {
+export function BoutonExcel({
+  onClick,
+  disabled,
+  libelle = "Télécharger en Excel",
+  taille = "normal",
+}: {
   onClick: () => unknown;
   disabled?: boolean;
   libelle?: string;
@@ -66,7 +78,12 @@ export function BoutonExcel({ onClick, disabled, libelle = "Télécharger en Exc
 }
 
 // Les deux côte à côte, avec un message quand il n'y a rien à exporter.
-export function BoutonsExport({ onPDF, onExcel, disabled, raison = "Rien à exporter pour le moment." }: {
+export function BoutonsExport({
+  onPDF,
+  onExcel,
+  disabled,
+  raison = "Rien à exporter pour le moment.",
+}: {
   onPDF: () => unknown | Promise<unknown>;
   onExcel: () => unknown;
   disabled?: boolean;

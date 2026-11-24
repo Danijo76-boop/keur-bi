@@ -3,14 +3,7 @@ import { lire, ecrire, nouvelId } from "./stockage";
 import { popup } from "./popup";
 
 /* ── Signalements d'annonces ── */
-export const MOTIFS_SIGNALEMENT = [
-  "Arnaque suspectée",
-  "Titre Foncier douteux",
-  "Prix trompeur",
-  "Bien déjà vendu",
-  "Photos non conformes",
-  "Autre",
-];
+export const MOTIFS_SIGNALEMENT = ["Arnaque suspectée", "Titre Foncier douteux", "Prix trompeur", "Bien déjà vendu", "Photos non conformes", "Autre"];
 
 export type Signalement = {
   id: string;
@@ -36,7 +29,10 @@ export function signaler(s: Omit<Signalement, "id" | "date" | "statut">) {
 // Une décision sur une annonce vaut pour tous ses signalements encore ouverts.
 export function traiterSignalements(bienId: string, statut: "classe" | "retire") {
   popup.succes(statut === "retire" ? "Annonce retirée" : "Signalement classé sans suite");
-  ecrire(CLE_SIGNALEMENTS, lireSignalements().map((s) => (s.bienId === bienId && s.statut === "ouvert" ? { ...s, statut } : s)));
+  ecrire(
+    CLE_SIGNALEMENTS,
+    lireSignalements().map((s) => (s.bienId === bienId && s.statut === "ouvert" ? { ...s, statut } : s)),
+  );
 }
 
 /* ── Avis après transaction ── */
@@ -75,8 +71,7 @@ export function publierAvis(a: Omit<Avis, "id" | "date" | "auteurNom"> & { nomCo
 }
 
 // Texte affiché à côté des étoiles : « 4,7 (12 avis) », ou « Aucun avis pour l'instant » tant que personne n'a noté.
-export const texteNote = (note: number, nbAvis: number) =>
-  nbAvis > 0 ? `${note.toLocaleString("fr-FR")} (${nbAvis} avis)` : "Aucun avis pour l'instant";
+export const texteNote = (note: number, nbAvis: number) => (nbAvis > 0 ? `${note.toLocaleString("fr-FR")} (${nbAvis} avis)` : "Aucun avis pour l'instant");
 
 export function noteAgregee(note: number, nbAvis: number, locaux: Avis[]) {
   const nb = nbAvis + locaux.length;

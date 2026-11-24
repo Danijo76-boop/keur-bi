@@ -39,15 +39,28 @@ export default function SignalerAnnonce({ bienId }: { bienId: string }) {
           >
             <label className="text-sm font-semibold text-gray-700">
               Motif
-              <select value={motif} onChange={(e) => setMotif(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-normal mt-1 outline-none focus:border-navy">
-                {MOTIFS_SIGNALEMENT.map((m) => <option key={m}>{m}</option>)}
+              <select
+                value={motif}
+                onChange={(e) => setMotif(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-normal mt-1 outline-none focus:border-navy"
+              >
+                {MOTIFS_SIGNALEMENT.map((m) => (
+                  <option key={m}>{m}</option>
+                ))}
               </select>
             </label>
             <label className="text-sm font-semibold text-gray-700">
               Précisions (optionnel)
-              <textarea rows={3} value={detail} onChange={(e) => setDetail(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-normal mt-1 outline-none focus:border-navy resize-none" />
+              <textarea
+                rows={3}
+                value={detail}
+                onChange={(e) => setDetail(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-normal mt-1 outline-none focus:border-navy resize-none"
+              />
             </label>
-            <button type="submit" className="btn-navy text-sm">Envoyer le signalement</button>
+            <button type="submit" className="btn-navy text-sm">
+              Envoyer le signalement
+            </button>
           </form>
         </Modal>
       )}

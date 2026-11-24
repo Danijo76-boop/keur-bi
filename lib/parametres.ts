@@ -76,10 +76,7 @@ export function lireParametres(): Parametres {
 export function sauvegarderParametres(p: Parametres, auteur: string, champs: string[]) {
   popup.succes("Paramètres enregistrés", champs.join(", "));
   ecrire(CLE, p);
-  ecrire(CLE_AUDIT, [
-    { id: nouvelId(), date: new Date().toISOString(), auteur, detail: champs.join(", ") },
-    ...lireAudit(),
-  ]);
+  ecrire(CLE_AUDIT, [{ id: nouvelId(), date: new Date().toISOString(), auteur, detail: champs.join(", ") }, ...lireAudit()]);
 }
 
 export function lireAudit(): EntreeAudit[] {

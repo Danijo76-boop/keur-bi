@@ -1,7 +1,10 @@
 export type EvenementIcs = { id: string; titre: string; detail?: string; date: Date; dureeMinutes?: number };
 
 function horodatage(d: Date): string {
-  return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  return d
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}/, "");
 }
 
 function echapper(s: string): string {

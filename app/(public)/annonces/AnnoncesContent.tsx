@@ -156,7 +156,7 @@ export default function AnnoncesContent() {
       if (statutsTF.length > 0 && !statutsTF.includes(statutTF(b, overridesTF, demandesTF))) return false;
       if (featured && !b.is_featured) return false;
       if (baisse && !b.prix_baisser) return false;
-      if (q && !(`${b.titre} ${b.ville} ${b.quartier} ${b.region} ${b.agence}`.toLowerCase().includes(q))) return false;
+      if (q && !`${b.titre} ${b.ville} ${b.quartier} ${b.region} ${b.agence}`.toLowerCase().includes(q)) return false;
       return true;
     });
 
@@ -168,14 +168,32 @@ export default function AnnoncesContent() {
     };
     if (sorters[tri]) r = [...r].sort(sorters[tri]);
     return r;
-  }, [biens, transaction, type, region, quartier, recherche, prixMin, prixMax, superficieMin, superficieMax, statutsTF, featured, baisse, tri, overridesTF, demandesTF]);
+  }, [
+    biens,
+    transaction,
+    type,
+    region,
+    quartier,
+    recherche,
+    prixMin,
+    prixMax,
+    superficieMin,
+    superficieMax,
+    statutsTF,
+    featured,
+    baisse,
+    tri,
+    overridesTF,
+    demandesTF,
+  ]);
 
   const quartiers = useMemo(
     () => Array.from(new Set(biens.filter((b) => region === "Toutes les régions" || b.region === region).map((b) => b.quartier))).sort(),
     [biens, region],
   );
   const nbFiltresActifs =
-    [type !== "Tous", region !== "Toutes les régions", !!quartier, !!prixMin || !!prixMax, !!superficieMin || !!superficieMax, featured, baisse].filter(Boolean).length + statutsTF.length;
+    [type !== "Tous", region !== "Toutes les régions", !!quartier, !!prixMin || !!prixMax, !!superficieMin || !!superficieMax, featured, baisse].filter(Boolean)
+      .length + statutsTF.length;
   const nbPages = Math.max(Math.ceil(resultats.length / PAR_PAGE), 1);
   const pageCourante = Math.min(page, nbPages);
   const affiches = resultats.slice((pageCourante - 1) * PAR_PAGE, pageCourante * PAR_PAGE);
@@ -236,10 +254,7 @@ export default function AnnoncesContent() {
             className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy w-48"
           />
           {flags.carte && (
-            <Link
-              href="/carte"
-              className="flex items-center gap-2 border border-gray-200 bg-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50"
-            >
+            <Link href="/carte" className="flex items-center gap-2 border border-gray-200 bg-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50">
               <Map size={16} /> Carte
             </Link>
           )}
@@ -274,150 +289,155 @@ export default function AnnoncesContent() {
               <ChevronDown size={18} className={`text-gray-400 lg:hidden transition-transform ${filtresOuverts ? "rotate-180" : ""}`} />
             </button>
             <div className={`mt-4 ${filtresOuverts ? "" : "hidden"} lg:block`}>
-
-            {/* Acheter ou louer */}
-            <div className="mb-5">
-              <span className="text-sm font-semibold text-gray-700 block mb-2">Je souhaite</span>
-              <div className="flex flex-wrap gap-2">
-                {([["vente", "Acheter"], ["location", "Louer"]] as const).map(([val, label]) => (
-                  <button
-                    key={val}
-                    aria-pressed={transaction === val}
-                    onClick={() => {
-                      setTransaction(val);
-                      if (val === "location") setStatutsTF([]);
-                    }}
-                    className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
-                      transaction === val
-                        ? "bg-navy text-white border-navy"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-navy hover:text-navy"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
+              {/* Acheter ou louer */}
+              <div className="mb-5">
+                <span className="text-sm font-semibold text-gray-700 block mb-2">Je souhaite</span>
+                <div className="flex flex-wrap gap-2">
+                  {(
+                    [
+                      ["vente", "Acheter"],
+                      ["location", "Louer"],
+                    ] as const
+                  ).map(([val, label]) => (
+                    <button
+                      key={val}
+                      aria-pressed={transaction === val}
+                      onClick={() => {
+                        setTransaction(val);
+                        if (val === "location") setStatutsTF([]);
+                      }}
+                      className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
+                        transaction === val ? "bg-navy text-white border-navy" : "bg-white text-gray-600 border-gray-200 hover:border-navy hover:text-navy"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Type de bien */}
-            <div className="mb-5">
-              <label className="text-sm font-semibold text-gray-700 block mb-2">Type de bien</label>
-              <div className="flex flex-wrap gap-2">
-                {TYPES.map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => setType(t)}
-                    className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
-                      t === type
-                        ? "bg-navy text-white border-navy"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-navy hover:text-navy"
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
+              {/* Type de bien */}
+              <div className="mb-5">
+                <label className="text-sm font-semibold text-gray-700 block mb-2">Type de bien</label>
+                <div className="flex flex-wrap gap-2">
+                  {TYPES.map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setType(t)}
+                      className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
+                        t === type ? "bg-navy text-white border-navy" : "bg-white text-gray-600 border-gray-200 hover:border-navy hover:text-navy"
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Région */}
-            <div className="mb-5">
-              <label className="text-sm font-semibold text-gray-700 block mb-2">Région</label>
-              <select
-                value={region}
-                onChange={(e) => {
-                  setRegion(e.target.value);
-                  setQuartier("");
-                }}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 outline-none focus:border-navy"
-              >
-                {REGIONS_OPTIONS.map((r) => (
-                  <option key={r}>{r}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Quartier */}
-            <div className="mb-5">
-              <label htmlFor="filtre-quartier" className="text-sm font-semibold text-gray-700 block mb-2">Quartier</label>
-              <select
-                id="filtre-quartier"
-                value={quartier}
-                onChange={(e) => setQuartier(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 outline-none focus:border-navy"
-              >
-                <option value="">Tous les quartiers</option>
-                {quartiers.map((q) => (
-                  <option key={q}>{q}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Prix */}
-            <div className="mb-5">
-              <label className="text-sm font-semibold text-gray-700 block mb-2">{transaction === "location" ? "Loyer mensuel (FCFA)" : "Budget (FCFA)"}</label>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  value={prixMin}
-                  onChange={(e) => setPrixMin(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
-                />
-                <input
-                  type="number"
-                  placeholder="Max"
-                  value={prixMax}
-                  onChange={(e) => setPrixMax(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
-                />
+              {/* Région */}
+              <div className="mb-5">
+                <label className="text-sm font-semibold text-gray-700 block mb-2">Région</label>
+                <select
+                  value={region}
+                  onChange={(e) => {
+                    setRegion(e.target.value);
+                    setQuartier("");
+                  }}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 outline-none focus:border-navy"
+                >
+                  {REGIONS_OPTIONS.map((r) => (
+                    <option key={r}>{r}</option>
+                  ))}
+                </select>
               </div>
-            </div>
 
-            {/* Superficie */}
-            <div className="mb-5">
-              <label className="text-sm font-semibold text-gray-700 block mb-2">Superficie (m²)</label>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  value={superficieMin}
-                  onChange={(e) => setSuperficieMin(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
-                />
-                <input
-                  type="number"
-                  placeholder="Max"
-                  value={superficieMax}
-                  onChange={(e) => setSuperficieMax(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
-                />
-              </div>
-            </div>
-
-            {/* Options */}
-            <div className="mb-5 flex flex-col gap-2">
-              {/* Le Titre Foncier ne concerne que les ventes. */}
-              {transaction === "vente" && <span className="text-sm font-semibold text-gray-700">Statut du Titre Foncier</span>}
-              {transaction === "vente" && STATUTS_TF.map((s) => (
-                <label key={s} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                  <input type="checkbox" className="rounded accent-navy" checked={statutsTF.includes(s)} onChange={() => basculerStatut(s)} />
-                  {ICONES_TF[s]} {LABELS_TF[s]}
+              {/* Quartier */}
+              <div className="mb-5">
+                <label htmlFor="filtre-quartier" className="text-sm font-semibold text-gray-700 block mb-2">
+                  Quartier
                 </label>
-              ))}
-              <span className="text-sm font-semibold text-gray-700 mt-2">Options</span>
-              <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <input type="checkbox" className="rounded accent-navy" checked={featured} onChange={(e) => setFeatured(e.target.checked)} />
-                Annonces en vedette
-              </label>
-              <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <input type="checkbox" className="rounded accent-navy" checked={baisse} onChange={(e) => setBaisse(e.target.checked)} />
-                Prix en baisse
-              </label>
-            </div>
+                <select
+                  id="filtre-quartier"
+                  value={quartier}
+                  onChange={(e) => setQuartier(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 outline-none focus:border-navy"
+                >
+                  <option value="">Tous les quartiers</option>
+                  {quartiers.map((q) => (
+                    <option key={q}>{q}</option>
+                  ))}
+                </select>
+              </div>
 
-            <button onClick={reinitialiser} className="w-full btn-navy text-sm">
-              Réinitialiser les filtres
-            </button>
+              {/* Prix */}
+              <div className="mb-5">
+                <label className="text-sm font-semibold text-gray-700 block mb-2">
+                  {transaction === "location" ? "Loyer mensuel (FCFA)" : "Budget (FCFA)"}
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={prixMin}
+                    onChange={(e) => setPrixMin(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={prixMax}
+                    onChange={(e) => setPrixMax(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                  />
+                </div>
+              </div>
+
+              {/* Superficie */}
+              <div className="mb-5">
+                <label className="text-sm font-semibold text-gray-700 block mb-2">Superficie (m²)</label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={superficieMin}
+                    onChange={(e) => setSuperficieMin(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={superficieMax}
+                    onChange={(e) => setSuperficieMax(e.target.value)}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                  />
+                </div>
+              </div>
+
+              {/* Options */}
+              <div className="mb-5 flex flex-col gap-2">
+                {/* Le Titre Foncier ne concerne que les ventes. */}
+                {transaction === "vente" && <span className="text-sm font-semibold text-gray-700">Statut du Titre Foncier</span>}
+                {transaction === "vente" &&
+                  STATUTS_TF.map((s) => (
+                    <label key={s} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                      <input type="checkbox" className="rounded accent-navy" checked={statutsTF.includes(s)} onChange={() => basculerStatut(s)} />
+                      {ICONES_TF[s]} {LABELS_TF[s]}
+                    </label>
+                  ))}
+                <span className="text-sm font-semibold text-gray-700 mt-2">Options</span>
+                <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                  <input type="checkbox" className="rounded accent-navy" checked={featured} onChange={(e) => setFeatured(e.target.checked)} />
+                  Annonces en vedette
+                </label>
+                <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                  <input type="checkbox" className="rounded accent-navy" checked={baisse} onChange={(e) => setBaisse(e.target.checked)} />
+                  Prix en baisse
+                </label>
+              </div>
+
+              <button onClick={reinitialiser} className="w-full btn-navy text-sm">
+                Réinitialiser les filtres
+              </button>
             </div>
           </div>
         </aside>
@@ -429,7 +449,9 @@ export default function AnnoncesContent() {
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-sm text-gray-500">{resultats.length} annonces</span>
               {alerteCreee ? (
-                <Link href="/notifications" className="text-sm text-green font-medium hover:underline">✅ Alerte créée, voir mes alertes</Link>
+                <Link href="/notifications" className="text-sm text-green font-medium hover:underline">
+                  ✅ Alerte créée, voir mes alertes
+                </Link>
               ) : user ? (
                 <button onClick={enregistrerRecherche} className="flex items-center gap-1 text-sm text-blue font-medium hover:underline">
                   <BellPlus size={14} /> Enregistrer cette recherche

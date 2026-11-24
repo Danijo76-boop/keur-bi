@@ -119,10 +119,25 @@ function calculer(user: User): Notification[] {
   for (const v of lireVisites()) {
     const quand = new Date(v.date).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
     if (estCoteVendeur(user.role) && v.statut === "demandee" && new Date(v.date).getTime() > Date.now()) {
-      out.push({ id: `visite-${v.id}`, categorie: "dossier", titre: `Demande de visite · ${v.bienTitre}`, detail: `${v.acheteurNom}, le ${quand}.`, date: v.creeLe, lien: "/tableau-de-bord", action: "Répondre" });
+      out.push({
+        id: `visite-${v.id}`,
+        categorie: "dossier",
+        titre: `Demande de visite · ${v.bienTitre}`,
+        detail: `${v.acheteurNom}, le ${quand}.`,
+        date: v.creeLe,
+        lien: "/tableau-de-bord",
+        action: "Répondre",
+      });
     }
     if (user.role === "acheteur" && v.acheteurEmail === user.email && (v.statut === "confirmee" || v.statut === "refusee")) {
-      out.push({ id: `visite-${v.id}-${v.statut}`, categorie: "dossier", titre: `Visite ${v.statut === "confirmee" ? "confirmée" : "refusée"} · ${v.bienTitre}`, detail: `Créneau du ${quand}.`, date: v.creeLe, lien: `/annonces/${v.bienId}` });
+      out.push({
+        id: `visite-${v.id}-${v.statut}`,
+        categorie: "dossier",
+        titre: `Visite ${v.statut === "confirmee" ? "confirmée" : "refusée"} · ${v.bienTitre}`,
+        detail: `Créneau du ${quand}.`,
+        date: v.creeLe,
+        lien: `/annonces/${v.bienId}`,
+      });
     }
   }
 
@@ -185,7 +200,14 @@ function calculer(user: User): Notification[] {
 
   if (estCoteVendeur(user.role)) {
     for (const s of lireSignalements().filter((x) => x.statut === "retire")) {
-      out.push({ id: `retrait-${s.id}`, categorie: "urgent", titre: `Annonce retirée par la modération · ${titreBien(s.bienId)}`, detail: `Motif : ${s.motif}.`, date: s.date, lien: `/mes-annonces/${s.bienId}` });
+      out.push({
+        id: `retrait-${s.id}`,
+        categorie: "urgent",
+        titre: `Annonce retirée par la modération · ${titreBien(s.bienId)}`,
+        detail: `Motif : ${s.motif}.`,
+        date: s.date,
+        lien: `/mes-annonces/${s.bienId}`,
+      });
     }
   }
 
@@ -193,7 +215,15 @@ function calculer(user: User): Notification[] {
   if (estPlateforme(user.role)) {
     const signales = lireSignalements().filter((s) => s.statut === "ouvert");
     if (signales.length > 0) {
-      out.push({ id: `signalements-${signales.length}`, categorie: "urgent", titre: `${signales.length} signalement${signales.length > 1 ? "s" : ""} à traiter`, detail: signales.map((s) => s.motif).join(", "), date: signales[0].date, lien: "/admin/moderation", action: "Traiter" });
+      out.push({
+        id: `signalements-${signales.length}`,
+        categorie: "urgent",
+        titre: `${signales.length} signalement${signales.length > 1 ? "s" : ""} à traiter`,
+        detail: signales.map((s) => s.motif).join(", "),
+        date: signales[0].date,
+        lien: "/admin/moderation",
+        action: "Traiter",
+      });
     }
     const kyc = lireUtilisateurs().filter((u) => u.statutKYC === "en_attente");
     if (kyc.length > 0) {

@@ -96,7 +96,10 @@ export async function listerAnnonces(f: FiltresAnnonces = {}, compte?: Utilisate
         ...(f.region && { region: f.region }),
         ...(f.quartier && { quartier: f.quartier }),
         ...((f.prixMin !== undefined || f.prixMax !== undefined) && {
-          prix: { ...(f.prixMin !== undefined && { gte: BigInt(Math.round(f.prixMin)) }), ...(f.prixMax !== undefined && { lte: BigInt(Math.round(f.prixMax)) }) },
+          prix: {
+            ...(f.prixMin !== undefined && { gte: BigInt(Math.round(f.prixMin)) }),
+            ...(f.prixMax !== undefined && { lte: BigInt(Math.round(f.prixMax)) }),
+          },
         }),
         ...(f.q && {
           OR: ["titre", "quartier", "ville", "description"].map((champ) => ({ [champ]: { contains: f.q, mode: "insensitive" } })),
@@ -125,7 +128,7 @@ const entier = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? Ma
 
 const CENTRES: Record<string, [number, number]> = {
   Dakar: [14.7167, -17.4677],
-  "Thiès": [14.791, -16.9256],
+  Thiès: [14.791, -16.9256],
   "Saint-Louis": [16.0179, -16.4896],
   Ziguinchor: [12.5681, -16.2719],
   Kaolack: [14.1652, -16.0726],
@@ -137,7 +140,10 @@ export async function creerAnnonce(compte: Utilisateur, corps: Record<string, un
   if (!peutPublier(compte.role)) return refus("La publication est réservée aux vendeurs : particulier, agence ou agent.", 403);
 
   const transaction = corps.transaction === "location" ? "location" : "vente";
-  const montantFacultatif = (v: unknown) => { const n = entier(v); return n >= 0 && n <= PRIX_MAX ? BigInt(n) : null; };
+  const montantFacultatif = (v: unknown) => {
+    const n = entier(v);
+    return n >= 0 && n <= PRIX_MAX ? BigInt(n) : null;
+  };
   const charges = montantFacultatif(corps.charges);
   const caution = montantFacultatif(corps.caution);
   const nbPieces = entier(corps.nb_pieces);
@@ -157,7 +163,8 @@ export async function creerAnnonce(compte: Utilisateur, corps: Record<string, un
   if (titre.length < 5) return refus("Le titre doit contenir au moins 5 caractères.");
   if (!type) return refus("Type de bien inconnu.");
   if (!(superficie >= 1 && superficie <= 10_000_000)) return refus("Superficie invalide.");
-  if (!(prix >= 1 && prix <= (transaction === "location" ? 100_000_000 : PRIX_MAX))) return refus(transaction === "location" ? "Loyer invalide." : "Prix invalide.");
+  if (!(prix >= 1 && prix <= (transaction === "location" ? 100_000_000 : PRIX_MAX)))
+    return refus(transaction === "location" ? "Loyer invalide." : "Prix invalide.");
   if (!region) return refus("Région inconnue.");
   if (!ville || !quartier) return refus("Indiquez la ville et le quartier.");
   if (description.length < 10) return refus("La description est trop courte.");
@@ -166,7 +173,8 @@ export async function creerAnnonce(compte: Utilisateur, corps: Record<string, un
   if (dateTF && Number.isNaN(dateTF.getTime())) return refus("Date du Titre Foncier invalide.");
 
   const quota = quotaAnnonces(compte);
-  if ((await annoncesActives(compte.id)) >= quota) return refus(`Votre compte permet ${quota} annonce(s) active(s). Retirez-en une ou changez d'abonnement.`, 403);
+  if ((await annoncesActives(compte.id)) >= quota)
+    return refus(`Votre compte permet ${quota} annonce(s) active(s). Retirez-en une ou changez d'abonnement.`, 403);
 
   const [lat0, lng0] = CENTRES[region];
   // Léger décalage pour éviter que les annonces d'une même région se superposent sur la carte.
@@ -180,13 +188,22 @@ export async function creerAnnonce(compte: Utilisateur, corps: Record<string, un
       const ligne = await db.bien.create({
         data: {
           reference: `KB-${annee}-${String(numero).padStart(4, "0")}`,
-          titre, type, superficie, prix: BigInt(prix), region, ville, quartier, description,
+          titre,
+          type,
+          superficie,
+          prix: BigInt(prix),
+          region,
+          ville,
+          quartier,
+          description,
           transaction,
           ...(transaction === "location" && { charges, caution, meuble: corps.meuble === true }),
           nbPieces: nbPieces >= 1 && nbPieces <= 50 ? nbPieces : null,
-          photo: photos[0], photos,
+          photo: photos[0],
+          photos,
           telephone: texte(corps.telephone, 30) || compte.telephone || "",
-          lat: lat0 + decalage(), lng: lng0 + decalage(),
+          lat: lat0 + decalage(),
+          lng: lng0 + decalage(),
           agenceNom: texte(corps.agence, 120) || compte.nom,
           auteurId: compte.id,
           proprietaire: texte(corps.proprietaire, 120) || null,

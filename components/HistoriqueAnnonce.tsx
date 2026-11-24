@@ -16,12 +16,23 @@ export default function HistoriqueAnnonce({ bien }: { bien: Bien }) {
   }
   let precedent = prixInitial;
   for (const c of changements) {
-    lignes.push({ cle: c.date, date: c.date, evenement: c.prix < precedent ? "Baisse de prix" : "Hausse de prix", prix: c.prix, variation: ((c.prix - precedent) / precedent) * 100 });
+    lignes.push({
+      cle: c.date,
+      date: c.date,
+      evenement: c.prix < precedent ? "Baisse de prix" : "Hausse de prix",
+      prix: c.prix,
+      variation: ((c.prix - precedent) / precedent) * 100,
+    });
     precedent = c.prix;
   }
   // Baisse connue sans date précise (annonces d'origine).
   if (changements.length === 0 && bien.ancien_prix && bien.ancien_prix !== bien.prix) {
-    lignes.push({ cle: "actuel", evenement: bien.prix < bien.ancien_prix ? "Baisse de prix" : "Hausse de prix", prix: bien.prix, variation: ((bien.prix - bien.ancien_prix) / bien.ancien_prix) * 100 });
+    lignes.push({
+      cle: "actuel",
+      evenement: bien.prix < bien.ancien_prix ? "Baisse de prix" : "Hausse de prix",
+      prix: bien.prix,
+      variation: ((bien.prix - bien.ancien_prix) / bien.ancien_prix) * 100,
+    });
   }
   if (lignes.length === 0) return null;
 
@@ -42,9 +53,15 @@ export default function HistoriqueAnnonce({ bien }: { bien: Bien }) {
       <table className="w-full text-sm">
         <thead>
           <tr className="text-left text-xs text-gray-400 border-b border-gray-100">
-            <th scope="col" className="py-2 font-semibold">Date</th>
-            <th scope="col" className="py-2 font-semibold">Événement</th>
-            <th scope="col" className="py-2 font-semibold text-right">Prix</th>
+            <th scope="col" className="py-2 font-semibold">
+              Date
+            </th>
+            <th scope="col" className="py-2 font-semibold">
+              Événement
+            </th>
+            <th scope="col" className="py-2 font-semibold text-right">
+              Prix
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -54,7 +71,9 @@ export default function HistoriqueAnnonce({ bien }: { bien: Bien }) {
               <td className="py-2 text-gray-800">{l.evenement}</td>
               <td className="py-2 text-right whitespace-nowrap">
                 <span className="font-semibold text-gray-900">{formatFCFA(l.prix)}</span>
-                {l.variation !== undefined && <span className={`ml-2 text-xs font-semibold ${l.variation < 0 ? "text-green" : "text-red"}`}>{pct(l.variation)}</span>}
+                {l.variation !== undefined && (
+                  <span className={`ml-2 text-xs font-semibold ${l.variation < 0 ? "text-green" : "text-red"}`}>{pct(l.variation)}</span>
+                )}
               </td>
             </tr>
           ))}

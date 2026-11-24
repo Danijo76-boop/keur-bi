@@ -50,7 +50,9 @@ function Espace({ role, children }: { role: Role; children: ReactNode }) {
         ) : (
           <div className="card p-10 text-center text-gray-500">
             <p className="mb-2">Votre rôle n&apos;est pas habilité pour cette section.</p>
-            <Link href={liens[0].href} className="text-blue font-medium hover:underline">Aller à « {liens[0].label} » →</Link>
+            <Link href={liens[0].href} className="text-blue font-medium hover:underline">
+              Aller à « {liens[0].label} » →
+            </Link>
           </div>
         )}
       </div>

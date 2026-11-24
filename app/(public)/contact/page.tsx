@@ -31,11 +31,25 @@ function Formulaire() {
         <div className="card p-8 text-center text-green font-semibold">✅ Message enregistré</div>
       ) : (
         <form onSubmit={envoyer} className="card p-6 flex flex-col gap-3">
-          <label className="text-sm font-semibold text-gray-700">Votre nom<input required value={nom} onChange={(e) => setNom(e.target.value)} className={champ} /></label>
-          <label className="text-sm font-semibold text-gray-700">Téléphone ou email<input required value={contact} onChange={(e) => setContact(e.target.value)} className={champ} /></label>
-          <label className="text-sm font-semibold text-gray-700">Sujet<input value={sujet} onChange={(e) => setSujet(e.target.value)} className={champ} /></label>
-          <label className="text-sm font-semibold text-gray-700">Message<textarea required rows={4} value={message} onChange={(e) => setMessage(e.target.value)} className={`${champ} resize-none`} /></label>
-          <button type="submit" className="btn-navy">Envoyer</button>
+          <label className="text-sm font-semibold text-gray-700">
+            Votre nom
+            <input required value={nom} onChange={(e) => setNom(e.target.value)} className={champ} />
+          </label>
+          <label className="text-sm font-semibold text-gray-700">
+            Téléphone ou email
+            <input required value={contact} onChange={(e) => setContact(e.target.value)} className={champ} />
+          </label>
+          <label className="text-sm font-semibold text-gray-700">
+            Sujet
+            <input value={sujet} onChange={(e) => setSujet(e.target.value)} className={champ} />
+          </label>
+          <label className="text-sm font-semibold text-gray-700">
+            Message
+            <textarea required rows={4} value={message} onChange={(e) => setMessage(e.target.value)} className={`${champ} resize-none`} />
+          </label>
+          <button type="submit" className="btn-navy">
+            Envoyer
+          </button>
         </form>
       )}
     </div>

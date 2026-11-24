@@ -1,14 +1,47 @@
 import Link from "next/link";
 
 const ETAPES = [
-  { titre: "Identifier et visiter le terrain", desc: "Recherchez sur KEUR BI parmi les annonces avec TF vérifié. Visitez physiquement, vérifiez l'accessibilité, les réseaux (eau, électricité) et les servitudes éventuelles.", tag: "~2 sem." },
-  { titre: "Vérifier le Titre Foncier (TF)", desc: "Consultez la Conservation Foncière ou passez par la vérification KEUR BI. Confirmez l'identité du propriétaire, l'absence d'hypothèques et l'intégrité du TF.", tag: "KEUR BI" },
-  { titre: "Négocier et signer la promesse de vente", desc: "Rédigez une promesse de vente (sous seing privé ou notariée) avec un acompte de 10–30 %. Précisez les conditions suspensives (obtention de crédit, purge d'éventuels droits).", tag: "Recommandé" },
-  { titre: "Choisir un notaire", desc: "Sélectionnez un notaire agréé. Il est le garant légal de la transaction. Comparez les frais sur notre simulateur.", tag: "Simulateur", lien: "/frais" },
-  { titre: "Rédiger et signer l'acte authentique", desc: "Le notaire rédige l'acte de vente authentique. Acheteur et vendeur signent en sa présence. Le solde du prix est versé à ce stade.", tag: "J0" },
-  { titre: "Enregistrement à la DGID", desc: "Le notaire dépose l'acte à la Direction Générale des Impôts et des Domaines dans les 3 mois et règle les droits d'enregistrement. KEUR BI envoie des alertes J-30 et J-7.", tag: "⚠ Délai 3 mois" },
-  { titre: "Mutation du Titre Foncier", desc: "Dépôt de l'acte enregistré à la Conservation Foncière. Le conservateur procède à la mutation du TF au nom de l'acheteur. Délai : 15–30 jours ouvrés.", tag: "15–30 j" },
-  { titre: "Réception du nouveau TF", desc: "Vous recevez le Titre Foncier mis à jour à votre nom. Vous êtes officiellement propriétaire et le dossier est clôturé sur KEUR BI.", tag: "🎉" },
+  {
+    titre: "Identifier et visiter le terrain",
+    desc: "Recherchez sur KEUR BI parmi les annonces avec TF vérifié. Visitez physiquement, vérifiez l'accessibilité, les réseaux (eau, électricité) et les servitudes éventuelles.",
+    tag: "~2 sem.",
+  },
+  {
+    titre: "Vérifier le Titre Foncier (TF)",
+    desc: "Consultez la Conservation Foncière ou passez par la vérification KEUR BI. Confirmez l'identité du propriétaire, l'absence d'hypothèques et l'intégrité du TF.",
+    tag: "KEUR BI",
+  },
+  {
+    titre: "Négocier et signer la promesse de vente",
+    desc: "Rédigez une promesse de vente (sous seing privé ou notariée) avec un acompte de 10–30 %. Précisez les conditions suspensives (obtention de crédit, purge d'éventuels droits).",
+    tag: "Recommandé",
+  },
+  {
+    titre: "Choisir un notaire",
+    desc: "Sélectionnez un notaire agréé. Il est le garant légal de la transaction. Comparez les frais sur notre simulateur.",
+    tag: "Simulateur",
+    lien: "/frais",
+  },
+  {
+    titre: "Rédiger et signer l'acte authentique",
+    desc: "Le notaire rédige l'acte de vente authentique. Acheteur et vendeur signent en sa présence. Le solde du prix est versé à ce stade.",
+    tag: "J0",
+  },
+  {
+    titre: "Enregistrement à la DGID",
+    desc: "Le notaire dépose l'acte à la Direction Générale des Impôts et des Domaines dans les 3 mois et règle les droits d'enregistrement. KEUR BI envoie des alertes J-30 et J-7.",
+    tag: "⚠ Délai 3 mois",
+  },
+  {
+    titre: "Mutation du Titre Foncier",
+    desc: "Dépôt de l'acte enregistré à la Conservation Foncière. Le conservateur procède à la mutation du TF au nom de l'acheteur. Délai : 15–30 jours ouvrés.",
+    tag: "15–30 j",
+  },
+  {
+    titre: "Réception du nouveau TF",
+    desc: "Vous recevez le Titre Foncier mis à jour à votre nom. Vous êtes officiellement propriétaire et le dossier est clôturé sur KEUR BI.",
+    tag: "🎉",
+  },
 ];
 
 const LEXIQUE = [
@@ -20,9 +53,15 @@ const LEXIQUE = [
 ];
 
 const FAQ = [
-  { q: "Un terrain sans TF est-il achetable ?", r: "C'est déconseillé : un terrain sans Titre Foncier expose à de sérieux risques juridiques. Faites-vous conseiller par un notaire avant toute offre." },
+  {
+    q: "Un terrain sans TF est-il achetable ?",
+    r: "C'est déconseillé : un terrain sans Titre Foncier expose à de sérieux risques juridiques. Faites-vous conseiller par un notaire avant toute offre.",
+  },
   { q: "Peut-on acheter à distance (diaspora) ?", r: "Oui, via une procuration notariée. KEUR BI permet de suivre le dossier en ligne à chaque étape." },
-  { q: "Quelle est la durée totale du processus ?", r: "En moyenne 2 à 4 mois entre la signature et l'obtention du nouveau TF, selon la diligence du notaire et les délais de la Conservation." },
+  {
+    q: "Quelle est la durée totale du processus ?",
+    r: "En moyenne 2 à 4 mois entre la signature et l'obtention du nouveau TF, selon la diligence du notaire et les délais de la Conservation.",
+  },
 ];
 
 export default function GuidesPage() {
@@ -48,7 +87,9 @@ export default function GuidesPage() {
                   <div className="flex items-start justify-between gap-3 flex-wrap mb-1">
                     <h3 className="font-bold text-gray-900">{e.titre}</h3>
                     {e.lien ? (
-                      <Link href={e.lien} className="text-xs font-semibold text-blue hover:underline">{e.tag} →</Link>
+                      <Link href={e.lien} className="text-xs font-semibold text-blue hover:underline">
+                        {e.tag} →
+                      </Link>
                     ) : (
                       <span className="text-xs font-semibold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{e.tag}</span>
                     )}
@@ -85,7 +126,9 @@ export default function GuidesPage() {
           </div>
           <div className="card p-5 bg-navy text-white">
             <h2 className="font-bold mb-3">Commencer votre recherche</h2>
-            <Link href="/annonces" className="btn-primary text-sm block text-center">Voir les annonces</Link>
+            <Link href="/annonces" className="btn-primary text-sm block text-center">
+              Voir les annonces
+            </Link>
           </div>
           <p className="text-xs text-gray-400">Ce guide est informatif et ne remplace pas le conseil d&apos;un notaire.</p>
         </aside>

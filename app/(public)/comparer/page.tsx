@@ -33,7 +33,7 @@ export default function ComparerPage() {
   async function partager() {
     await navigator.clipboard.writeText(`${window.location.origin}/comparer?ids=${ids.join(",")}`);
     setCopie(true);
-      popup.succes("Lien copié", "Vous pouvez le coller où vous voulez.");
+    popup.succes("Lien copié", "Vous pouvez le coller où vous voulez.");
   }
 
   const totaux = compares.map((b) => calculerFrais(b.prix, p).totalAcquisition);
@@ -43,16 +43,62 @@ export default function ComparerPage() {
   const iPlusGrand = compares.reduce((m, b, i) => (b.superficie > compares[m].superficie ? i : m), 0);
 
   const lignes: { label: string; rendu: (b: Bien, i: number) => ReactNode }[] = [
-    { label: "Superficie", rendu: (b, i) => <>{b.superficie.toLocaleString("fr-FR")} m²{compares.length > 1 && i === iPlusGrand && " ↑"}</> },
-    { label: "Prix / m²", rendu: (b, i) => <>{formatFCFA(prixM2[i])}{compares.length > 1 && i === iMeilleurM2 && " ✓"}</> },
+    {
+      label: "Superficie",
+      rendu: (b, i) => (
+        <>
+          {b.superficie.toLocaleString("fr-FR")} m²{compares.length > 1 && i === iPlusGrand && " ↑"}
+        </>
+      ),
+    },
+    {
+      label: "Prix / m²",
+      rendu: (b, i) => (
+        <>
+          {formatFCFA(prixM2[i])}
+          {compares.length > 1 && i === iMeilleurM2 && " ✓"}
+        </>
+      ),
+    },
     { label: "Quartier", rendu: (b) => b.quartier },
-    { label: "Titre Foncier", rendu: (b) => { const s = statutTF(b, overrides, demandes); return `${ICONES_TF[s]} ${LABELS_TF[s]}`; } },
+    {
+      label: "Titre Foncier",
+      rendu: (b) => {
+        const s = statutTF(b, overrides, demandes);
+        return `${ICONES_TF[s]} ${LABELS_TF[s]}`;
+      },
+    },
     { label: "Conservation", rendu: (b) => b.tf.conservation ?? "—" },
     { label: "Type", rendu: (b) => <span className="capitalize">{b.type}</span> },
     { label: "Frais estimés", rendu: (b) => formatFCFA(calculerFrais(b.prix, p).totalFrais) },
-    { label: "Total acquisition", rendu: (b, i) => <strong className="text-navy">{formatFCFA(totaux[i])}{compares.length > 1 && i === iMoinsCher && " ✓"}</strong> },
-    { label: "Notaire suggéré", rendu: (b) => { const n = notaireSuggere(b.region); return <Link href={`/notaires/${n.slug}`} className="text-blue hover:underline">{n.nom}</Link>; } },
-    { label: "Action", rendu: (b) => <Link href={`/annonces/${b.id}`} className="text-blue font-medium hover:underline">Voir le détail →</Link> },
+    {
+      label: "Total acquisition",
+      rendu: (b, i) => (
+        <strong className="text-navy">
+          {formatFCFA(totaux[i])}
+          {compares.length > 1 && i === iMoinsCher && " ✓"}
+        </strong>
+      ),
+    },
+    {
+      label: "Notaire suggéré",
+      rendu: (b) => {
+        const n = notaireSuggere(b.region);
+        return (
+          <Link href={`/notaires/${n.slug}`} className="text-blue hover:underline">
+            {n.nom}
+          </Link>
+        );
+      },
+    },
+    {
+      label: "Action",
+      rendu: (b) => (
+        <Link href={`/annonces/${b.id}`} className="text-blue font-medium hover:underline">
+          Voir le détail →
+        </Link>
+      ),
+    },
   ];
 
   const analyse = (() => {
@@ -65,7 +111,12 @@ export default function ComparerPage() {
       <>
         <strong>{moinsCher.titre}</strong> a le coût total d&apos;acquisition le plus bas, avec {formatFCFA(ecart)} de moins que le suivant.{" "}
         <strong>{compares[iMeilleurM2].titre}</strong> a le meilleur prix au m².
-        {grand.id !== moinsCher.id && <> <strong>{grand.titre}</strong> offre la plus grande surface ({grand.superficie.toLocaleString("fr-FR")} m²).</>}
+        {grand.id !== moinsCher.id && (
+          <>
+            {" "}
+            <strong>{grand.titre}</strong> offre la plus grande surface ({grand.superficie.toLocaleString("fr-FR")} m²).
+          </>
+        )}
       </>
     );
   })();
@@ -79,7 +130,10 @@ export default function ComparerPage() {
             <p className="text-gray-500 text-sm">Comparez jusqu&apos;à {MAX_COMPARAISON} biens côte à côte</p>
           </div>
           {compares.length > 0 && (
-            <button onClick={partager} className="flex items-center gap-2 border border-gray-200 bg-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50">
+            <button
+              onClick={partager}
+              className="flex items-center gap-2 border border-gray-200 bg-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50"
+            >
               <Share2 size={16} /> {copie ? "Lien copié ✓" : "Partager la comparaison"}
             </button>
           )}
@@ -89,7 +143,9 @@ export default function ComparerPage() {
           <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="border-b border-gray-100 align-top">
-                <th scope="col" className="p-4 text-left text-gray-400 font-semibold w-44">Critères</th>
+                <th scope="col" className="p-4 text-left text-gray-400 font-semibold w-44">
+                  Critères
+                </th>
                 {compares.map((b) => (
                   <th scope="col" key={b.id} className="p-4 text-left font-normal">
                     <div className="relative h-28 rounded-lg overflow-hidden bg-gray-200 mb-2">
@@ -114,7 +170,11 @@ export default function ComparerPage() {
                       className="w-full border border-gray-200 rounded-lg px-2 py-2 text-sm outline-none focus:border-navy"
                     >
                       <option value="">Choisir…</option>
-                      {disponibles.map((b) => <option key={b.id} value={b.id}>{b.titre}</option>)}
+                      {disponibles.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {b.titre}
+                        </option>
+                      ))}
                     </select>
                   </th>
                 )}
@@ -124,8 +184,14 @@ export default function ComparerPage() {
               <tbody>
                 {lignes.map((l) => (
                   <tr key={l.label} className="border-b border-gray-50 last:border-0">
-                    <th scope="row" className="p-4 text-left text-gray-500 font-medium">{l.label}</th>
-                    {compares.map((b, i) => <td key={b.id} className="p-4 text-gray-800">{l.rendu(b, i)}</td>)}
+                    <th scope="row" className="p-4 text-left text-gray-500 font-medium">
+                      {l.label}
+                    </th>
+                    {compares.map((b, i) => (
+                      <td key={b.id} className="p-4 text-gray-800">
+                        {l.rendu(b, i)}
+                      </td>
+                    ))}
                     {compares.length < MAX_COMPARAISON && <td />}
                   </tr>
                 ))}
@@ -138,7 +204,9 @@ export default function ComparerPage() {
           <div className="card p-5 mt-6 border-l-4 border-blue">
             <h2 className="font-bold text-gray-900 mb-1">Analyse KEUR BI</h2>
             <p className="text-sm text-gray-600 leading-relaxed">{analyse}</p>
-            <p className="text-xs text-gray-400 mt-2">Calcul automatique à partir des chiffres ci-dessus. Il ne remplace pas une visite ni l&apos;avis d&apos;un notaire.</p>
+            <p className="text-xs text-gray-400 mt-2">
+              Calcul automatique à partir des chiffres ci-dessus. Il ne remplace pas une visite ni l&apos;avis d&apos;un notaire.
+            </p>
           </div>
         )}
       </div>

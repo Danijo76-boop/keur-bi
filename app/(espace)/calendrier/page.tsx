@@ -59,10 +59,25 @@ function Contenu({ user }: { user: User }) {
       }
     }
     for (const v of visites) {
-      out.push({ id: `v-${v.id}`, date: new Date(v.date), titre: `Visite · ${v.bienTitre}`, detail: `${LABELS_VISITE[v.statut]}${estCoteVendeur(user.role) ? ` · ${v.acheteurNom}` : ""}`, lien: `/annonces/${v.bienId}`, type: "rdv" });
+      out.push({
+        id: `v-${v.id}`,
+        date: new Date(v.date),
+        titre: `Visite · ${v.bienTitre}`,
+        detail: `${LABELS_VISITE[v.statut]}${estCoteVendeur(user.role) ? ` · ${v.acheteurNom}` : ""}`,
+        lien: `/annonces/${v.bienId}`,
+        type: "rdv",
+      });
     }
     for (const r of rdvs) {
-      out.push({ id: `r-${r.id}`, rdvId: r.id, date: new Date(r.date), titre: `RDV ${estNotariat(user.role) ? r.clientNom ?? "client" : r.notaireNom}`, detail: r.motif, lien: `/notaires/${r.notaireSlug}`, type: "rdv" });
+      out.push({
+        id: `r-${r.id}`,
+        rdvId: r.id,
+        date: new Date(r.date),
+        titre: `RDV ${estNotariat(user.role) ? (r.clientNom ?? "client") : r.notaireNom}`,
+        detail: r.motif,
+        lien: `/notaires/${r.notaireSlug}`,
+        type: "rdv",
+      });
     }
     return out.sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [dossiers, rdvs, visites, biens, user.role]);
@@ -127,22 +142,48 @@ function Contenu({ user }: { user: User }) {
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold text-gray-900 capitalize">{mois.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</h2>
             <div className="flex gap-1 print:hidden">
-              <button aria-label="Mois précédent" onClick={() => setMois(new Date(mois.getFullYear(), mois.getMonth() - 1, 1))} className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"><ChevronLeft size={16} /></button>
-              <button aria-label="Mois suivant" onClick={() => setMois(new Date(mois.getFullYear(), mois.getMonth() + 1, 1))} className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"><ChevronRight size={16} /></button>
+              <button
+                aria-label="Mois précédent"
+                onClick={() => setMois(new Date(mois.getFullYear(), mois.getMonth() - 1, 1))}
+                className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                aria-label="Mois suivant"
+                onClick={() => setMois(new Date(mois.getFullYear(), mois.getMonth() + 1, 1))}
+                className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"
+              >
+                <ChevronRight size={16} />
+              </button>
             </div>
           </div>
           <div className="grid grid-cols-7 gap-px bg-gray-100 border border-gray-100 rounded-lg overflow-hidden">
-            {JOURS.map((j) => <div key={j} className="bg-gray-50 text-center text-xs font-semibold text-gray-500 py-2">{j}</div>)}
+            {JOURS.map((j) => (
+              <div key={j} className="bg-gray-50 text-center text-xs font-semibold text-gray-500 py-2">
+                {j}
+              </div>
+            ))}
             {cases.map((c) => {
               const duJour = evenements.filter((e) => memeJour(e.date, c));
               const horsMois = c.getMonth() !== mois.getMonth();
               const auj = memeJour(c, maintenant);
               return (
                 <div key={c.toISOString()} className={`bg-white min-h-20 p-1 ${horsMois ? "opacity-40" : ""}`}>
-                  <div className={`text-xs mb-1 w-5 h-5 flex items-center justify-center rounded-full ${auj ? "bg-navy text-white font-bold" : "text-gray-500"}`}>{c.getDate()}</div>
+                  <div
+                    className={`text-xs mb-1 w-5 h-5 flex items-center justify-center rounded-full ${auj ? "bg-navy text-white font-bold" : "text-gray-500"}`}
+                  >
+                    {c.getDate()}
+                  </div>
                   {duJour.map((e) => (
-                    <Link key={e.id} href={e.lien ?? "#"} title={`${e.titre}${e.detail ? ` · ${e.detail}` : ""}`} className={`block text-[10px] leading-tight font-semibold rounded px-1 py-0.5 mb-0.5 truncate ${COULEURS[e.type]}`}>
-                      {e.type === "fait" ? "✓ " : e.type === "delai" ? "⚠ " : "📅 "}{e.titre}
+                    <Link
+                      key={e.id}
+                      href={e.lien ?? "#"}
+                      title={`${e.titre}${e.detail ? ` · ${e.detail}` : ""}`}
+                      className={`block text-[10px] leading-tight font-semibold rounded px-1 py-0.5 mb-0.5 truncate ${COULEURS[e.type]}`}
+                    >
+                      {e.type === "fait" ? "✓ " : e.type === "delai" ? "⚠ " : "📅 "}
+                      {e.titre}
                     </Link>
                   ))}
                 </div>
@@ -156,7 +197,10 @@ function Contenu({ user }: { user: User }) {
             <h2 className="font-bold text-gray-900 mb-3">À venir</h2>
             {aVenir.length === 0 ? (
               <p className="text-sm text-gray-400">
-                Aucune échéance. <Link href="/notaires" className="text-blue hover:underline">Prendre rendez-vous avec un notaire</Link>
+                Aucune échéance.{" "}
+                <Link href="/notaires" className="text-blue hover:underline">
+                  Prendre rendez-vous avec un notaire
+                </Link>
               </p>
             ) : (
               <div className="flex flex-col gap-3">
@@ -166,14 +210,22 @@ function Contenu({ user }: { user: User }) {
                   return (
                     <div key={e.id} className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <Link href={e.lien ?? "#"} className="text-sm font-semibold text-gray-800 hover:text-navy block">{e.titre}</Link>
+                        <Link href={e.lien ?? "#"} className="text-sm font-semibold text-gray-800 hover:text-navy block">
+                          {e.titre}
+                        </Link>
                         {e.detail && <div className="text-xs text-gray-400 truncate">{e.detail}</div>}
-                        <div className="text-xs text-gray-500">{e.date.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: e.type === "rdv" ? "short" : undefined })}</div>
+                        <div className="text-xs text-gray-500">
+                          {e.date.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: e.type === "rdv" ? "short" : undefined })}
+                        </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${critique ? "bg-red/10 text-red" : "bg-gray-100 text-gray-600"}`}>J-{j}</span>
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${critique ? "bg-red/10 text-red" : "bg-gray-100 text-gray-600"}`}>
+                          J-{j}
+                        </span>
                         {e.rdvId && (
-                          <button aria-label={`Annuler ${e.titre}`} onClick={() => annulerRendezVous(e.rdvId!)} className="text-gray-400 hover:text-red"><Trash2 size={14} /></button>
+                          <button aria-label={`Annuler ${e.titre}`} onClick={() => annulerRendezVous(e.rdvId!)} className="text-gray-400 hover:text-red">
+                            <Trash2 size={14} />
+                          </button>
                         )}
                       </div>
                     </div>

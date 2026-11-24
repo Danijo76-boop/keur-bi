@@ -4,15 +4,7 @@ import { lire, ecrire, nouvelId } from "./stockage";
 import { lireParametres } from "./parametres";
 
 export type StatutDossier =
-  | "brouillon"
-  | "due_diligence"
-  | "tf_verifie"
-  | "compromis_signe"
-  | "en_signature"
-  | "actif"
-  | "enregistrement_dgid"
-  | "enregistre"
-  | "mute";
+  "brouillon" | "due_diligence" | "tf_verifie" | "compromis_signe" | "en_signature" | "actif" | "enregistrement_dgid" | "enregistre" | "mute";
 
 export const ETAPES_DOSSIER: StatutDossier[] = [
   "brouillon",
@@ -160,15 +152,15 @@ export function choisirNotaire(dossierId: string, slug: string, nom: string): Do
 }
 
 export function ajouterOffre(dossierId: string, offre: Omit<Offre, "id" | "date">): Dossier[] {
-  popup.succes(offre.auteur === "acheteur" ? "Offre envoyée" : "Contre-offre envoyée", `${offre.montant.toLocaleString("fr-FR")} FCFA proposés. L'autre partie est prévenue.`);
+  popup.succes(
+    offre.auteur === "acheteur" ? "Offre envoyée" : "Contre-offre envoyée",
+    `${offre.montant.toLocaleString("fr-FR")} FCFA proposés. L'autre partie est prévenue.`,
+  );
   return majDossier(dossierId, (d) => ({
     ...d,
     statut: d.statut === "brouillon" ? "due_diligence" : d.statut,
     offres: [...d.offres, { ...offre, id: nouvelId(), date: new Date().toISOString() }],
-    evenements: [
-      ...d.evenements,
-      evenement(`${offre.auteur === "acheteur" ? "Offre" : "Contre-offre"} de ${offre.montant.toLocaleString("fr-FR")} FCFA`),
-    ],
+    evenements: [...d.evenements, evenement(`${offre.auteur === "acheteur" ? "Offre" : "Contre-offre"} de ${offre.montant.toLocaleString("fr-FR")} FCFA`)],
   }));
 }
 
@@ -308,7 +300,11 @@ export function conditionsTransition(d: Dossier, tfVerifie: boolean, noms: { ven
     manque.push(declare ? `Confirmation par le notaire (${notaire}) du versement déclaré` : `Versement de l'acompte par l'acheteur (${d.acheteurNom})`);
   }
   if (suivante === "actif" && !toutesSignatures(d)) {
-    const libelles: Record<Signataire, string> = { notaire: `le notaire (${notaire})`, acheteur: `l'acheteur (${d.acheteurNom})`, vendeur: `le vendeur (${vendeur})` };
+    const libelles: Record<Signataire, string> = {
+      notaire: `le notaire (${notaire})`,
+      acheteur: `l'acheteur (${d.acheteurNom})`,
+      vendeur: `le vendeur (${vendeur})`,
+    };
     const absents = SIGNATAIRES.filter((x) => !d.signatures?.[x]).map((x) => libelles[x]);
     manque.push(`Signature de l'acte par ${absents.join(" et ")}`);
   }

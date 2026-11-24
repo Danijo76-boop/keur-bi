@@ -41,7 +41,9 @@ export default function JournalPage() {
     categorie && `Catégorie : ${LABELS_JOURNAL[categorie as CategorieJournal]}`,
     PERIODES.find((x) => x.jours === jours && x.jours > 0)?.label,
     recherche.trim() && `Recherche : « ${recherche.trim()} »`,
-  ].filter(Boolean).join(" · ");
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   const exporterEnPDF = () =>
     exporterPDF("Journal_activite", {
@@ -75,10 +77,18 @@ export default function JournalPage() {
         />
         <select aria-label="Filtrer par catégorie" value={categorie} onChange={(e) => setCategorie(e.target.value as CategorieJournal | "")} className={select}>
           <option value="">Toutes les catégories</option>
-          {CATEGORIES.map((c) => <option key={c} value={c}>{LABELS_JOURNAL[c]}</option>)}
+          {CATEGORIES.map((c) => (
+            <option key={c} value={c}>
+              {LABELS_JOURNAL[c]}
+            </option>
+          ))}
         </select>
         <select aria-label="Filtrer par période" value={jours} onChange={(e) => setJours(Number(e.target.value))} className={select}>
-          {PERIODES.map((p) => <option key={p.jours} value={p.jours}>{p.label}</option>)}
+          {PERIODES.map((p) => (
+            <option key={p.jours} value={p.jours}>
+              {p.label}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -86,24 +96,46 @@ export default function JournalPage() {
         <table className="w-full text-sm min-w-[600px]">
           <thead>
             <tr className="text-left text-xs text-gray-400 border-b border-gray-100">
-              <th scope="col" className="p-3 font-semibold">Date</th>
-              <th scope="col" className="p-3 font-semibold">Catégorie</th>
-              <th scope="col" className="p-3 font-semibold">Auteur</th>
-              <th scope="col" className="p-3 font-semibold">Action</th>
+              <th scope="col" className="p-3 font-semibold">
+                Date
+              </th>
+              <th scope="col" className="p-3 font-semibold">
+                Catégorie
+              </th>
+              <th scope="col" className="p-3 font-semibold">
+                Auteur
+              </th>
+              <th scope="col" className="p-3 font-semibold">
+                Action
+              </th>
             </tr>
           </thead>
           <tbody>
             {lignes.slice(0, nbAffiches).map((e) => (
               <tr key={e.id} className="border-b border-gray-50 align-top">
                 <td className="p-3 text-gray-500 whitespace-nowrap">{new Date(e.date).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}</td>
-                <td className="p-3"><span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-navy/10 text-navy whitespace-nowrap">{LABELS_JOURNAL[e.categorie]}</span></td>
+                <td className="p-3">
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-navy/10 text-navy whitespace-nowrap">{LABELS_JOURNAL[e.categorie]}</span>
+                </td>
                 <td className="p-3 text-gray-600 whitespace-nowrap">{e.auteur}</td>
                 <td className="p-3 text-gray-800 break-words">
-                  {e.lien ? <Link href={e.lien} className="hover:text-blue hover:underline">{e.detail}</Link> : e.detail}
+                  {e.lien ? (
+                    <Link href={e.lien} className="hover:text-blue hover:underline">
+                      {e.detail}
+                    </Link>
+                  ) : (
+                    e.detail
+                  )}
                 </td>
               </tr>
             ))}
-            {lignes.length === 0 && <tr><td colSpan={4} className="p-8 text-center text-gray-400">Aucune action ne correspond.</td></tr>}
+            {lignes.length === 0 && (
+              <tr>
+                <td colSpan={4} className="p-8 text-center text-gray-400">
+                  Aucune action ne correspond.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

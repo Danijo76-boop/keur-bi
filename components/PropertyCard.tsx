@@ -35,11 +35,7 @@ export default function PropertyCard({ bien, className }: { bien: Bien; classNam
               </>
             )}
             <BadgeDemande bien={bien} />
-            {bien.is_featured && (
-              <span className="bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">
-                ⭐ En vedette
-              </span>
-            )}
+            {bien.is_featured && <span className="bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">⭐ En vedette</span>}
             {bien.prix_baisser && (
               <span className="bg-red text-white text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
                 <TrendingDown size={11} /> Prix baissé
@@ -66,9 +62,7 @@ export default function PropertyCard({ bien, className }: { bien: Bien; classNam
 
         {/* Contenu */}
         <div className="p-4">
-          <h3 className="font-bold text-gray-900 text-[15px] leading-snug line-clamp-2 group-hover:text-navy transition-colors mb-1">
-            {bien.titre}
-          </h3>
+          <h3 className="font-bold text-gray-900 text-[15px] leading-snug line-clamp-2 group-hover:text-navy transition-colors mb-1">{bien.titre}</h3>
 
           <p className="text-xs text-gray-500 mb-3 flex items-center gap-1">
             <MapPin size={12} className="text-gold shrink-0" /> {bien.quartier}, {bien.ville}
@@ -77,18 +71,14 @@ export default function PropertyCard({ bien, className }: { bien: Bien; classNam
           <div className="flex items-end justify-between gap-3">
             <div>
               <div className="font-display text-navy-dark font-extrabold text-lg leading-none">{prixAffiche(bien)}</div>
-              {bien.prix_baisser && bien.ancien_prix && (
-                <div className="text-xs text-gray-400 line-through mt-1">{formatPrix(bien.ancien_prix)}</div>
-              )}
+              {bien.prix_baisser && bien.ancien_prix && <div className="text-xs text-gray-400 line-through mt-1">{formatPrix(bien.ancien_prix)}</div>}
             </div>
             <span className="text-xs font-medium text-gray-600 bg-gray-100 rounded-full px-2.5 py-1 flex items-center gap-1 shrink-0">
               <Maximize2 size={11} /> {bien.superficie.toLocaleString("fr-FR")} m²
             </span>
           </div>
 
-          <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-400 truncate">
-            {bien.agence}
-          </div>
+          <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-400 truncate">{bien.agence}</div>
         </div>
       </div>
     </Link>

@@ -5,15 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { Bien } from "@/lib/mock-data";
 import { lireDossiers } from "@/lib/dossiers";
 
-export default function BoutonFaireOffre({
-  bien,
-  className,
-  children,
-}: {
-  bien: Bien;
-  className?: string;
-  children: ReactNode;
-}) {
+export default function BoutonFaireOffre({ bien, className, children }: { bien: Bien; className?: string; children: ReactNode }) {
   const router = useRouter();
   const { user } = useAuth();
 

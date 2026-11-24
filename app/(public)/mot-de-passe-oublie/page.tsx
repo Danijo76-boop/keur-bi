@@ -46,7 +46,11 @@ function Formulaire() {
     setInfo("");
     setEnvoi(true);
     try {
-      const r = await fetch("/api/auth/mot-de-passe-oublie", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email.trim() }) });
+      const r = await fetch("/api/auth/mot-de-passe-oublie", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
       const d = await r.json().catch(() => ({}));
       if (!r.ok || !d.defi) return setErreur(d.erreur ?? "Le service est momentanément indisponible. Réessayez.");
       if (defi) setInfo("Un nouveau code vient d'être envoyé. Seul le dernier code reçu est valable.");
@@ -93,14 +97,26 @@ function Formulaire() {
         {!defi ? (
           <form onSubmit={demanderCode} className="flex flex-col gap-3">
             <p className="text-gray-500 text-sm text-center mb-3">
-              Indiquez l&apos;adresse email de votre compte. Nous vous enverrons un code pour choisir un nouveau mot de passe,
-              sur votre numéro WhatsApp vérifié (ou par SMS), sinon par email.
+              Indiquez l&apos;adresse email de votre compte. Nous vous enverrons un code pour choisir un nouveau mot de passe, sur votre numéro WhatsApp vérifié
+              (ou par SMS), sinon par email.
             </p>
             <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 focus-within:border-navy">
               <Mail size={16} className="text-gray-400 shrink-0" />
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Adresse email" autoComplete="email" autoFocus className="w-full text-sm outline-none" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Adresse email"
+                autoComplete="email"
+                autoFocus
+                className="w-full text-sm outline-none"
+              />
             </div>
-            {erreur && <p role="alert" className="text-red text-xs">{erreur}</p>}
+            {erreur && (
+              <p role="alert" className="text-red text-xs">
+                {erreur}
+              </p>
+            )}
             <button type="submit" disabled={envoi} className="btn-navy w-full mt-2 disabled:opacity-60">
               {envoi ? "Envoi…" : "Recevoir un code"}
             </button>
@@ -108,8 +124,8 @@ function Formulaire() {
         ) : (
           <form onSubmit={valider} className="flex flex-col gap-3">
             <p className="text-sm bg-blue/5 border border-blue/20 text-gray-700 rounded-lg px-3 py-2.5" role="status">
-              Si un compte KEUR BI existe pour <strong className="break-all">{email.trim()}</strong>, un code à 6 chiffres vient d&apos;être envoyé
-              sur son numéro WhatsApp vérifié (ou par SMS), sinon par email. Il expire dans 10 minutes.
+              Si un compte KEUR BI existe pour <strong className="break-all">{email.trim()}</strong>, un code à 6 chiffres vient d&apos;être envoyé sur son
+              numéro WhatsApp vérifié (ou par SMS), sinon par email. Il expire dans 10 minutes.
             </p>
             {codeDemo && (
               <p className="text-sm bg-gold/10 border border-gold/30 text-navy-dark rounded-lg px-3 py-2.5 text-center">
@@ -127,29 +143,56 @@ function Formulaire() {
             />
             <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 focus-within:border-navy">
               <Lock size={16} className="text-gray-400 shrink-0" />
-              <input type="password" value={motDePasse} onChange={(e) => setMotDePasse(e.target.value)} placeholder="Nouveau mot de passe" autoComplete="new-password" className="w-full text-sm outline-none" />
+              <input
+                type="password"
+                value={motDePasse}
+                onChange={(e) => setMotDePasse(e.target.value)}
+                placeholder="Nouveau mot de passe"
+                autoComplete="new-password"
+                className="w-full text-sm outline-none"
+              />
             </div>
             <ReglesMotDePasse motDePasse={motDePasse} email={email.trim()} />
             <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 focus-within:border-navy">
               <Lock size={16} className="text-gray-400 shrink-0" />
-              <input type="password" value={confirmation} onChange={(e) => setConfirmation(e.target.value)} placeholder="Confirmez le nouveau mot de passe" autoComplete="new-password" className="w-full text-sm outline-none" />
+              <input
+                type="password"
+                value={confirmation}
+                onChange={(e) => setConfirmation(e.target.value)}
+                placeholder="Confirmez le nouveau mot de passe"
+                autoComplete="new-password"
+                className="w-full text-sm outline-none"
+              />
             </div>
-            {erreur && <p role="alert" className="text-red text-xs">{erreur}</p>}
-            {info && !erreur && <p role="status" className="text-green-700 text-xs">{info}</p>}
+            {erreur && (
+              <p role="alert" className="text-red text-xs">
+                {erreur}
+              </p>
+            )}
+            {info && !erreur && (
+              <p role="status" className="text-green-700 text-xs">
+                {info}
+              </p>
+            )}
             <button type="submit" disabled={envoi} className="btn-navy w-full mt-2 disabled:opacity-60">
               {envoi ? "Enregistrement…" : "Enregistrer le nouveau mot de passe"}
             </button>
-            <p className="text-xs text-gray-500 text-center">
-              Par sécurité, toutes les sessions ouvertes sur vos autres appareils seront fermées.
-            </p>
-            <button type="button" disabled={attente > 0 || envoi} onClick={() => demanderCode()} className="text-sm text-blue font-medium hover:underline disabled:text-gray-400 disabled:no-underline">
+            <p className="text-xs text-gray-500 text-center">Par sécurité, toutes les sessions ouvertes sur vos autres appareils seront fermées.</p>
+            <button
+              type="button"
+              disabled={attente > 0 || envoi}
+              onClick={() => demanderCode()}
+              className="text-sm text-blue font-medium hover:underline disabled:text-gray-400 disabled:no-underline"
+            >
               {attente > 0 ? `Renvoyer un code (${attente} s)` : "Pas reçu ? Renvoyer un code"}
             </button>
           </form>
         )}
 
         <p className="text-sm text-gray-500 text-center mt-5">
-          <Link href="/connexion" className="text-blue font-medium hover:underline">Revenir à la connexion</Link>
+          <Link href="/connexion" className="text-blue font-medium hover:underline">
+            Revenir à la connexion
+          </Link>
         </p>
       </div>
     </div>

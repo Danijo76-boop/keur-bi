@@ -38,10 +38,22 @@ export function SimulateurCredit({ prix }: { prix: number }) {
     <div className="card p-5 mb-6">
       <h2 className="font-bold text-gray-900 mb-3">Simulation de crédit</h2>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-        <label className="text-xs font-semibold text-gray-600">Apport (%)<input type="number" min={0} max={100} value={apport} onChange={(e) => setApport(e.target.value)} className={champ} /></label>
-        <label className="text-xs font-semibold text-gray-600">Durée (ans)<input type="number" min={1} max={30} value={duree} onChange={(e) => setDuree(e.target.value)} className={champ} /></label>
-        <label className="text-xs font-semibold text-gray-600">Taux annuel (%)<input type="number" min={0} step="0.1" value={taux} onChange={(e) => setTaux(e.target.value)} className={champ} /></label>
-        <label className="text-xs font-semibold text-gray-600">Revenu mensuel<input type="number" min={0} placeholder="Optionnel" value={revenu} onChange={(e) => setRevenu(e.target.value)} className={champ} /></label>
+        <label className="text-xs font-semibold text-gray-600">
+          Apport (%)
+          <input type="number" min={0} max={100} value={apport} onChange={(e) => setApport(e.target.value)} className={champ} />
+        </label>
+        <label className="text-xs font-semibold text-gray-600">
+          Durée (ans)
+          <input type="number" min={1} max={30} value={duree} onChange={(e) => setDuree(e.target.value)} className={champ} />
+        </label>
+        <label className="text-xs font-semibold text-gray-600">
+          Taux annuel (%)
+          <input type="number" min={0} step="0.1" value={taux} onChange={(e) => setTaux(e.target.value)} className={champ} />
+        </label>
+        <label className="text-xs font-semibold text-gray-600">
+          Revenu mensuel
+          <input type="number" min={0} placeholder="Optionnel" value={revenu} onChange={(e) => setRevenu(e.target.value)} className={champ} />
+        </label>
       </div>
       <dl className="text-sm flex flex-col gap-2">
         <Ligne label="Apport" val={formatFCFA(prix - capital)} />
@@ -54,7 +66,9 @@ export function SimulateurCredit({ prix }: { prix: number }) {
           {endettement > SEUIL_ENDETTEMENT ? "⚠" : "✓"} Mensualité égale à {endettement} % de votre revenu (repère courant : {SEUIL_ENDETTEMENT} % maximum).
         </p>
       )}
-      <p className="text-xs text-gray-400 mt-3">Le taux par défaut est une simple hypothèse, hors assurance et frais de dossier. Seule votre banque peut vous donner une offre.</p>
+      <p className="text-xs text-gray-400 mt-3">
+        Le taux par défaut est une simple hypothèse, hors assurance et frais de dossier. Seule votre banque peut vous donner une offre.
+      </p>
     </div>
   );
 }
@@ -74,9 +88,18 @@ export function SimulateurInvestisseur({ prix, frais }: { prix: number; frais: n
     <div className="card p-5">
       <h2 className="font-bold text-gray-900 mb-3">Rendement locatif</h2>
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <label className="text-xs font-semibold text-gray-600">Loyer mensuel<input type="number" min={0} value={loyer} onChange={(e) => setLoyer(e.target.value)} className={champ} /></label>
-        <label className="text-xs font-semibold text-gray-600">Charges / an<input type="number" min={0} value={charges} onChange={(e) => setCharges(e.target.value)} className={champ} /></label>
-        <label className="text-xs font-semibold text-gray-600">Mois vacants / an<input type="number" min={0} max={12} value={vacance} onChange={(e) => setVacance(e.target.value)} className={champ} /></label>
+        <label className="text-xs font-semibold text-gray-600">
+          Loyer mensuel
+          <input type="number" min={0} value={loyer} onChange={(e) => setLoyer(e.target.value)} className={champ} />
+        </label>
+        <label className="text-xs font-semibold text-gray-600">
+          Charges / an
+          <input type="number" min={0} value={charges} onChange={(e) => setCharges(e.target.value)} className={champ} />
+        </label>
+        <label className="text-xs font-semibold text-gray-600">
+          Mois vacants / an
+          <input type="number" min={0} max={12} value={vacance} onChange={(e) => setVacance(e.target.value)} className={champ} />
+        </label>
       </div>
       {loyerMensuel > 0 && investi > 0 ? (
         <dl className="text-sm flex flex-col gap-2">

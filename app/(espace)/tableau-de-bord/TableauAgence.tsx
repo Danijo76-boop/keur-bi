@@ -64,9 +64,21 @@ export default function TableauAgence({ user }: { user: User }) {
                   </div>
                 </Link>
                 <div className="flex gap-2 shrink-0">
-                  <button onClick={() => repondreOffre(d.id, o.id, "acceptee")} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-green text-white">Accepter</button>
-                  <Link href={`/dossiers/${d.id}`} className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">Contre-offre</Link>
-                  <button onClick={() => repondreOffre(d.id, o.id, "refusee")} className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">Refuser</button>
+                  <button onClick={() => repondreOffre(d.id, o.id, "acceptee")} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-green text-white">
+                    Accepter
+                  </button>
+                  <Link
+                    href={`/dossiers/${d.id}`}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
+                  >
+                    Contre-offre
+                  </Link>
+                  <button
+                    onClick={() => repondreOffre(d.id, o.id, "refusee")}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
+                  >
+                    Refuser
+                  </button>
                 </div>
               </div>
             ))}
@@ -116,10 +128,22 @@ export default function TableauAgence({ user }: { user: User }) {
               <Building2 size={18} className="text-navy" /> Mes annonces
             </h2>
             <div className="flex gap-1 mr-auto">
-              <button onClick={() => setArchives(false)} className={`text-xs font-medium px-3 py-1 rounded-full ${!archives ? "bg-navy text-white" : "text-gray-500 hover:bg-gray-100"}`}>Actives ({biens.length - nbArchivees})</button>
-              <button onClick={() => setArchives(true)} className={`text-xs font-medium px-3 py-1 rounded-full ${archives ? "bg-navy text-white" : "text-gray-500 hover:bg-gray-100"}`}>Archivées ({nbArchivees})</button>
+              <button
+                onClick={() => setArchives(false)}
+                className={`text-xs font-medium px-3 py-1 rounded-full ${!archives ? "bg-navy text-white" : "text-gray-500 hover:bg-gray-100"}`}
+              >
+                Actives ({biens.length - nbArchivees})
+              </button>
+              <button
+                onClick={() => setArchives(true)}
+                className={`text-xs font-medium px-3 py-1 rounded-full ${archives ? "bg-navy text-white" : "text-gray-500 hover:bg-gray-100"}`}
+              >
+                Archivées ({nbArchivees})
+              </button>
             </div>
-            <Link href="/publier" className="btn-primary text-sm px-3 py-2 flex items-center gap-1"><Plus size={15} /> Publier</Link>
+            <Link href="/publier" className="btn-primary text-sm px-3 py-2 flex items-center gap-1">
+              <Plus size={15} /> Publier
+            </Link>
           </div>
           <div className="flex flex-col gap-2">
             {affichees.length === 0 && <div className="card p-8 text-center text-gray-400">Aucune annonce ici.</div>}
@@ -129,8 +153,12 @@ export default function TableauAgence({ user }: { user: User }) {
                 <Link key={b.id} href={`/mes-annonces/${b.id}`} className="card p-4 flex items-center justify-between gap-4 hover:shadow-md transition-shadow">
                   <div className="min-w-0">
                     <div className="font-semibold text-sm text-gray-900 truncate">{b.titre}</div>
-                    <div className="text-xs text-gray-400 mb-1">{b.agence} · {b.ville} · {b.nb_vues} vues · {offres} offre{offres > 1 ? "s" : ""}</div>
-                    <div className="flex"><TFBadge bien={b} /></div>
+                    <div className="text-xs text-gray-400 mb-1">
+                      {b.agence} · {b.ville} · {b.nb_vues} vues · {offres} offre{offres > 1 ? "s" : ""}
+                    </div>
+                    <div className="flex">
+                      <TFBadge bien={b} />
+                    </div>
                   </div>
                   <div className="text-navy font-bold text-sm shrink-0">{formatPrix(b.prix)}</div>
                 </Link>
@@ -143,18 +171,33 @@ export default function TableauAgence({ user }: { user: User }) {
           <div className="card p-5">
             <h2 className="font-bold text-gray-900 mb-3">Actions rapides</h2>
             <div className="flex flex-col gap-2 text-sm">
-              <Link href="/publier" className="text-blue hover:underline">➕ Publier une nouvelle annonce</Link>
-              <Link href="/profil" className="text-blue hover:underline">👤 Compléter mon profil vendeur</Link>
-              <Link href="/frais" className="text-blue hover:underline">🧮 Simuler les frais de vente</Link>
-              <Link href="/tarifs" className="text-blue hover:underline">⭐ Voir les abonnements</Link>
+              <Link href="/publier" className="text-blue hover:underline">
+                ➕ Publier une nouvelle annonce
+              </Link>
+              <Link href="/profil" className="text-blue hover:underline">
+                👤 Compléter mon profil vendeur
+              </Link>
+              <Link href="/frais" className="text-blue hover:underline">
+                🧮 Simuler les frais de vente
+              </Link>
+              <Link href="/tarifs" className="text-blue hover:underline">
+                ⭐ Voir les abonnements
+              </Link>
             </div>
           </div>
           <div className="card p-5">
-            <h2 className="font-bold text-gray-900 mb-3 flex items-center gap-2"><Lightbulb size={16} className="text-gold" /> Conseils pour vendre plus vite</h2>
+            <h2 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <Lightbulb size={16} className="text-gold" /> Conseils pour vendre plus vite
+            </h2>
             <ul className="text-sm text-gray-600 flex flex-col gap-1">
               <li>✓ Publiez des photos nettes et lumineuses</li>
               <li>✓ Faites vérifier votre TF dès la publication</li>
-              <li>✓ Comparez votre prix au <Link href="/statistiques" className="text-blue hover:underline">marché</Link></li>
+              <li>
+                ✓ Comparez votre prix au{" "}
+                <Link href="/statistiques" className="text-blue hover:underline">
+                  marché
+                </Link>
+              </li>
             </ul>
           </div>
         </aside>
@@ -175,10 +218,14 @@ export default function TableauAgence({ user }: { user: User }) {
                   <span className="text-xs text-gray-400 shrink-0">{new Date(m.date).toLocaleDateString("fr-FR")}</span>
                 </div>
                 <p className="text-sm text-gray-600 break-words">{m.message}</p>
-                <p className="text-xs text-gray-400 mt-1">De {m.nom} — {m.contact}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  De {m.nom} — {m.contact}
+                </p>
               </div>
             ))}
-            <Link href="/messages" className="text-sm text-blue font-medium hover:underline">Ouvrir la messagerie →</Link>
+            <Link href="/messages" className="text-sm text-blue font-medium hover:underline">
+              Ouvrir la messagerie →
+            </Link>
           </div>
         )}
       </section>

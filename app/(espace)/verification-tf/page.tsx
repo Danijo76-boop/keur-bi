@@ -10,15 +10,7 @@ import { BoutonPDF } from "@/components/BoutonsExport";
 import { useParametres } from "@/lib/parametres";
 import { usePeut } from "@/lib/permissions";
 import { useStocke } from "@/lib/stockage";
-import {
-  deciderDemandeTF,
-  DemandeTF,
-  ICONES_TF,
-  LABELS_TF,
-  lireDemandesTF,
-  relancerDemandeTF,
-  soumettreDemandeTF,
-} from "@/lib/tf";
+import { deciderDemandeTF, DemandeTF, ICONES_TF, LABELS_TF, lireDemandesTF, relancerDemandeTF, soumettreDemandeTF } from "@/lib/tf";
 import BandeauDemo from "@/components/BandeauDemo";
 import Protege from "@/components/Protege";
 import SiActif from "@/components/SiActif";
@@ -120,38 +112,82 @@ function Contenu({ user }: { user: User }) {
           {peutSoumettre && (
             <form onSubmit={soumettre} className="card p-5 flex flex-col gap-3">
               <h2 className="font-bold text-gray-900">Soumettre un TF</h2>
-              <label className="text-sm font-semibold text-gray-700">Numéro TF *<input required value={numero} onChange={(e) => setNumero(e.target.value)} className={champ} /></label>
-              <label className="text-sm font-semibold text-gray-700">Région cadastrale *
-                <select value={region} onChange={(e) => setRegion(e.target.value)} className={champ}>{REGIONS.map((r) => <option key={r}>{r}</option>)}</select>
+              <label className="text-sm font-semibold text-gray-700">
+                Numéro TF *<input required value={numero} onChange={(e) => setNumero(e.target.value)} className={champ} />
               </label>
-              <label className="text-sm font-semibold text-gray-700">Propriétaire déclaré *<input required value={proprietaire} onChange={(e) => setProprietaire(e.target.value)} className={champ} /></label>
-              <label className="text-sm font-semibold text-gray-700">Annonce associée
-                <select value={bienId} onChange={(e) => setBienId(e.target.value)} className={champ}>
-                  <option value="">Aucune, vérification libre</option>
-                  {biens.map((b) => <option key={b.id} value={b.id}>{b.reference} · {b.titre}</option>)}
+              <label className="text-sm font-semibold text-gray-700">
+                Région cadastrale *
+                <select value={region} onChange={(e) => setRegion(e.target.value)} className={champ}>
+                  {REGIONS.map((r) => (
+                    <option key={r}>{r}</option>
+                  ))}
                 </select>
               </label>
-              <label className="text-sm font-semibold text-gray-700">Copie du TF (PDF ou image)
+              <label className="text-sm font-semibold text-gray-700">
+                Propriétaire déclaré *<input required value={proprietaire} onChange={(e) => setProprietaire(e.target.value)} className={champ} />
+              </label>
+              <label className="text-sm font-semibold text-gray-700">
+                Annonce associée
+                <select value={bienId} onChange={(e) => setBienId(e.target.value)} className={champ}>
+                  <option value="">Aucune, vérification libre</option>
+                  {biens.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.reference} · {b.titre}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm font-semibold text-gray-700">
+                Copie du TF (PDF ou image)
                 <input type="file" accept=".pdf,image/*" onChange={(e) => setFichier(e.target.files?.[0]?.name ?? "")} className={champ} />
               </label>
-              <button type="submit" className="btn-navy text-sm">Envoyer la demande →</button>
+              <button type="submit" className="btn-navy text-sm">
+                Envoyer la demande →
+              </button>
               <p className="text-xs text-gray-400">Délai de réponse habituel : 3 à {p.delaiDGID} jours ouvrés</p>
             </form>
           )}
           <div className="card p-5">
-            <input aria-label="Rechercher un TF" placeholder="N° TF ou localité…" value={recherche} onChange={(e) => setRecherche(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mb-3" />
+            <input
+              aria-label="Rechercher un TF"
+              placeholder="N° TF ou localité…"
+              value={recherche}
+              onChange={(e) => setRecherche(e.target.value)}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mb-3"
+            />
             <div className="flex gap-1 mb-3">
-              {([["toutes", "Toutes"], ["en_verification", "En cours"], ["terminees", "Terminées"]] as const).map(([id, label]) => (
-                <button key={id} onClick={() => setFiltre(id)} className={`text-xs font-medium px-3 py-1 rounded-full ${filtre === id ? "bg-navy text-white" : "text-gray-500 hover:bg-gray-50"}`}>{label}</button>
+              {(
+                [
+                  ["toutes", "Toutes"],
+                  ["en_verification", "En cours"],
+                  ["terminees", "Terminées"],
+                ] as const
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  onClick={() => setFiltre(id)}
+                  className={`text-xs font-medium px-3 py-1 rounded-full ${filtre === id ? "bg-navy text-white" : "text-gray-500 hover:bg-gray-50"}`}
+                >
+                  {label}
+                </button>
               ))}
             </div>
             <div className="flex flex-col gap-2">
               {mesDemandes.length === 0 && <p className="text-sm text-gray-400 py-3 text-center">Aucune demande.</p>}
               {mesDemandes.map((d) => (
-                <button key={d.id} onClick={() => setSelection(d.id)} className={`text-left rounded-lg p-3 border ${active?.id === d.id ? "border-navy bg-navy/5" : "border-gray-100 hover:bg-gray-50"}`}>
+                <button
+                  key={d.id}
+                  onClick={() => setSelection(d.id)}
+                  className={`text-left rounded-lg p-3 border ${active?.id === d.id ? "border-navy bg-navy/5" : "border-gray-100 hover:bg-gray-50"}`}
+                >
                   <div className="text-sm font-semibold text-gray-900">TF {d.numero}</div>
-                  <div className="text-xs text-gray-400">{d.region} · {new Date(d.soumisLe).toLocaleDateString("fr-FR")}</div>
-                  <div className="text-xs font-medium text-gray-600 mt-0.5">{ICONES_TF[d.statut]} {LABELS_TF[d.statut]}{d.prioritaire && " · Prioritaire"}</div>
+                  <div className="text-xs text-gray-400">
+                    {d.region} · {new Date(d.soumisLe).toLocaleDateString("fr-FR")}
+                  </div>
+                  <div className="text-xs font-medium text-gray-600 mt-0.5">
+                    {ICONES_TF[d.statut]} {LABELS_TF[d.statut]}
+                    {d.prioritaire && " · Prioritaire"}
+                  </div>
                 </button>
               ))}
             </div>
@@ -169,13 +205,30 @@ function Contenu({ user }: { user: User }) {
                 <div className="flex items-start justify-between gap-3 flex-wrap mb-4">
                   <div>
                     <h2 className="font-bold text-gray-900 text-lg">TF {active.numero}</h2>
-                    <p className="text-sm text-gray-500">{active.region}{bienActif && <> · <Link href={`/annonces/${bienActif.id}`} className="text-blue hover:underline">{bienActif.titre}</Link></>}</p>
+                    <p className="text-sm text-gray-500">
+                      {active.region}
+                      {bienActif && (
+                        <>
+                          {" "}
+                          ·{" "}
+                          <Link href={`/annonces/${bienActif.id}`} className="text-blue hover:underline">
+                            {bienActif.titre}
+                          </Link>
+                        </>
+                      )}
+                    </p>
                   </div>
-                  <span className="text-sm font-semibold">{ICONES_TF[active.statut]} {LABELS_TF[active.statut]}</span>
+                  <span className="text-sm font-semibold">
+                    {ICONES_TF[active.statut]} {LABELS_TF[active.statut]}
+                  </span>
                 </div>
                 <ol className="flex gap-1 flex-wrap">
                   {ETAPES.map((e, i) => (
-                    <li key={e} aria-current={i === etape ? "step" : undefined} className={`flex-1 min-w-[6rem] text-center text-xs font-semibold px-2 py-2 rounded-lg ${i < etape || (i === etape && active.statut !== "en_verification") ? "bg-green/10 text-green" : i === etape ? "bg-navy text-white" : "bg-gray-100 text-gray-400"}`}>
+                    <li
+                      key={e}
+                      aria-current={i === etape ? "step" : undefined}
+                      className={`flex-1 min-w-[6rem] text-center text-xs font-semibold px-2 py-2 rounded-lg ${i < etape || (i === etape && active.statut !== "en_verification") ? "bg-green/10 text-green" : i === etape ? "bg-navy text-white" : "bg-gray-100 text-gray-400"}`}
+                    >
                       {e}
                     </li>
                   ))}
@@ -191,12 +244,32 @@ function Contenu({ user }: { user: User }) {
               <div className="card p-5">
                 <h3 className="font-bold text-gray-900 mb-3">Fiche</h3>
                 <dl className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
-                  <div className="bg-gray-50 rounded-lg p-3"><dt className="text-xs text-gray-400">Propriétaire déclaré</dt><dd className="font-semibold break-words">{active.proprietaire}</dd></div>
-                  <div className="bg-gray-50 rounded-lg p-3"><dt className="text-xs text-gray-400">Demandeur</dt><dd className="font-semibold break-words">{active.demandeur}</dd></div>
-                  <div className="bg-gray-50 rounded-lg p-3"><dt className="text-xs text-gray-400">Soumis le</dt><dd className="font-semibold">{new Date(active.soumisLe).toLocaleDateString("fr-FR")}</dd></div>
-                  <div className="bg-gray-50 rounded-lg p-3"><dt className="text-xs text-gray-400">Copie du TF</dt><dd className="font-semibold break-all">{active.fichier ?? "Non fournie"}</dd></div>
-                  <div className="bg-gray-50 rounded-lg p-3"><dt className="text-xs text-gray-400">Relances</dt><dd className="font-semibold">{active.relances}</dd></div>
-                  {active.traiteLe && <div className="bg-gray-50 rounded-lg p-3"><dt className="text-xs text-gray-400">Décision le</dt><dd className="font-semibold">{new Date(active.traiteLe).toLocaleDateString("fr-FR")}</dd></div>}
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <dt className="text-xs text-gray-400">Propriétaire déclaré</dt>
+                    <dd className="font-semibold break-words">{active.proprietaire}</dd>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <dt className="text-xs text-gray-400">Demandeur</dt>
+                    <dd className="font-semibold break-words">{active.demandeur}</dd>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <dt className="text-xs text-gray-400">Soumis le</dt>
+                    <dd className="font-semibold">{new Date(active.soumisLe).toLocaleDateString("fr-FR")}</dd>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <dt className="text-xs text-gray-400">Copie du TF</dt>
+                    <dd className="font-semibold break-all">{active.fichier ?? "Non fournie"}</dd>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <dt className="text-xs text-gray-400">Relances</dt>
+                    <dd className="font-semibold">{active.relances}</dd>
+                  </div>
+                  {active.traiteLe && (
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <dt className="text-xs text-gray-400">Décision le</dt>
+                      <dd className="font-semibold">{new Date(active.traiteLe).toLocaleDateString("fr-FR")}</dd>
+                    </div>
+                  )}
                 </dl>
                 {active.motif && <p className="mt-3 text-sm font-semibold text-red bg-red/10 rounded-lg px-3 py-2">Motif d&apos;invalidité : {active.motif}</p>}
                 <div className="flex gap-2 flex-wrap mt-3">
@@ -209,20 +282,22 @@ function Contenu({ user }: { user: User }) {
                           titre: `Rapport de vérification du Titre Foncier ${active.numero}`,
                           sousTitre: `Décision : ${LABELS_TF[active.statut]}`,
                           avertissement: "Rapport de démonstration, sans valeur juridique.",
-                          sections: [{
-                            titre: "Vérification",
-                            champs: [
-                              { label: "N° de Titre Foncier", valeur: active.numero },
-                              { label: "Région", valeur: active.region },
-                              { label: "Propriétaire déclaré", valeur: active.proprietaire },
-                              { label: "Demandeur", valeur: active.demandeur },
-                              { label: "Soumis le", valeur: new Date(active.soumisLe).toLocaleDateString("fr-FR") },
-                              { label: "Décision", valeur: LABELS_TF[active.statut] },
-                              { label: "Décision le", valeur: active.traiteLe ? new Date(active.traiteLe).toLocaleDateString("fr-FR") : "-" },
-                              { label: "Motif", valeur: active.motif ?? "-" },
-                              { label: "Relances", valeur: active.relances },
-                            ],
-                          }],
+                          sections: [
+                            {
+                              titre: "Vérification",
+                              champs: [
+                                { label: "N° de Titre Foncier", valeur: active.numero },
+                                { label: "Région", valeur: active.region },
+                                { label: "Propriétaire déclaré", valeur: active.proprietaire },
+                                { label: "Demandeur", valeur: active.demandeur },
+                                { label: "Soumis le", valeur: new Date(active.soumisLe).toLocaleDateString("fr-FR") },
+                                { label: "Décision", valeur: LABELS_TF[active.statut] },
+                                { label: "Décision le", valeur: active.traiteLe ? new Date(active.traiteLe).toLocaleDateString("fr-FR") : "-" },
+                                { label: "Motif", valeur: active.motif ?? "-" },
+                                { label: "Relances", valeur: active.relances },
+                              ],
+                            },
+                          ],
                         })
                       }
                     />
@@ -236,7 +311,9 @@ function Contenu({ user }: { user: User }) {
                     </button>
                   )}
                 </div>
-                {active.statut === "invalide" && active.bienId && <p className="text-xs text-gray-400 mt-2">Le vendeur et les acheteurs concernés voient l&apos;alerte dans leurs notifications.</p>}
+                {active.statut === "invalide" && active.bienId && (
+                  <p className="text-xs text-gray-400 mt-2">Le vendeur et les acheteurs concernés voient l&apos;alerte dans leurs notifications.</p>
+                )}
               </div>
 
               {peutDecider && active.statut === "en_verification" && (
@@ -244,19 +321,40 @@ function Contenu({ user }: { user: User }) {
                   <h3 className="font-bold text-gray-900 mb-3">Décision du notaire</h3>
                   <label className="text-sm font-semibold text-gray-700 block mb-3">
                     Motif (obligatoire en cas d&apos;invalidité)
-                    <input value={motif} onChange={(e) => setMotif(e.target.value)} placeholder="ex. hypothèque enregistrée, charge non levée" className={champ} />
+                    <input
+                      value={motif}
+                      onChange={(e) => setMotif(e.target.value)}
+                      placeholder="ex. hypothèque enregistrée, charge non levée"
+                      className={champ}
+                    />
                   </label>
                   <div className="flex gap-2 flex-wrap">
-                    <button onClick={() => decider("verifie")} className="text-sm font-semibold px-4 py-2 rounded-lg bg-green text-white">✓ Valider</button>
-                    <button onClick={() => decider("invalide")} disabled={!motif.trim()} className="text-sm font-semibold px-4 py-2 rounded-lg border border-red/30 text-red disabled:opacity-50">✗ Invalide</button>
-                    <button onClick={() => relancerDemandeTF(active.id)} className="text-sm font-semibold px-4 py-2 rounded-lg border border-gray-200 text-gray-600">Relancer</button>
+                    <button onClick={() => decider("verifie")} className="text-sm font-semibold px-4 py-2 rounded-lg bg-green text-white">
+                      ✓ Valider
+                    </button>
+                    <button
+                      onClick={() => decider("invalide")}
+                      disabled={!motif.trim()}
+                      className="text-sm font-semibold px-4 py-2 rounded-lg border border-red/30 text-red disabled:opacity-50"
+                    >
+                      ✗ Invalide
+                    </button>
+                    <button
+                      onClick={() => relancerDemandeTF(active.id)}
+                      className="text-sm font-semibold px-4 py-2 rounded-lg border border-gray-200 text-gray-600"
+                    >
+                      Relancer
+                    </button>
                   </div>
                 </div>
               )}
 
               {!peutDecider && active.statut === "en_verification" && p.flags.tfPrioritaire && (
                 <div className="card p-5 text-sm text-gray-700">
-                  🚀 TF accéléré disponible pour {formatFCFA(p.prixTFPrioritaire)}. <Link href="/contact?sujet=TF%20acc%C3%A9l%C3%A9r%C3%A9" className="text-blue hover:underline">Nous contacter</Link>
+                  🚀 TF accéléré disponible pour {formatFCFA(p.prixTFPrioritaire)}.{" "}
+                  <Link href="/contact?sujet=TF%20acc%C3%A9l%C3%A9r%C3%A9" className="text-blue hover:underline">
+                    Nous contacter
+                  </Link>
                 </div>
               )}
             </>
@@ -269,7 +367,10 @@ function Contenu({ user }: { user: User }) {
 
 export default function VerificationTFPage() {
   return (
-    <SiActif flag="cadastre" message="La vérification cadastrale des Titres Fonciers est en pause pour le moment. Elle sera rouverte dès que les données du cadastre seront disponibles.">
+    <SiActif
+      flag="cadastre"
+      message="La vérification cadastrale des Titres Fonciers est en pause pour le moment. Elle sera rouverte dès que les données du cadastre seront disponibles."
+    >
       <Protege>{(user) => <Contenu user={user} />}</Protege>
     </SiActif>
   );

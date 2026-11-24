@@ -24,18 +24,37 @@ function zipStocke(fichiers: { nom: string; contenu: string }[]): Uint8Array {
     const nom = encodeur.encode(f.nom);
     const data = encodeur.encode(f.contenu);
     const crc = crc32(data);
-    const commun: [number, 2 | 4][] = [[20, 2], [0x0800, 2], [0, 2], [0, 2], [0x21, 2], [crc, 4], [data.length, 4], [data.length, 4], [nom.length, 2], [0, 2]];
+    const commun: [number, 2 | 4][] = [
+      [20, 2],
+      [0x0800, 2],
+      [0, 2],
+      [0, 2],
+      [0x21, 2],
+      [crc, 4],
+      [data.length, 4],
+      [data.length, 4],
+      [nom.length, 2],
+      [0, 2],
+    ];
     const decalage = locaux.length;
     locaux.push(...octets([[0x04034b50, 4], ...commun]), ...nom, ...data);
     central.push(...octets([[0x02014b50, 4], [20, 2], ...commun, [0, 2], [0, 2], [0, 2], [0, 4], [decalage, 4]]), ...nom);
   }
-  const fin = octets([[0x06054b50, 4], [0, 2], [0, 2], [fichiers.length, 2], [fichiers.length, 2], [central.length, 4], [locaux.length, 4], [0, 2]]);
+  const fin = octets([
+    [0x06054b50, 4],
+    [0, 2],
+    [0, 2],
+    [fichiers.length, 2],
+    [fichiers.length, 2],
+    [central.length, 4],
+    [locaux.length, 4],
+    [0, 2],
+  ]);
   return Uint8Array.from([...locaux, ...central, ...fin]);
 }
 
 function xml(s: string): string {
   return s
-    // eslint-disable-next-line no-control-regex
     .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

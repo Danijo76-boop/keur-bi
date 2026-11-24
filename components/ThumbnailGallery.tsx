@@ -1,15 +1,7 @@
 "use client";
 import Image from "next/image";
 
-export default function ThumbnailGallery({
-  photos,
-  actif,
-  onChange,
-}: {
-  photos: string[];
-  actif: number;
-  onChange: (index: number) => void;
-}) {
+export default function ThumbnailGallery({ photos, actif, onChange }: { photos: string[]; actif: number; onChange: (index: number) => void }) {
   // Une annonce sans galerie n'a qu'une photo : inutile d'afficher une miniature identique.
   if (photos.length < 2) return <div className="mb-6" />;
 

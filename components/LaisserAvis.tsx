@@ -4,12 +4,31 @@ import { Star } from "lucide-react";
 import { avisDuDossier, Avis, publierAvis } from "@/lib/moderation";
 import { useStocke } from "@/lib/stockage";
 
-function Formulaire({ cible, slug, nomCible, dossierId, auteurEmail, nomComplet }: { cible: Avis["cible"]; slug: string; nomCible: string; dossierId: string; auteurEmail: string; nomComplet: string }) {
+function Formulaire({
+  cible,
+  slug,
+  nomCible,
+  dossierId,
+  auteurEmail,
+  nomComplet,
+}: {
+  cible: Avis["cible"];
+  slug: string;
+  nomCible: string;
+  dossierId: string;
+  auteurEmail: string;
+  nomComplet: string;
+}) {
   const existant = useStocke(() => avisDuDossier(dossierId, cible), undefined, [dossierId, cible]);
   const [note, setNote] = useState(5);
   const [texte, setTexte] = useState("");
 
-  if (existant) return <p className="text-sm text-green font-semibold">✓ Votre avis sur {nomCible} est publié ({existant.note}/5).</p>;
+  if (existant)
+    return (
+      <p className="text-sm text-green font-semibold">
+        ✓ Votre avis sur {nomCible} est publié ({existant.note}/5).
+      </p>
+    );
 
   return (
     <form
@@ -36,12 +55,20 @@ function Formulaire({ cible, slug, nomCible, dossierId, auteurEmail, nomComplet 
         onChange={(e) => setTexte(e.target.value)}
         className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy resize-none"
       />
-      <button type="submit" className="btn-navy text-sm self-start">Publier mon avis</button>
+      <button type="submit" className="btn-navy text-sm self-start">
+        Publier mon avis
+      </button>
     </form>
   );
 }
 
-export default function LaisserAvis({ dossierId, auteurEmail, nomComplet, notaire, agence }: {
+export default function LaisserAvis({
+  dossierId,
+  auteurEmail,
+  nomComplet,
+  notaire,
+  agence,
+}: {
   dossierId: string;
   auteurEmail: string;
   nomComplet: string;
@@ -54,8 +81,12 @@ export default function LaisserAvis({ dossierId, auteurEmail, nomComplet, notair
       <h2 className="font-bold text-gray-900 mb-1">Donnez votre avis</h2>
       <p className="text-xs text-gray-400 mb-3">Seuls les clients ayant signé un acte peuvent noter : les avis restent ainsi vérifiés.</p>
       <div className="flex flex-col gap-5">
-        {notaire && <Formulaire cible="notaire" slug={notaire.slug} nomCible={notaire.nom} dossierId={dossierId} auteurEmail={auteurEmail} nomComplet={nomComplet} />}
-        {agence && <Formulaire cible="agence" slug={agence.slug} nomCible={agence.nom} dossierId={dossierId} auteurEmail={auteurEmail} nomComplet={nomComplet} />}
+        {notaire && (
+          <Formulaire cible="notaire" slug={notaire.slug} nomCible={notaire.nom} dossierId={dossierId} auteurEmail={auteurEmail} nomComplet={nomComplet} />
+        )}
+        {agence && (
+          <Formulaire cible="agence" slug={agence.slug} nomCible={agence.nom} dossierId={dossierId} auteurEmail={auteurEmail} nomComplet={nomComplet} />
+        )}
       </div>
     </div>
   );

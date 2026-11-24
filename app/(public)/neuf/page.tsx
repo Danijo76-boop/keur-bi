@@ -30,7 +30,9 @@ export default async function NeufPage(props: { searchParams: Promise<{ region?:
           <h1 className="text-2xl font-bold text-navy">Programmes neufs</h1>
           <p className="text-gray-500 text-sm">Appartements, villas et bureaux vendus sur plan ou en construction par des promoteurs</p>
         </div>
-        <Link href="/neuf/publier" className="btn-primary text-sm px-3 py-2 flex items-center gap-1"><Plus size={15} /> Publier un programme</Link>
+        <Link href="/neuf/publier" className="btn-primary text-sm px-3 py-2 flex items-center gap-1">
+          <Plus size={15} /> Publier un programme
+        </Link>
       </div>
 
       <div className="flex gap-2 flex-wrap mb-6">
@@ -46,8 +48,12 @@ export default async function NeufPage(props: { searchParams: Promise<{ region?:
         ))}
       </div>
 
-      {indisponible && <div className="card p-8 text-center text-gray-400">Les programmes ne peuvent pas être affichés pour le moment. Réessayez dans quelques instants.</div>}
-      {!indisponible && programmes.length === 0 && <div className="card p-8 text-center text-gray-400">Aucun programme neuf dans cette région pour l&apos;instant.</div>}
+      {indisponible && (
+        <div className="card p-8 text-center text-gray-400">Les programmes ne peuvent pas être affichés pour le moment. Réessayez dans quelques instants.</div>
+      )}
+      {!indisponible && programmes.length === 0 && (
+        <div className="card p-8 text-center text-gray-400">Aucun programme neuf dans cette région pour l&apos;instant.</div>
+      )}
 
       <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
         {programmes.map((p) => {
@@ -57,17 +63,28 @@ export default async function NeufPage(props: { searchParams: Promise<{ region?:
             <Link key={p.id} href={`/neuf/${p.slug}`}>
               <div className="card card-hover group cursor-pointer">
                 <div className="relative h-52 overflow-hidden bg-gradient-to-br from-navy/20 to-blue/10">
-                  <Image src={p.photo} alt={p.nom} fill sizes="(min-width: 1280px) 400px, (min-width: 640px) 50vw, 100vw" unoptimized={!p.photo.startsWith("http")} className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <Image
+                    src={p.photo}
+                    alt={p.nom}
+                    fill
+                    sizes="(min-width: 1280px) 400px, (min-width: 640px) 50vw, 100vw"
+                    unoptimized={!p.photo.startsWith("http")}
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
                   <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/45 to-transparent pointer-events-none" />
                   <div className="absolute top-2 left-2 flex flex-col gap-1">
                     <span className="bg-gold text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">Neuf</span>
                     <span className="bg-white/90 text-navy-dark text-xs font-semibold px-2 py-0.5 rounded-full">{p.avancement}</span>
                   </div>
-                  <span className="absolute bottom-2.5 left-3 text-white text-xs font-medium flex items-center gap-1"><CalendarClock size={12} /> Livraison {p.livraison}</span>
+                  <span className="absolute bottom-2.5 left-3 text-white text-xs font-medium flex items-center gap-1">
+                    <CalendarClock size={12} /> Livraison {p.livraison}
+                  </span>
                 </div>
                 <div className="p-4">
                   <h3 className="font-bold text-gray-900 text-[15px] leading-snug line-clamp-2 group-hover:text-navy transition-colors mb-1">{p.nom}</h3>
-                  <p className="text-xs text-gray-500 mb-3 flex items-center gap-1"><MapPin size={12} className="text-gold shrink-0" /> {p.quartier}, {p.ville}</p>
+                  <p className="text-xs text-gray-500 mb-3 flex items-center gap-1">
+                    <MapPin size={12} className="text-gold shrink-0" /> {p.quartier}, {p.ville}
+                  </p>
                   <div className="flex items-end justify-between gap-3">
                     <div>
                       <div className="text-xs text-gray-400">À partir de</div>

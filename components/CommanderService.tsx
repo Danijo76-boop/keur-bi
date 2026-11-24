@@ -10,7 +10,17 @@ import { trouverUtilisateur } from "@/lib/utilisateurs";
 const champ = "border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-navy";
 
 // Bouton qui ouvre le formulaire de commande d'un service à la carte.
-export default function CommanderService({ serviceId, bienId, className, children }: { serviceId: string; bienId?: string; className?: string; children: ReactNode }) {
+export default function CommanderService({
+  serviceId,
+  bienId,
+  className,
+  children,
+}: {
+  serviceId: string;
+  bienId?: string;
+  className?: string;
+  children: ReactNode;
+}) {
   const { user } = useAuth();
   const profil = useStocke(() => (user ? trouverUtilisateur(user.email) : undefined), undefined, [user?.email]);
   const service = SERVICES.find((s) => s.id === serviceId);
@@ -36,15 +46,32 @@ export default function CommanderService({ serviceId, bienId, className, childre
 
   return (
     <>
-      <button type="button" className={className} onClick={() => setOuvert(true)}>{children}</button>
+      <button type="button" className={className} onClick={() => setOuvert(true)}>
+        {children}
+      </button>
       {ouvert && (
         <Modal titre={service.titre} sousTitre={`${formatFCFA(service.prix)} · paiement à la confirmation`} onClose={() => setOuvert(false)}>
           <form onSubmit={envoyer} className="flex flex-col gap-3">
             <input required placeholder="Votre nom" value={nom} onChange={(e) => setNom(e.target.value)} className={champ} />
-            <input required type="tel" placeholder="Téléphone (WhatsApp de préférence)" value={telephone} onChange={(e) => setTelephone(e.target.value)} className={champ} />
-            <textarea rows={3} placeholder="Précisions : bien concerné, disponibilités… (optionnel)" value={note} onChange={(e) => setNote(e.target.value)} className={`${champ} resize-none`} />
+            <input
+              required
+              type="tel"
+              placeholder="Téléphone (WhatsApp de préférence)"
+              value={telephone}
+              onChange={(e) => setTelephone(e.target.value)}
+              className={champ}
+            />
+            <textarea
+              rows={3}
+              placeholder="Précisions : bien concerné, disponibilités… (optionnel)"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              className={`${champ} resize-none`}
+            />
             <p className="text-xs text-gray-400">Aucun paiement en ligne à cette étape : un conseiller vous rappelle pour confirmer la prestation.</p>
-            <button type="submit" className="btn-navy w-full">Commander</button>
+            <button type="submit" className="btn-navy w-full">
+              Commander
+            </button>
           </form>
         </Modal>
       )}

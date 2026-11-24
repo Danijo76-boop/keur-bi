@@ -53,7 +53,11 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
     return (
       <div className="max-w-3xl mx-auto px-4 py-16 text-center text-gray-400">
         {pret ? "Cette annonce est introuvable ou a été retirée." : "Chargement…"}
-        {pret && <Link href="/annonces" className="block text-blue text-sm mt-2 hover:underline">Voir toutes les annonces</Link>}
+        {pret && (
+          <Link href="/annonces" className="block text-blue text-sm mt-2 hover:underline">
+            Voir toutes les annonces
+          </Link>
+        )}
       </div>
     );
   }
@@ -77,7 +81,9 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
     return (
       <div className="max-w-3xl mx-auto px-4 py-16 text-center text-gray-400">
         Cette annonce a été retirée.
-        <Link href="/annonces" className="block text-blue text-sm mt-2 hover:underline">Voir toutes les annonces</Link>
+        <Link href="/annonces" className="block text-blue text-sm mt-2 hover:underline">
+          Voir toutes les annonces
+        </Link>
       </div>
     );
   }
@@ -86,9 +92,13 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Fil d'Ariane */}
       <nav className="flex items-center gap-1 text-sm text-gray-400 mb-6">
-        <Link href="/" className="hover:text-navy">Accueil</Link>
+        <Link href="/" className="hover:text-navy">
+          Accueil
+        </Link>
         <ChevronRight size={14} />
-        <Link href="/annonces" className="hover:text-navy">Annonces</Link>
+        <Link href="/annonces" className="hover:text-navy">
+          Annonces
+        </Link>
         <ChevronRight size={14} />
         <span className="text-gray-700">{bien.titre}</span>
       </nav>
@@ -106,9 +116,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
                 texte="TF Vérifié DGID"
                 className="bg-green text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1"
               />
-              {bien.is_featured && (
-                <span className="bg-gold text-navy-dark text-xs font-semibold px-3 py-1 rounded-full">⭐ En vedette</span>
-              )}
+              {bien.is_featured && <span className="bg-gold text-navy-dark text-xs font-semibold px-3 py-1 rounded-full">⭐ En vedette</span>}
             </div>
             <div className="absolute bottom-3 right-3 flex gap-2">
               <FavoriButton id={bien.id} size={18} className="bg-white/90 hover:bg-white p-2 rounded-lg shadow-sm" />
@@ -126,16 +134,16 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
               <h1 className="text-2xl font-bold text-gray-900">{bien.titre}</h1>
               <div className="text-right shrink-0">
                 <div className="text-2xl font-bold text-navy">{prixAffiche(bien)}</div>
-                {bien.prix_baisser && bien.ancien_prix && (
-                  <div className="text-sm text-gray-400 line-through">{formatPrix(bien.ancien_prix)}</div>
-                )}
+                {bien.prix_baisser && bien.ancien_prix && <div className="text-sm text-gray-400 line-through">{formatPrix(bien.ancien_prix)}</div>}
               </div>
             </div>
             <p className="text-gray-500 flex items-center gap-1 mb-1">
               <MapPin size={15} /> {bien.quartier}, {bien.ville} — {bien.region}
             </p>
             <p className="text-gray-400 text-sm flex items-center gap-3">
-              <span className="flex items-center gap-1"><Eye size={13} /> {bien.nb_vues} vues</span>
+              <span className="flex items-center gap-1">
+                <Eye size={13} /> {bien.nb_vues} vues
+              </span>
               <span>Réf : {bien.reference}</span>
               <span className="capitalize">{bien.type}</span>
             </p>
@@ -173,7 +181,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
                     ]),
                 { label: "Référence", val: bien.reference },
                 { label: "Statut", val: location ? "À louer" : LABELS_VENTE[vente] },
-              ].map(c => (
+              ].map((c) => (
                 <div key={c.label} className="bg-gray-50 rounded-lg p-3">
                   <div className="text-xs text-gray-400 mb-0.5">{c.label}</div>
                   <div className="font-semibold text-sm text-gray-800">{c.val}</div>
@@ -215,9 +223,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
           {/* Agence card */}
           <div className="card p-5 mb-4">
             <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
-              <div className="w-12 h-12 rounded-xl bg-navy flex items-center justify-center text-gold font-bold text-lg">
-                {bien.agence[0]}
-              </div>
+              <div className="w-12 h-12 rounded-xl bg-navy flex items-center justify-center text-gold font-bold text-lg">{bien.agence[0]}</div>
               <div>
                 <div className="font-bold text-sm text-gray-900">{bien.agence}</div>
                 <div className="flex items-center gap-1 text-xs text-gray-400">
@@ -267,10 +273,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
             </div>
 
             {bien.agence_slug && (
-              <Link
-                href={`/agences/${bien.agence_slug}`}
-                className="block text-center text-sm text-blue hover:underline"
-              >
+              <Link href={`/agences/${bien.agence_slug}`} className="block text-center text-sm text-blue hover:underline">
                 Voir le profil de l&apos;agence →
               </Link>
             )}
@@ -297,7 +300,9 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
               <>
                 <h3 className="font-bold mb-1">{vente === "vendu" ? "Ce bien est vendu" : "Ce bien est sous offre"}</h3>
                 <p className="text-white/70 text-sm mb-4">Il n&apos;accepte plus de nouvelles offres. Voyez les biens comparables.</p>
-                <Link href={`/annonces?type=${bien.type}`} className="btn-primary w-full text-center block">Voir des biens similaires</Link>
+                <Link href={`/annonces?type=${bien.type}`} className="btn-primary w-full text-center block">
+                  Voir des biens similaires
+                </Link>
               </>
             )}
           </div>
@@ -314,16 +319,28 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
             <h3 className="font-bold text-gray-900 mb-1">{location ? "Louez l'esprit tranquille" : "Achetez l'esprit tranquille"}</h3>
             <p className="text-sm text-gray-500 mb-3">Faites contrôler ce bien par un professionnel avant de vous engager.</p>
             <div className="flex flex-col gap-2">
-              {!location && <CommanderService serviceId="rapport_tf" bienId={bien.id} className="text-sm text-left text-blue font-medium hover:underline">Rapport complet du Titre Foncier →</CommanderService>}
-              <CommanderService serviceId="visite_accompagnee" bienId={bien.id} className="text-sm text-left text-blue font-medium hover:underline">Visite accompagnée par un expert →</CommanderService>
-              {!location && <Link href="/financement" className="text-sm text-blue font-medium hover:underline">Comparer les crédits →</Link>}
+              {!location && (
+                <CommanderService serviceId="rapport_tf" bienId={bien.id} className="text-sm text-left text-blue font-medium hover:underline">
+                  Rapport complet du Titre Foncier →
+                </CommanderService>
+              )}
+              <CommanderService serviceId="visite_accompagnee" bienId={bien.id} className="text-sm text-left text-blue font-medium hover:underline">
+                Visite accompagnée par un expert →
+              </CommanderService>
+              {!location && (
+                <Link href="/financement" className="text-sm text-blue font-medium hover:underline">
+                  Comparer les crédits →
+                </Link>
+              )}
             </div>
           </div>
 
           <div className="card p-5 mb-4">
             <h3 className="font-bold text-gray-900 mb-1">Ce bien est-il dans votre budget ?</h3>
             <p className="text-sm text-gray-500 mb-3">Calculez le prix maximum que vous pouvez viser, frais compris.</p>
-            <Link href="/budget" className="text-sm text-blue font-medium hover:underline">Calculer mon budget →</Link>
+            <Link href="/budget" className="text-sm text-blue font-medium hover:underline">
+              Calculer mon budget →
+            </Link>
           </div>
 
           {/* Notaire suggéré */}
@@ -333,7 +350,10 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
               <div className="w-10 h-10 rounded-full bg-navy/10 text-navy font-bold text-sm flex items-center justify-center">{notaire.initiales}</div>
               <div>
                 <div className="font-semibold text-sm text-gray-900 group-hover:text-navy">{notaire.nom}</div>
-                <div className="text-xs text-gray-400">{notaire.ville}{notaire.nbAvis > 0 && ` · ⭐ ${notaire.note.toLocaleString("fr-FR")}`}</div>
+                <div className="text-xs text-gray-400">
+                  {notaire.ville}
+                  {notaire.nbAvis > 0 && ` · ⭐ ${notaire.note.toLocaleString("fr-FR")}`}
+                </div>
               </div>
             </Link>
           </div>
@@ -347,7 +367,9 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
         <section className="mt-12">
           <h2 className="text-xl font-bold text-navy mb-6">Annonces similaires</h2>
           <div className="grid md:grid-cols-3 gap-5">
-            {similaires.map((b) => <PropertyCard key={b.id} bien={b} />)}
+            {similaires.map((b) => (
+              <PropertyCard key={b.id} bien={b} />
+            ))}
           </div>
         </section>
       )}
