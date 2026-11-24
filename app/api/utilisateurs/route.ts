@@ -1,11 +1,10 @@
-import { randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 import { Prisma, type Plan, type Role, type StatutKYC } from "@prisma/client";
 import { db } from "@/lib/serveur/db";
 import { compteCourant, emailValide, hacherMotDePasse, memeOrigine, normaliserEmail } from "@/lib/serveur/auth";
 import { versUtilisateur, versUtilisateurReduit } from "@/lib/serveur/utilisateurs";
 import { avecJournal, log } from "@/lib/serveur/journal";
-import { lireJson } from "@/lib/serveur/securite";
+import { lireJson, motDePasseProvisoire as genererMotDePasseProvisoire } from "@/lib/serveur/securite";
 
 export const dynamic = "force-dynamic";
 
@@ -183,7 +182,7 @@ async function post(requete: Request) {
     if (!emailValide(email)) return refus("Adresse email invalide.", 400);
     if (!role) return refus("Rôle inconnu.", 400);
 
-    const motDePasseProvisoire = randomBytes(9).toString("base64url");
+    const motDePasseProvisoire = genererMotDePasseProvisoire();
     const compte = await db.utilisateur.create({
       data: {
         nom, email, role,

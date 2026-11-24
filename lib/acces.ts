@@ -3,7 +3,7 @@
    Tout le reste (annonces, carte, outils, services, annuaires, espace personnel) demande un compte.
    Ce fichier est lu à la fois par le serveur (middleware.ts) et par le navigateur (GardeVisiteur). */
 
-export const PAGES_PUBLIQUES = ["/", "/connexion", "/bienvenue", "/faq", "/guides", "/tarifs", "/contact", "/annonceurs", "/diaspora"];
+export const PAGES_PUBLIQUES = ["/", "/connexion", "/mot-de-passe-oublie", "/bienvenue", "/faq", "/guides", "/tarifs", "/contact", "/annonceurs", "/diaspora"];
 
 export function estPagePublique(chemin: string): boolean {
   const propre = chemin.length > 1 ? chemin.replace(/\/+$/, "") : chemin;

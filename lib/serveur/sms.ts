@@ -20,20 +20,23 @@ export function smsConfigure(numero?: string): boolean {
   return orangeConfigure() && (!numero || numero.startsWith("+221"));
 }
 
-const texteSMS = (code: string) => `KEUR BI : votre code de connexion est ${code}. Il expire dans 10 minutes. Ne le communiquez à personne.`;
+const texteSMS = (code: string) => `KEUR BI : votre code de vérification est ${code}. Il expire dans 10 minutes. Ne le communiquez à personne, même à un agent KEUR BI.`;
 
 export type ResultatSMS = { ok: true } | { ok: false; raison: string };
 
-export async function envoyerCodeSMS(numero: string, code: string): Promise<ResultatSMS> {
+export const envoyerCodeSMS = (numero: string, code: string) => envoyerSMS(numero, texteSMS(code), "code");
+
+// Message libre (alerte de sécurité). Le SMS, contrairement à WhatsApp, n'exige pas de modèle approuvé.
+export async function envoyerSMS(numero: string, texte: string, objet = "message"): Promise<ResultatSMS> {
   const viaOrange = orangeConfigure() && numero.startsWith("+221");
   if (!viaOrange && !twilioConfigure()) return { ok: false, raison: "non_configure" };
   try {
-    const r = viaOrange ? await viaOrangeSMS(numero, code) : await viaTwilio(numero, code);
+    const r = viaOrange ? await viaOrangeSMS(numero, texte) : await viaTwilio(numero, texte);
     if (!r.ok) {
-      log.warn(`SMS : code refusé par ${viaOrange ? "Orange" : "Twilio"}`, { statut: r.status, reponse: (await r.text()).slice(0, 400), numero: masquerNumero(numero) });
+      log.warn(`SMS : ${objet} refusé par ${viaOrange ? "Orange" : "Twilio"}`, { statut: r.status, reponse: (await r.text()).slice(0, 400), numero: masquerNumero(numero) });
       return { ok: false, raison: `http_${r.status}` };
     }
-    log.info("SMS : code envoyé", { fournisseur: viaOrange ? "orange" : "twilio", numero: masquerNumero(numero) });
+    log.info(`SMS : ${objet} envoyé`, { fournisseur: viaOrange ? "orange" : "twilio", numero: masquerNumero(numero) });
     return { ok: true };
   } catch (e) {
     log.warn("SMS : service injoignable", e);
@@ -59,7 +62,7 @@ async function lireJetonOrange(): Promise<string> {
   return d.access_token;
 }
 
-async function viaOrangeSMS(numero: string, code: string): Promise<Response> {
+async function viaOrangeSMS(numero: string, texte: string): Promise<Response> {
   const expediteur = process.env.ORANGE_SMS_EXPEDITEUR || "tel:+2210000";
   return fetch(`https://api.orange.com/smsmessaging/v1/outbound/${encodeURIComponent(expediteur)}/requests`, {
     method: "POST",
@@ -69,16 +72,16 @@ async function viaOrangeSMS(numero: string, code: string): Promise<Response> {
         address: `tel:${numero}`,
         senderAddress: expediteur,
         ...(process.env.ORANGE_SMS_NOM && { senderName: process.env.ORANGE_SMS_NOM }),
-        outboundSMSTextMessage: { message: texteSMS(code) },
+        outboundSMSTextMessage: { message: texte },
       },
     }),
     signal: AbortSignal.timeout(10_000),
   });
 }
 
-async function viaTwilio(numero: string, code: string): Promise<Response> {
+async function viaTwilio(numero: string, texte: string): Promise<Response> {
   const sid = process.env.TWILIO_ACCOUNT_SID!;
-  const corps = new URLSearchParams({ To: numero, Body: texteSMS(code) });
+  const corps = new URLSearchParams({ To: numero, Body: texte });
   if (process.env.TWILIO_MESSAGING_SERVICE_SID) corps.set("MessagingServiceSid", process.env.TWILIO_MESSAGING_SERVICE_SID);
   else corps.set("From", process.env.TWILIO_FROM!);
   return fetch(`https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`, {

@@ -14,7 +14,7 @@ import { noterUtilisateur } from "./journal";
 export const COOKIE_SESSION = "keurbi_session";
 const DUREE_SESSION_JOURS = 30;
 const COUT_BCRYPT = 12;
-export const LONGUEUR_MIN_MOT_DE_PASSE = 8;
+export { LONGUEUR_MIN_MOT_DE_PASSE } from "./securite";
 
 // Rôles qu'une personne peut choisir elle-même à l'inscription. Modérateur et admin sont attribués par un administrateur.
 export const ROLES_INSCRIPTION: Role[] = ["acheteur", "vendeur", "agence", "agent", "notaire", "clerc"];

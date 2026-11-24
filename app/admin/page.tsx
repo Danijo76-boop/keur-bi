@@ -11,6 +11,7 @@ import { lireUtilisateurs } from "@/lib/utilisateurs";
 import { lireSignalements } from "@/lib/moderation";
 import { ROLE_LABELS, ROLES } from "@/lib/auth";
 import BarresHorizontales from "@/components/BarresHorizontales";
+import EtatSecurite from "@/components/EtatSecurite";
 
 export default function AdminPage() {
   const biens = useBiens();
@@ -68,6 +69,8 @@ export default function AdminPage() {
     <div>
       <h1 className="text-2xl font-bold text-navy mb-1">Vue d&apos;ensemble</h1>
       <p className="text-gray-500 text-sm mb-6">Données calculées à partir de ce navigateur (démo)</p>
+
+      <EtatSecurite />
 
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
         {tuiles.map((t) => (

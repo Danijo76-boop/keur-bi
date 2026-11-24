@@ -13,7 +13,17 @@ export const ROLES: Role[] = ["acheteur", "vendeur", "agence", "agent", "notaire
 // Rôles qu'une personne peut choisir elle-même à l'inscription. Modérateur et admin sont attribués par un administrateur.
 export const ROLES_INSCRIPTION: Role[] = ["acheteur", "vendeur", "agence", "agent", "notaire", "clerc"];
 
-export const LONGUEUR_MIN_MOT_DE_PASSE = 8;
+export const LONGUEUR_MIN_MOT_DE_PASSE = 10;
+
+// Règles d'un nouveau mot de passe, affichées et cochées pendant la saisie. Le serveur applique les mêmes
+// (lib/serveur/securite.ts, refusMotDePasse), plus le refus des mots de passe les plus courants.
+export const REGLES_MOT_DE_PASSE: { texte: string; test: (mdp: string, email: string) => boolean }[] = [
+  { texte: `${LONGUEUR_MIN_MOT_DE_PASSE} caractères minimum`, test: (m) => m.length >= LONGUEUR_MIN_MOT_DE_PASSE },
+  { texte: "Au moins une lettre", test: (m) => /\p{L}/u.test(m) },
+  { texte: "Au moins un chiffre", test: (m) => /\d/.test(m) },
+  { texte: "Ne contient pas votre adresse email", test: (m, e) => { const n = e.split("@")[0].toLowerCase(); return !m || n.length < 4 || !m.toLowerCase().includes(n); } },
+];
+export const motDePasseConforme = (m: string, e: string) => REGLES_MOT_DE_PASSE.every((r) => r.test(m, e));
 
 export const ROLE_LABELS: Record<Role, string> = {
   acheteur: "Acheteur",
@@ -60,11 +70,13 @@ export const estCoteVendeur = (role: Role | undefined) => famille(role) === "ven
 export const estNotariat = (role: Role | undefined) => famille(role) === "notariat";
 export const estPlateforme = (role: Role | undefined) => famille(role) === "plateforme";
 
-// Connexion en deux temps : après le mot de passe, le serveur demande un code reçu par WhatsApp (ou par SMS).
+// Connexion en deux temps : après le mot de passe, le serveur demande un code reçu par WhatsApp, SMS ou email.
 // « numero » : le compte n'a pas encore de numéro WhatsApp, il faut le saisir. « code » : un code a été envoyé.
+// « autres » : moyens que la personne peut demander à la place.
+export type Canal = "whatsapp" | "sms" | "email";
 export type EtapeOTP =
-  | { etape: "numero"; defi: string }
-  | { etape: "code"; defi: string; numero: string; canal: "whatsapp" | "sms"; smsPossible: boolean; codeDemo?: string };
+  | { etape: "numero"; defi: string; autres: Canal[] }
+  | { etape: "code"; defi: string; destination: string; canal: Canal; autres: Canal[]; codeDemo?: string };
 export type ResultatAuth = { ok: true } | { ok: false; erreur: string } | { ok: "otp"; otp: EtapeOTP };
 export type ResultatEnvoiCode = { ok: true; otp: EtapeOTP } | { ok: false; erreur: string; expire?: boolean };
 export type DonneesInscription = { nom: string; email: string; motDePasse: string; role: Role; telephone?: string };
@@ -74,8 +86,9 @@ type AuthContextValue = {
   pret: boolean;
   connexion: (email: string, motDePasse: string) => Promise<ResultatAuth>;
   inscription: (d: DonneesInscription) => Promise<ResultatAuth>;
-  envoyerCode: (defi: string, numero?: string, canal?: "sms") => Promise<ResultatEnvoiCode>;
+  envoyerCode: (defi: string, numero?: string, canal?: Canal) => Promise<ResultatEnvoiCode>;
   verifierCode: (defi: string, code: string) => Promise<ResultatAuth & { expire?: boolean }>;
+  reinitialiser: (email: string, defi: string, code: string, motDePasse: string) => Promise<ResultatAuth & { expire?: boolean }>;
   majProfil: (patch: { nom?: string; telephone?: string; ville?: string }) => Promise<ResultatAuth>;
   logout: () => Promise<void>;
 };
@@ -138,8 +151,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const connexion = (email: string, motDePasse: string) => ouvrir("/api/auth/connexion", { email, motDePasse });
   const inscription = (d: DonneesInscription) => ouvrir("/api/auth/inscription", d);
   const verifierCode = (defi: string, code: string) => ouvrir("/api/auth/otp/verifier", { defi, code });
+  // Mot de passe oublié : le code reçu permet d'enregistrer un nouveau mot de passe, puis la session s'ouvre.
+  const reinitialiser = (email: string, defi: string, code: string, motDePasse: string) =>
+    ouvrir("/api/auth/mot-de-passe-oublie/valider", { email, defi, code, motDePasse });
 
-  async function envoyerCode(defi: string, numero?: string, canal?: "sms"): Promise<ResultatEnvoiCode> {
+  async function envoyerCode(defi: string, numero?: string, canal?: Canal): Promise<ResultatEnvoiCode> {
     const { ok, statut, donnees } = await appeler("/api/auth/otp/envoyer", "POST", { defi, numero, canal });
     if (ok && donnees.otp) return { ok: true, otp: donnees.otp };
     return { ok: false, erreur: donnees.erreur ?? "Une erreur est survenue. Réessayez.", expire: statut === 410 };
@@ -157,7 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     appliquer(null);
   }
 
-  return <AuthContext.Provider value={{ user, pret, connexion, inscription, envoyerCode, verifierCode, majProfil, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, pret, connexion, inscription, envoyerCode, verifierCode, reinitialiser, majProfil, logout }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
