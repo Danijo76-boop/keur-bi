@@ -17,6 +17,7 @@
     "securite": "trivy fs --config trivy.yaml ."
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.13.0",
     "@prisma/client": "^6.19.3",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
@@ -25,7 +26,8 @@
     "next": "^15.5.29",
     "react": "^19.1.10",
     "react-dom": "^19.1.10",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.12",

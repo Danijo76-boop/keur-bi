@@ -86,6 +86,9 @@ La liste des pages ouvertes est dans `lib/acces.ts` ; elle est appliquée par `m
 - Retirer ou remettre en ligne : l'auteur, un administrateur ou un modérateur. La remise en ligne compte dans le quota.
 - Une annonce retirée n'est visible que de son auteur et de la modération.
 - Les photos sont envoyées au serveur une par une (JPEG, PNG ou WebP, 2 Mo au maximum) et servies par `/api/fichiers/<id>`. Elles sont stockées dans la base pour l'instant ; `lib/serveur/fichiers.ts` est le seul fichier à changer pour les déplacer vers un stockage dédié.
+- Chaque photo est vérifiée dès son ajout, avant d'être enregistrée (`lib/serveur/moderation-image.ts`). Elle est examinée par Claude (API Anthropic) et refusée si elle montre de la nudité ou un contenu sexuel, de la violence ou du sang, un message haineux, un contenu choquant (arme, drogue, cadavre, maltraitance), des données personnelles lisibles (pièce d'identité, carte bancaire, document nominatif) ou un enfant reconnaissable. La personne voit le motif du refus ; le refus est noté dans le journal technique.
+  - Réglage : variable `ANTHROPIC_API_KEY`. Sans elle, en local, la vérification est sautée ; en ligne, les photos sont refusées tant que la clé manque (`MODERATION_IMAGES=off` coupe la vérification).
+  - Si le service de vérification ne répond pas, la photo est refusée et la personne est invitée à réessayer : aucune photo n'est publiée sans contrôle.
 
 Les règles sont dans `lib/serveur/annonces.ts`.
 
@@ -100,6 +103,7 @@ Variables à définir dans le projet Vercel (Settings → Environment Variables)
 | `DATABASE_URL` | Adresse de la base PostgreSQL (fournie automatiquement par l'intégration Neon de Vercel) |
 | `DATABASE_URL_UNPOOLED` | Adresse directe, utilisée pour les migrations (fournie aussi par Neon ; sinon `DATABASE_URL` sert) |
 | `ADMIN_EMAIL`, `ADMIN_MOT_DE_PASSE` | Premier compte administrateur |
+| `ANTHROPIC_API_KEY` | Vérification du contenu des photos envoyées (clé à créer sur console.anthropic.com) |
 | `SEED_AU_DEPLOIEMENT` | `1` au premier déploiement pour charger les données d'exemple et créer l'administrateur ; à retirer ensuite |
 
 Ne définissez pas `MOT_DE_PASSE_DEMO` en ligne : sans lui, les comptes d'exemple existent mais personne ne peut s'y connecter.
