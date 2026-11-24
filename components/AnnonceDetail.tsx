@@ -333,7 +333,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
               <div className="w-10 h-10 rounded-full bg-navy/10 text-navy font-bold text-sm flex items-center justify-center">{notaire.initiales}</div>
               <div>
                 <div className="font-semibold text-sm text-gray-900 group-hover:text-navy">{notaire.nom}</div>
-                <div className="text-xs text-gray-400">{notaire.ville} · ⭐ {notaire.note}</div>
+                <div className="text-xs text-gray-400">{notaire.ville}{notaire.nbAvis > 0 && ` · ⭐ ${notaire.note.toLocaleString("fr-FR")}`}</div>
               </div>
             </Link>
           </div>

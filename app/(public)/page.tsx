@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Shield, FileCheck, TrendingUp, ArrowRight, CheckCircle, Star, MapPin, Home, Wallet, Calculator, Landmark, BadgeCheck, Globe2 } from "lucide-react";
+import { Shield, FileCheck, TrendingUp, ArrowRight, CheckCircle, MapPin, Home, Wallet, Calculator, Landmark, BadgeCheck, Globe2 } from "lucide-react";
 import { BIENS, REGIONS, formatPrix } from "@/lib/mock-data";
 import { ChiffresCles, NbAnnoncesRegion } from "@/components/ChiffresAccueil";
 import PropertyCard from "@/components/PropertyCard";
@@ -271,34 +271,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── AVIS ── */}
-      <section className="pb-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <p className="eyebrow block text-center mb-2">Témoignages</p>
-          <h2 className="section-title text-center mb-10">Ils nous font confiance</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { nom: "Moussa Diop", role: "Acheteur — Dakar", note: 5, avis: "J'ai acheté un terrain aux Almadies. La vérification du TF m'a évité une arnaque. Tout s'est passé en ligne, super service !" },
-              { nom: "Fatou Sy", role: "Vendeuse — Thiès", note: 5, avis: "Ma villa était vendue en 3 semaines. Le système de séquestre est rassurant pour les deux parties." },
-              { nom: "Ibrahima Ndiaye", role: "Notaire partenaire", note: 5, avis: "La plateforme facilite vraiment mon travail. Les dossiers arrivent complets, les signatures électroniques sont fiables." },
-            ].map(a => (
-              <div key={a.nom} className="card p-6 flex flex-col">
-                <div className="flex gap-0.5 mb-3">
-                  {[...Array(a.note)].map((_, i) => <Star key={i} size={15} className="text-gold fill-gold" />)}
-                </div>
-                <p className="text-gray-600 text-sm leading-relaxed mb-5 flex-1">&ldquo;{a.avis}&rdquo;</p>
-                <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
-                  <span className="w-10 h-10 rounded-full bg-gradient-to-br from-navy to-blue text-white font-bold text-sm flex items-center justify-center">{a.nom[0]}</span>
-                  <span>
-                    <span className="block font-semibold text-sm text-gray-900">{a.nom}</span>
-                    <span className="block text-xs text-gray-400">{a.role}</span>
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

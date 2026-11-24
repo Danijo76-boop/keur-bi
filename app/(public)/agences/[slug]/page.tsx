@@ -66,9 +66,15 @@ export default function AgencePage() {
               <span className="badge-tf">{partTF}% TF vérifiés</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <Etoiles note={note} taille={16} />
-              <span className="font-bold text-gray-700">{note.toLocaleString("fr-FR")}</span>
-              <span className="text-xs text-gray-400">({nbAvis} avis)</span>
+              {nbAvis > 0 ? (
+                <>
+                  <Etoiles note={note} taille={16} />
+                  <span className="font-bold text-gray-700">{note.toLocaleString("fr-FR")}</span>
+                  <span className="text-xs text-gray-400">({nbAvis} avis)</span>
+                </>
+              ) : (
+                <span className="text-xs text-gray-400">Aucun avis pour l&apos;instant</span>
+              )}
             </div>
           </div>
           <div className="flex flex-col gap-2 w-full md:w-auto shrink-0">
@@ -89,7 +95,7 @@ export default function AgencePage() {
             { val: annonces.length, label: "Annonces actives" },
             { val: agence.ventes, label: "Ventes conclues" },
             { val: `${partTF}%`, label: "TF vérifiés" },
-            { val: `${note.toLocaleString("fr-FR")} ★`, label: "Note moyenne" },
+            { val: nbAvis > 0 ? `${note.toLocaleString("fr-FR")} ★` : "—", label: nbAvis > 0 ? "Note moyenne" : "Pas encore d'avis" },
           ].map((s) => (
             <div key={s.label} className="card p-4 text-center">
               <div className="font-bold text-navy text-xl">{s.val}</div>
@@ -138,7 +144,7 @@ export default function AgencePage() {
                     <div className="w-11 h-11 rounded-full bg-navy/10 text-navy font-bold text-sm flex items-center justify-center shrink-0">{a.initiales}</div>
                     <div>
                       <div className="font-semibold text-sm text-gray-900">{a.nom}</div>
-                      <div className="text-xs text-gray-400">{a.role} · {a.ventes} ventes · ★ {a.note.toLocaleString("fr-FR")}</div>
+                      <div className="text-xs text-gray-400">{a.role}</div>
                     </div>
                   </div>
                 ))}
@@ -146,6 +152,7 @@ export default function AgencePage() {
             )}
             {onglet === "avis" && (
               <div className="flex flex-col gap-3">
+                {tousLesAvis.length === 0 && <p className="text-sm text-gray-500">Aucun avis pour l&apos;instant. Les avis sont laissés uniquement par des clients ayant conclu une transaction avec ce professionnel via KEUR BI.</p>}
                 {tousLesAvis.map((a) => (
                   <div key={`${a.auteur}-${a.texte}`} className="card p-4">
                     <Etoiles note={a.note} />

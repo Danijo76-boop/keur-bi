@@ -74,6 +74,10 @@ export function publierAvis(a: Omit<Avis, "id" | "date" | "auteurNom"> & { nomCo
   ecrire(CLE_AVIS, [{ ...reste, auteurNom: nomPublic(nomComplet), id: nouvelId(), date: new Date().toISOString() }, ...lire<Avis[]>(CLE_AVIS, [])]);
 }
 
+// Texte affiché à côté des étoiles : « 4,7 (12 avis) », ou « Aucun avis pour l'instant » tant que personne n'a noté.
+export const texteNote = (note: number, nbAvis: number) =>
+  nbAvis > 0 ? `${note.toLocaleString("fr-FR")} (${nbAvis} avis)` : "Aucun avis pour l'instant";
+
 export function noteAgregee(note: number, nbAvis: number, locaux: Avis[]) {
   const nb = nbAvis + locaux.length;
   const somme = note * nbAvis + locaux.reduce((s, a) => s + a.note, 0);

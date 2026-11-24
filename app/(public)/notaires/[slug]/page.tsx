@@ -73,7 +73,11 @@ export default function NotairePage() {
           <h1 className="text-2xl font-bold text-gray-900">{notaire.nom}</h1>
           <p className="text-sm text-gray-500 mb-2">Notaire · {notaire.etude} · {notaire.ville} · Agréé depuis {notaire.agreeDepuis}</p>
           <div className="flex items-center gap-1 text-sm mb-2">
-            <Star size={15} className="text-gold fill-gold" /> <strong>{note}</strong> <span className="text-gray-400">({nbAvis} avis)</span>
+            {nbAvis > 0 ? (
+              <><Star size={15} className="text-gold fill-gold" /> <strong>{note.toLocaleString("fr-FR")}</strong> <span className="text-gray-400">({nbAvis} avis)</span></>
+            ) : (
+              <span className="text-gray-400">Aucun avis pour l&apos;instant</span>
+            )}
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
             <span className="flex items-center gap-1"><MapPin size={14} /> {notaire.adresse}</span>
@@ -104,6 +108,7 @@ export default function NotairePage() {
           <div className="card p-5">
             <h2 className="font-bold text-gray-900 mb-3">Derniers avis clients</h2>
             <div className="flex flex-col gap-3">
+              {tousLesAvis.length === 0 && <p className="text-sm text-gray-500">Aucun avis pour l&apos;instant. Les avis sont laissés uniquement par des clients ayant conclu une transaction avec ce professionnel via KEUR BI.</p>}
               {tousLesAvis.map((a) => (
                 <div key={`${a.auteur}-${a.texte}`} className="bg-gray-50 rounded-lg p-3">
                   <div className="text-sm font-semibold text-gray-800">{a.auteur} <span className="text-xs font-normal text-gray-400">· {a.date}</span></div>
