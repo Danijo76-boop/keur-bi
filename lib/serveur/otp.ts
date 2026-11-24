@@ -4,18 +4,21 @@ import type { Utilisateur } from "@prisma/client";
 import { db } from "./db";
 import { log } from "./journal";
 import { freiner, type Limite } from "./securite";
+import { envoyerCodeSMS, smsConfigure } from "./sms";
 import { envoyerCodeWhatsApp, masquerNumero, whatsappConfigure } from "./whatsapp";
 
-/* ── Connexion en deux temps : mot de passe, puis code reçu par WhatsApp ──
+/* ── Connexion en deux temps : mot de passe, puis code reçu par WhatsApp (ou par SMS en secours) ──
    1. Mot de passe correct (ou compte tout juste créé) : on ouvre un « défi » au lieu d'une session.
       Le navigateur reçoit un jeton qui désigne ce défi.
    2. Si le compte a déjà un numéro WhatsApp vérifié, le code y part aussitôt ; sinon la personne saisit son numéro.
+      Le code part par WhatsApp ; si WhatsApp échoue (numéro sans WhatsApp, panne), il part par SMS.
+      La personne peut aussi demander le SMS elle-même (« Recevoir par SMS »).
    3. Code correct : la session s'ouvre, et le numéro devient le numéro WhatsApp vérifié du compte.
 
    Réglage :
-   - WhatsApp configuré (voir whatsapp.ts) : codes envoyés pour de bon.
-   - Non configuré, en local : les codes ne partent pas, ils s'affichent à l'écran (mode démo) et dans le journal.
-   - Non configuré, en ligne : la double vérification est désactivée (connexion par mot de passe seul) et une erreur
+   - WhatsApp et/ou SMS configurés (voir whatsapp.ts et sms.ts) : codes envoyés pour de bon.
+   - Aucun des deux, en local : les codes ne partent pas, ils s'affichent à l'écran (mode démo) et dans le journal.
+   - Aucun des deux, en ligne : la double vérification est désactivée (connexion par mot de passe seul) et une erreur
      est notée dans le journal, pour ne pas bloquer tout le monde dehors.
    - OTP_WHATSAPP=off : désactivée partout.
    Statut 410 : le défi lui-même n'existe plus, il faut recommencer la connexion depuis le mot de passe. */
@@ -28,15 +31,15 @@ const ESSAIS_MAX = 5;
 const LIMITE_NUMERO: Limite = { max: 6, fenetreMs: 60 * 60_000 }; // codes envoyés vers un même numéro
 const LIMITE_VERIF: Limite = { max: 20, fenetreMs: 60 * 60_000 }; // codes saisis pour un même compte
 
-export const modeDemo = () => !whatsappConfigure() && process.env.NODE_ENV !== "production";
+export const modeDemo = () => !whatsappConfigure() && !smsConfigure() && process.env.NODE_ENV !== "production";
 
 let alerteDonnee = false;
 export function otpActif(): boolean {
   if (process.env.OTP_WHATSAPP === "off") return false;
-  if (whatsappConfigure() || modeDemo()) return true;
+  if (whatsappConfigure() || smsConfigure() || modeDemo()) return true;
   if (!alerteDonnee) {
     alerteDonnee = true;
-    log.erreur("Double vérification WhatsApp désactivée : WHATSAPP_TOKEN ou WHATSAPP_PHONE_NUMBER_ID absent");
+    log.erreur("Double vérification désactivée : ni WhatsApp (WHATSAPP_TOKEN, WHATSAPP_PHONE_NUMBER_ID) ni SMS (Orange ou Twilio) n'est configuré");
   }
   return false;
 }
@@ -44,10 +47,13 @@ export function otpActif(): boolean {
 const empreinte = (texte: string) => createHash("sha256").update(texte).digest("hex");
 const empreinteCode = (defiId: string, code: string) => empreinte(`${defiId}:${code}`);
 
+export type Canal = "whatsapp" | "sms";
+
 // Réponse renvoyée au navigateur tant que la connexion n'est pas terminée.
+// « canal » : par où le code est parti ; « smsPossible » : le bouton « Recevoir par SMS » peut être proposé.
 export type EtapeOTP =
   | { etape: "numero"; defi: string }
-  | { etape: "code"; defi: string; numero: string; codeDemo?: string };
+  | { etape: "code"; defi: string; numero: string; canal: Canal; smsPossible: boolean; codeDemo?: string };
 
 export type ResultatOTP<T> = { ok: true; valeur: T } | { ok: false; erreur: string; status: number };
 const echec = (erreur: string, status = 400): { ok: false; erreur: string; status: number } => ({ ok: false, erreur, status });
@@ -71,39 +77,55 @@ async function lireDefi(jeton: unknown) {
   return defi;
 }
 
-async function envoyer(defiId: string, jeton: string, numero: string): Promise<ResultatOTP<EtapeOTP>> {
+async function envoyer(defiId: string, jeton: string, numero: string, smsDemande = false): Promise<ResultatOTP<EtapeOTP>> {
   if (await freiner(`otp-numero:${numero}`, LIMITE_NUMERO)) return echec("Trop de codes envoyés à ce numéro. Réessayez dans une heure.", 429);
   const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
   await db.defiOTP.update({
     where: { id: defiId },
     data: { numero, codeHash: empreinteCode(defiId, code), envoyeLe: new Date(), envois: { increment: 1 }, essais: 0 },
   });
+  const etape = (canal: Canal, codeDemo?: string): ResultatOTP<EtapeOTP> => ({
+    ok: true,
+    valeur: { etape: "code", defi: jeton, numero: masquerNumero(numero), canal, smsPossible: canal === "whatsapp" && (modeDemo() || smsConfigure(numero)), ...(codeDemo && { codeDemo }) },
+  });
   if (modeDemo()) {
-    log.info("Code de connexion (mode démo, non envoyé)", { numero: masquerNumero(numero), code });
-    return { ok: true, valeur: { etape: "code", defi: jeton, numero: masquerNumero(numero), codeDemo: code } };
+    log.info("Code de connexion (mode démo, non envoyé)", { numero: masquerNumero(numero), code, canal: smsDemande ? "sms" : "whatsapp" });
+    return etape(smsDemande ? "sms" : "whatsapp", code);
   }
-  const r = await envoyerCodeWhatsApp(numero, code);
-  if (!r.ok) {
-    // Un numéro qui n'a pas WhatsApp est refusé par Meta avec une erreur 400.
-    return echec(r.raison === "http_400"
-      ? "Le code n'a pas pu être envoyé. Vérifiez que ce numéro utilise bien WhatsApp."
-      : "L'envoi du code par WhatsApp a échoué. Réessayez dans un instant.", 502);
+
+  // 1. WhatsApp, sauf si la personne a demandé un SMS.
+  if (!smsDemande && whatsappConfigure()) {
+    const r = await envoyerCodeWhatsApp(numero, code);
+    if (r.ok) return etape("whatsapp");
+    if (!smsConfigure(numero)) {
+      // Un numéro qui n'a pas WhatsApp est refusé par Meta avec une erreur 400.
+      return echec(r.raison === "http_400"
+        ? "Le code n'a pas pu être envoyé. Vérifiez que ce numéro utilise bien WhatsApp."
+        : "L'envoi du code par WhatsApp a échoué. Réessayez dans un instant.", 502);
+    }
+    log.info("WhatsApp n'a pas abouti : envoi du code par SMS", { numero: masquerNumero(numero), raison: r.raison });
   }
-  return { ok: true, valeur: { etape: "code", defi: jeton, numero: masquerNumero(numero) } };
+
+  // 2. SMS : demandé, ou en secours de WhatsApp, ou seul moyen configuré.
+  if (!smsConfigure(numero)) return echec("L'envoi par SMS n'est pas disponible pour ce numéro.", 400);
+  const r = await envoyerCodeSMS(numero, code);
+  if (!r.ok) return echec("L'envoi du code a échoué. Vérifiez le numéro et réessayez dans un instant.", 502);
+  return etape("sms");
 }
 
 // Envoie (ou renvoie) le code. Un numéro saisi n'est accepté que si le compte n'a pas encore de numéro vérifié :
 // connaître le mot de passe ne suffit pas pour détourner les codes vers un autre téléphone.
-export async function renvoyerCode(jeton: unknown, numeroSaisi: string | null): Promise<ResultatOTP<EtapeOTP>> {
+export async function renvoyerCode(jeton: unknown, numeroSaisi: string | null, smsDemande = false): Promise<ResultatOTP<EtapeOTP>> {
   const defi = await lireDefi(jeton);
   if (!defi) return echec("La vérification a expiré. Reconnectez-vous.", 410);
   const numero = defi.utilisateur.whatsapp ?? numeroSaisi ?? defi.numero;
   if (!numero) return echec("Indiquez votre numéro WhatsApp.");
   if (defi.envois >= ENVOIS_MAX) return echec("Trop de codes demandés. Reconnectez-vous.", 429);
-  if (defi.envoyeLe && Date.now() - defi.envoyeLe.getTime() < DELAI_RENVOI_MS && numero === defi.numero) {
+  // Le délai ne s'applique pas au passage au SMS : c'est justement le recours quand WhatsApp n'arrive pas.
+  if (defi.envoyeLe && Date.now() - defi.envoyeLe.getTime() < DELAI_RENVOI_MS && numero === defi.numero && !smsDemande) {
     return echec("Patientez quelques secondes avant de demander un nouveau code.", 429);
   }
-  return envoyer(defi.id, jeton as string, numero);
+  return envoyer(defi.id, jeton as string, numero, smsDemande);
 }
 
 // Vérifie le code. En cas de succès, renvoie le compte (la session est ouverte par l'appelant).

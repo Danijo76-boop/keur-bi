@@ -217,12 +217,12 @@ function EtapeCode({ otp, numeroModifiable, onChange, onSucces, onAbandon }: {
     return () => clearTimeout(t);
   }, [attente]);
 
-  async function demanderCode(numeroSaisi?: string) {
+  async function demanderCode(numeroSaisi?: string, canal?: "sms") {
     if (envoi) return;
     setErreur("");
     setInfo("");
     setEnvoi(true);
-    const r = await envoyerCode(otp.defi, numeroSaisi);
+    const r = await envoyerCode(otp.defi, numeroSaisi, canal);
     setEnvoi(false);
     if (!r.ok) {
       if (r.expire) return onAbandon(r.erreur);
@@ -232,7 +232,7 @@ function EtapeCode({ otp, numeroModifiable, onChange, onSucces, onAbandon }: {
     setCode("");
     setChangerNumero(false);
     setAttente(RENVOI_S);
-    if (numeroSaisi === undefined) setInfo("Un nouveau code vous a été envoyé.");
+    if (numeroSaisi === undefined) setInfo(r.otp.etape === "code" && r.otp.canal === "sms" ? "Un nouveau code vous a été envoyé par SMS." : "Un nouveau code vous a été envoyé.");
   }
 
   async function valider(e: React.FormEvent) {
@@ -259,12 +259,12 @@ function EtapeCode({ otp, numeroModifiable, onChange, onSucces, onAbandon }: {
         <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-[#25D366]/15 text-[#128C7E] flex items-center justify-center">
           <MessageCircle size={24} />
         </div>
-        <h1 className="text-2xl font-bold text-navy mb-1 text-center">Vérification WhatsApp</h1>
+        <h1 className="text-2xl font-bold text-navy mb-1 text-center">{otp.etape === "code" && otp.canal === "sms" && !saisieNumero ? "Vérification par SMS" : "Vérification WhatsApp"}</h1>
 
         {saisieNumero ? (
           <form onSubmit={(e) => { e.preventDefault(); if (numero.trim()) demanderCode(numero.trim()); else setErreur("Indiquez votre numéro WhatsApp."); }} className="flex flex-col gap-3">
             <p className="text-gray-500 text-sm text-center mb-3">
-              Pour sécuriser votre compte, chaque connexion est confirmée par un code envoyé sur WhatsApp. Indiquez votre numéro.
+              Pour sécuriser votre compte, chaque connexion est confirmée par un code envoyé sur WhatsApp (ou par SMS). Indiquez votre numéro.
             </p>
             <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 focus-within:border-navy">
               <Phone size={16} className="text-gray-400 shrink-0" />
@@ -291,11 +291,11 @@ function EtapeCode({ otp, numeroModifiable, onChange, onSucces, onAbandon }: {
         ) : (
           <form onSubmit={valider} className="flex flex-col gap-3">
             <p className="text-gray-500 text-sm text-center mb-3">
-              Saisissez le code à 6 chiffres envoyé sur WhatsApp au <span className="font-semibold text-gray-700 whitespace-nowrap">{otp.numero}</span>.
+              Saisissez le code à 6 chiffres envoyé {otp.canal === "sms" ? "par SMS" : "sur WhatsApp"} au <span className="font-semibold text-gray-700 whitespace-nowrap">{otp.numero}</span>.
             </p>
             {otp.codeDemo && (
               <p className="text-sm bg-gold/10 border border-gold/30 text-navy-dark rounded-lg px-3 py-2.5 text-center" role="status">
-                Mode démo, WhatsApp n&apos;est pas configuré : votre code est <span className="font-mono font-bold tracking-widest">{otp.codeDemo}</span>
+                Mode démo, ni WhatsApp ni SMS ne sont configurés : votre code est <span className="font-mono font-bold tracking-widest">{otp.codeDemo}</span>
               </p>
             )}
             <input
@@ -303,7 +303,7 @@ function EtapeCode({ otp, numeroModifiable, onChange, onSucces, onAbandon }: {
               onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
               inputMode="numeric"
               autoComplete="one-time-code"
-              aria-label="Code reçu sur WhatsApp"
+              aria-label="Code de vérification"
               placeholder="••••••"
               autoFocus
               className="border border-gray-200 rounded-lg px-3 py-3 text-center text-2xl font-mono tracking-[0.5em] outline-none focus:border-navy"
@@ -317,6 +317,11 @@ function EtapeCode({ otp, numeroModifiable, onChange, onSucces, onAbandon }: {
               <button type="button" disabled={attente > 0 || envoi} onClick={() => demanderCode()} className="text-blue font-medium hover:underline disabled:text-gray-400 disabled:no-underline">
                 {attente > 0 ? `Renvoyer le code (${attente} s)` : "Renvoyer le code"}
               </button>
+              {otp.smsPossible && (
+                <button type="button" disabled={envoi} onClick={() => demanderCode(undefined, "sms")} className="text-blue font-medium hover:underline disabled:text-gray-400">
+                  Pas reçu sur WhatsApp ? Recevoir par SMS
+                </button>
+              )}
               {numeroModifiable && (
                 <button type="button" onClick={() => { setChangerNumero(true); setErreur(""); setInfo(""); }} className="text-blue font-medium hover:underline">
                   Changer de numéro

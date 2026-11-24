@@ -7,7 +7,8 @@ import { normaliserNumero } from "@/lib/serveur/whatsapp";
 
 const refus = (erreur: string, status = 400) => NextResponse.json({ erreur }, { status });
 
-// POST /api/auth/otp/envoyer  { defi, numero? } : envoie ou renvoie le code de connexion par WhatsApp.
+// POST /api/auth/otp/envoyer  { defi, numero?, canal? } : envoie ou renvoie le code de connexion
+// par WhatsApp (SMS en secours), ou par SMS si canal = "sms".
 async function post(requete: Request) {
   if (!(await memeOrigine())) return refus("Requête refusée.", 403);
   const corps = await lireJson(requete);
@@ -17,7 +18,7 @@ async function post(requete: Request) {
     if (!numero) return refus("Numéro WhatsApp invalide. Exemple : 77 123 45 67 ou +33 6 12 34 56 78.");
   }
   try {
-    const r = await renvoyerCode(corps?.defi, numero);
+    const r = await renvoyerCode(corps?.defi, numero, corps?.canal === "sms");
     if (!r.ok) return refus(r.erreur, r.status);
     return NextResponse.json({ otp: r.valeur });
   } catch (e) {
