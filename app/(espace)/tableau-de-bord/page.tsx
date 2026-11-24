@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth, ROLE_LABELS, estCoteVendeur, estNotariat, estPlateforme } from "@/lib/auth";
@@ -12,6 +12,14 @@ export default function TableauDeBordPage() {
   const { user, pret } = useAuth();
   const router = useRouter();
   const matrice = useMatrice();
+  // Retour de « Mot de passe oublié » : on confirme le changement, puis on nettoie l'adresse.
+  const [mdpChange, setMdpChange] = useState(false);
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("mdp") === "change") {
+      setMdpChange(true);
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
 
   useEffect(() => {
     if (pret && !user) router.replace("/connexion");
@@ -29,6 +37,11 @@ export default function TableauDeBordPage() {
         <h1 className="text-2xl font-bold text-navy">Bonjour, {user.nom}</h1>
         <p className="text-gray-500 text-sm">Espace {ROLE_LABELS[user.role]}</p>
       </div>
+      {mdpChange && (
+        <p role="status" className="text-sm bg-green-50 border border-green-200 text-green-900 rounded-lg px-4 py-3 mb-6">
+          Votre mot de passe a bien été changé. Par sécurité, vos autres appareils ont été déconnectés.
+        </p>
+      )}
 
       {user.role === "acheteur" && <TableauAcheteur user={user} />}
       {estCoteVendeur(user.role) && <TableauAgence user={user} />}

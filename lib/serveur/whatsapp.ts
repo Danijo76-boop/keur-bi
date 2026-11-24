@@ -7,7 +7,8 @@ import { log } from "./journal";
    - WHATSAPP_PHONE_NUMBER_ID : identifiant du numéro expéditeur (WhatsApp Manager → Numéros de téléphone) ;
    - WHATSAPP_MODELE (facultatif, défaut « code_connexion ») : nom du modèle de message de catégorie « Authentification »,
      approuvé par Meta, avec le bouton « Copier le code » ;
-   - WHATSAPP_LANGUE (facultatif, défaut « fr ») : langue du modèle.
+   - WHATSAPP_LANGUE (facultatif, défaut « fr ») : langue des modèles ;
+   - WHATSAPP_MODELE_ALERTE (facultatif) : modèle « Utilité » pour les alertes de connexion (voir envoyerAlerteWhatsApp).
    Sans WHATSAPP_TOKEN ni WHATSAPP_PHONE_NUMBER_ID, rien n'est envoyé (voir otpActif dans otp.ts). */
 
 const VERSION_API = process.env.WHATSAPP_API_VERSION || "v21.0";
@@ -29,7 +30,8 @@ export const masquerNumero = (n: string) => `${n.slice(0, n.length - 9)} ${n.sli
 
 export type ResultatEnvoi = { ok: true } | { ok: false; raison: string };
 
-export async function envoyerCodeWhatsApp(numero: string, code: string): Promise<ResultatEnvoi> {
+// Envoie un modèle de message approuvé par Meta (seuls les modèles peuvent être envoyés sans que la personne ait écrit avant).
+async function envoyerModele(numero: string, modele: string, components: unknown[], objet: string): Promise<ResultatEnvoi> {
   if (!whatsappConfigure()) return { ok: false, raison: "non_configure" };
   try {
     const r = await fetch(`https://graph.facebook.com/${VERSION_API}/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
@@ -39,26 +41,36 @@ export async function envoyerCodeWhatsApp(numero: string, code: string): Promise
         messaging_product: "whatsapp",
         to: numero.replace("+", ""),
         type: "template",
-        template: {
-          name: process.env.WHATSAPP_MODELE || "code_connexion",
-          language: { code: process.env.WHATSAPP_LANGUE || "fr" },
-          components: [
-            { type: "body", parameters: [{ type: "text", text: code }] },
-            // Bouton « Copier le code » des modèles d'authentification.
-            { type: "button", sub_type: "url", index: "0", parameters: [{ type: "text", text: code }] },
-          ],
-        },
+        template: { name: modele, language: { code: process.env.WHATSAPP_LANGUE || "fr" }, components },
       }),
       signal: AbortSignal.timeout(10_000),
     });
     if (!r.ok) {
-      log.warn("WhatsApp : code refusé par Meta", { statut: r.status, reponse: (await r.text()).slice(0, 400), numero: masquerNumero(numero) });
+      log.warn(`WhatsApp : ${objet} refusé par Meta`, { statut: r.status, reponse: (await r.text()).slice(0, 400), numero: masquerNumero(numero) });
       return { ok: false, raison: `http_${r.status}` };
     }
-    log.info("WhatsApp : code envoyé", { numero: masquerNumero(numero) });
+    log.info(`WhatsApp : ${objet} envoyé`, { numero: masquerNumero(numero) });
     return { ok: true };
   } catch (e) {
     log.warn("WhatsApp : service injoignable", e);
     return { ok: false, raison: "injoignable" };
   }
+}
+
+export function envoyerCodeWhatsApp(numero: string, code: string): Promise<ResultatEnvoi> {
+  return envoyerModele(numero, process.env.WHATSAPP_MODELE || "code_connexion", [
+    { type: "body", parameters: [{ type: "text", text: code }] },
+    // Bouton « Copier le code » des modèles d'authentification.
+    { type: "button", sub_type: "url", index: "0", parameters: [{ type: "text", text: code }] },
+  ], "code");
+}
+
+// Alerte de sécurité (nouvelle connexion, mot de passe changé). Nécessite un second modèle, de catégorie « Utilité »,
+// nommé par WHATSAPP_MODELE_ALERTE, avec deux variables : {{1}} l'évènement, {{2}} la date et l'appareil.
+export const alerteWhatsAppConfiguree = () => whatsappConfigure() && !!process.env.WHATSAPP_MODELE_ALERTE;
+
+export function envoyerAlerteWhatsApp(numero: string, evenement: string, details: string): Promise<ResultatEnvoi> {
+  return envoyerModele(numero, process.env.WHATSAPP_MODELE_ALERTE!, [
+    { type: "body", parameters: [{ type: "text", text: evenement }, { type: "text", text: details }] },
+  ], "alerte de sécurité");
 }

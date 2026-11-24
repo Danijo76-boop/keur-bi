@@ -61,15 +61,18 @@ Le code serveur vit dans `lib/serveur/` et ne peut pas être importé par les pa
 
 ## Comptes et connexion
 
-- Le mot de passe n'est jamais stocké, seulement son empreinte (bcrypt). Il fait 8 caractères au minimum.
+- Le mot de passe n'est jamais stocké, seulement son empreinte (bcrypt). Un nouveau mot de passe doit faire 10 caractères au minimum, avec au moins une lettre et un chiffre, ne pas contenir l'adresse email ni figurer parmi les mots de passe les plus courants. Les règles sont cochées en direct pendant la saisie.
 - La session est un cookie illisible par JavaScript ; la base n'en garde que l'empreinte. Elle dure 30 jours.
 - À l'inscription, on peut choisir acheteur, vendeur, agence, agent, notaire ou clerc. Les rôles modérateur et admin sont attribués par un administrateur.
-- Après 8 mots de passe erronés sur un compte, la connexion à ce compte est bloquée 15 minutes.
-- **Double vérification par WhatsApp, ou par SMS en secours** : après le mot de passe, un code à 6 chiffres est envoyé sur WhatsApp ; la session ne s'ouvre qu'une fois le code saisi. À l'inscription, le numéro WhatsApp est obligatoire et vérifié de la même façon. Un compte sans numéro (comptes anciens) en indique un à sa prochaine connexion. Code `lib/serveur/otp.ts`, `lib/serveur/whatsapp.ts` et `lib/serveur/sms.ts`.
-  - Si WhatsApp n'aboutit pas (numéro sans WhatsApp, panne), le code part automatiquement par SMS ; la personne peut aussi cliquer sur « Recevoir par SMS ». SMS via Orange pour les numéros sénégalais (+221), via Twilio pour les autres (et pour tous si Orange n'est pas configuré).
+- Après 8 mots de passe erronés sur un compte, la connexion à ce compte est bloquée 15 minutes. La personne est prévenue quand il lui reste 3 essais, puis voit combien de minutes il reste avant le déblocage.
+- **Mot de passe oublié** (`/mot-de-passe-oublie`) : un code est envoyé sur le numéro WhatsApp déjà vérifié du compte (WhatsApp, sinon SMS), à défaut par email. Il permet de choisir un nouveau mot de passe ; toutes les sessions ouvertes sont alors fermées. La page répond de la même façon que l'adresse soit inscrite ou non.
+- **Alertes de sécurité** : à chaque connexion et à chaque changement de mot de passe, un message (WhatsApp avec le modèle `WHATSAPP_MODELE_ALERTE`, sinon SMS, et email si Resend est configuré) indique la date, l'appareil et la marche à suivre si ce n'est pas la personne. Code `lib/serveur/alertes-securite.ts`.
+- Administration → Vue d'ensemble affiche si la double vérification est active, et sinon quelles variables ajouter.
+- **Double vérification par WhatsApp, SMS ou email** : après le mot de passe, un code à 6 chiffres est envoyé sur WhatsApp (SMS puis email en secours) ; la session ne s'ouvre qu'une fois le code saisi. À l'inscription, le numéro WhatsApp est obligatoire et vérifié de la même façon. Un compte sans numéro (comptes anciens) en indique un à sa prochaine connexion. Code `lib/serveur/otp.ts`, `lib/serveur/whatsapp.ts` et `lib/serveur/sms.ts`.
+  - Si WhatsApp n'aboutit pas (numéro sans WhatsApp, panne), le code part automatiquement par SMS, puis par email ; la personne peut aussi choisir « Recevoir par SMS » ou « Recevoir par email ». Avec l'email seul configuré (`RESEND_API_KEY`), la double vérification fonctionne déjà. SMS via Orange pour les numéros sénégalais (+221), via Twilio pour les autres (et pour tous si Orange n'est pas configuré).
   - Un code vaut 10 minutes, 5 essais au maximum ; un nouveau code peut être demandé toutes les 30 secondes, et 6 codes par heure au plus vers un même numéro.
   - Une fois vérifié, le numéro ne peut pas être changé avec le seul mot de passe : en cas de téléphone perdu, un administrateur l'efface (Administration → Utilisateurs → « Réinitialiser le numéro WhatsApp ») et la personne en indique un nouveau à sa connexion suivante.
-  - Envoi par l'API WhatsApp de Meta (voir « Déploiement sur Vercel »). Sans WhatsApp ni SMS configurés, en local, le code s'affiche à l'écran (mode démo) ; en ligne, la double vérification est désactivée et une erreur est notée dans le journal technique. `OTP_WHATSAPP=off` la désactive partout.
+  - Envoi par l'API WhatsApp de Meta (voir « Déploiement sur Vercel »). Sans aucun moyen d'envoi configuré (WhatsApp, SMS ou email), en local, le code s'affiche à l'écran (mode démo) ; en ligne, la double vérification est désactivée et une erreur est notée dans le journal technique. `OTP_WHATSAPP=off` la désactive partout.
 - Suspendre un compte ou changer son rôle depuis l'administration ferme ses sessions ouvertes.
 - Les pages de l'espace connecté et de l'administration renvoient vers la connexion sans session (`middleware.ts`).
 
@@ -110,6 +113,8 @@ Variables à définir dans le projet Vercel (Settings → Environment Variables)
 | `ADMIN_EMAIL`, `ADMIN_MOT_DE_PASSE` | Premier compte administrateur |
 | `ANTHROPIC_API_KEY` | Vérification du contenu des photos envoyées (clé à créer sur console.anthropic.com) |
 | `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` | Envoi des codes de connexion par WhatsApp : jeton d'accès permanent et identifiant du numéro expéditeur (Meta Business → WhatsApp Manager) |
+| `WHATSAPP_MODELE_ALERTE` | Facultatif : modèle « Utilité » approuvé par Meta pour les alertes de connexion, avec deux variables ({{1}} l'évènement, {{2}} la date et l'appareil) |
+| `RESEND_API_KEY`, `EMAIL_EXPEDITEUR` | Emails (alertes de recherche, codes de vérification en secours, alertes de sécurité) |
 | `WHATSAPP_MODELE`, `WHATSAPP_LANGUE` | Facultatif : nom et langue du modèle de message « Authentification » approuvé par Meta (par défaut `code_connexion`, `fr`) |
 | `ORANGE_CLIENT_ID`, `ORANGE_CLIENT_SECRET` | SMS de secours vers les numéros sénégalais (Orange SMS API, developer.orange.com). Facultatif : `ORANGE_SMS_EXPEDITEUR` (défaut `tel:+2210000`), `ORANGE_SMS_NOM` |
 | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` | SMS de secours vers les autres numéros (et tous si Orange manque). `TWILIO_MESSAGING_SERVICE_SID` peut remplacer `TWILIO_FROM` |

@@ -1,4 +1,5 @@
 import "server-only";
+import { randomInt } from "crypto";
 import { db } from "./db";
 import { log } from "./journal";
 
@@ -16,6 +17,8 @@ export const LIMITES = {
   publication: { max: 20, fenetreMs: 24 * 60 * 60_000 },
   rapportNavigateur: { max: 30, fenetreMs: 10 * 60_000 },
   alerte: { max: 30, fenetreMs: 60 * 60_000 },
+  oubliCompte: { max: 5, fenetreMs: 60 * 60_000 },
+  oubliAdresse: { max: 20, fenetreMs: 60 * 60_000 },
 } satisfies Record<string, Limite>;
 
 // Vrai si la limite est déjà atteinte (sans compter un nouvel essai).
@@ -86,14 +89,53 @@ export async function lireJson(requete: Request, tailleMax = 50_000): Promise<Re
   }
 }
 
-// Mots de passe trop courants, refusés à l'inscription même s'ils ont la bonne longueur.
-const COURANTS = new Set(["12345678", "123456789", "1234567890", "password", "motdepasse", "azertyuiop", "qwertyuiop", "11111111", "00000000", "senegal123", "keurbi123", "password1", "iloveyou", "abcd1234", "admin123", "dakar2024", "dakar2025", "dakar2026"]);
+// Mots de passe trop courants, refusés même s'ils respectent les autres règles.
+const COURANTS = new Set(["12345678", "123456789", "1234567890", "password", "motdepasse", "azertyuiop", "qwertyuiop", "11111111", "00000000", "senegal123", "keurbi123", "password1", "iloveyou", "abcd1234", "admin123", "dakar2024", "dakar2025", "dakar2026", "password123", "motdepasse1", "azerty1234", "senegal2026", "keurbi2026", "bienvenue1", "1234abcd", "qwerty1234"]);
 
-export function motDePasseFaible(motDePasse: string, email: string): string | null {
+export const LONGUEUR_MIN_MOT_DE_PASSE = 10;
+
+/* Règles d'un nouveau mot de passe (inscription, mot de passe oublié). Les mêmes sont affichées dans le formulaire
+   (lib/auth.tsx, REGLES_MOT_DE_PASSE) pour que la personne voie tout de suite ce qui manque.
+   Renvoie un message clair, ou null si le mot de passe est accepté. */
+export function refusMotDePasse(motDePasse: string, email: string): string | null {
+  if (motDePasse.length < LONGUEUR_MIN_MOT_DE_PASSE) return `Le mot de passe doit contenir au moins ${LONGUEUR_MIN_MOT_DE_PASSE} caractères.`;
+  // bcrypt ignore tout ce qui dépasse 72 octets : on refuse plutôt que de tronquer en silence.
+  if (Buffer.byteLength(motDePasse) > 72) return "Le mot de passe est trop long (72 caractères au maximum).";
+  if (!/\p{L}/u.test(motDePasse)) return "Le mot de passe doit contenir au moins une lettre.";
+  if (!/\d/.test(motDePasse)) return "Le mot de passe doit contenir au moins un chiffre.";
   const m = motDePasse.toLowerCase();
-  if (COURANTS.has(m)) return "Ce mot de passe est trop courant. Choisissez-en un plus difficile à deviner.";
-  if (/^(.)\1+$/.test(m)) return "Ce mot de passe est trop simple.";
+  if (COURANTS.has(m)) return "Ce mot de passe est trop courant : il figure parmi les premiers essayés par les pirates. Choisissez-en un plus personnel.";
+  if (/^(.)\1+$/.test(m) || new Set(m).size < 4) return "Ce mot de passe est trop simple : variez davantage les caractères.";
   const nom = email.split("@")[0].toLowerCase();
   if (nom.length >= 4 && m.includes(nom)) return "Le mot de passe ne doit pas contenir votre adresse email.";
   return null;
+}
+
+// Mot de passe provisoire (compte créé par un administrateur) : respecte toujours les règles ci-dessus.
+export function motDePasseProvisoire(): string {
+  const lettres = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+  const tirer = (jeu: string, n: number) => Array.from({ length: n }, () => jeu[randomInt(jeu.length)]).join("");
+  return `${tirer(lettres, 5)}-${tirer("23456789", 3)}-${tirer(lettres, 4)}`;
+}
+
+// Nombre d'essais restants avant blocage pour cette clé (pour prévenir la personne avant qu'elle soit bloquée).
+export async function essaisRestants(cle: string, limite: Limite): Promise<number> {
+  try {
+    const t = await db.tentative.findUnique({ where: { cle } });
+    if (!t || Date.now() - t.debut.getTime() > limite.fenetreMs) return limite.max;
+    return Math.max(0, limite.max - t.nb);
+  } catch {
+    return limite.max;
+  }
+}
+
+// Minutes avant la fin d'un blocage (arrondi au-dessus).
+export async function minutesAvantDeblocage(cle: string, limite: Limite): Promise<number> {
+  try {
+    const t = await db.tentative.findUnique({ where: { cle } });
+    if (!t) return 0;
+    return Math.max(1, Math.ceil((t.debut.getTime() + limite.fenetreMs - Date.now()) / 60_000));
+  } catch {
+    return Math.ceil(limite.fenetreMs / 60_000);
+  }
 }

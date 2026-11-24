@@ -98,8 +98,12 @@ model DefiOTP {
   jetonHash     String      @unique
   utilisateurId String
   utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
-  // Numéro auquel le code a été envoyé ; devient le numéro WhatsApp vérifié du compte une fois le code saisi.
+  // « connexion » ou « reinitialisation » (mot de passe oublié) : un code ne sert qu'à ce pour quoi il a été envoyé.
+  but           String      @default("connexion")
+  // Numéro visé ; devient le numéro WhatsApp vérifié du compte si le code est arrivé par WhatsApp ou SMS.
   numero        String?
+  // Moyen par lequel le dernier code est parti : whatsapp, sms ou email.
+  canal         String?
   codeHash      String?
   envoyeLe      DateTime?
   envois        Int         @default(0)

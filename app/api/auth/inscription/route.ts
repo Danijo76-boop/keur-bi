@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/serveur/db";
 import {
-  adresseClient, emailValide, hacherMotDePasse, LONGUEUR_MIN_MOT_DE_PASSE, memeOrigine,
+  adresseClient, emailValide, hacherMotDePasse, memeOrigine,
   normaliserEmail, ouvrirSession, ROLES_INSCRIPTION, versSession,
 } from "@/lib/serveur/auth";
 import { avecJournal, log } from "@/lib/serveur/journal";
 import { otpActif, ouvrirDefi } from "@/lib/serveur/otp";
 import { normaliserNumero } from "@/lib/serveur/whatsapp";
-import { freiner, LIMITES, lireJson, motDePasseFaible } from "@/lib/serveur/securite";
+import { freiner, LIMITES, lireJson, refusMotDePasse } from "@/lib/serveur/securite";
 
 const refus = (erreur: string, status = 400) => NextResponse.json({ erreur }, { status });
 
@@ -33,12 +33,9 @@ async function post(requete: Request) {
 
   if (nom.length < 2 || nom.length > 100) return refus("Indiquez votre nom complet.");
   if (!emailValide(email)) return refus("Adresse email invalide.");
-  if (motDePasse.length < LONGUEUR_MIN_MOT_DE_PASSE) return refus(`Le mot de passe doit contenir au moins ${LONGUEUR_MIN_MOT_DE_PASSE} caractères.`);
-  // bcrypt ignore tout ce qui dépasse 72 octets : on refuse plutôt que de tronquer en silence.
-  if (Buffer.byteLength(motDePasse) > 72) return refus("Le mot de passe est trop long (72 caractères au maximum).");
   if (!role) return refus("Ce type de compte ne peut pas être créé ici.");
   if (avecOTP && !numero) return refus(saisie ? "Numéro WhatsApp invalide. Exemple : 77 123 45 67 ou +33 6 12 34 56 78." : "Indiquez votre numéro WhatsApp : il sert à recevoir votre code de connexion.");
-  const faiblesse = motDePasseFaible(motDePasse, email);
+  const faiblesse = refusMotDePasse(motDePasse, email);
   if (faiblesse) return refus(faiblesse);
 
   try {
@@ -47,14 +44,14 @@ async function post(requete: Request) {
     });
     log.info("Compte créé", { utilisateurId: compte.id, role });
     if (avecOTP && numero) {
-      const defi = await ouvrirDefi(compte, numero);
+      const defi = await ouvrirDefi(compte, "connexion", numero);
       if (!defi.ok) return refus(defi.erreur, defi.status);
       return NextResponse.json({ otp: defi.valeur }, { status: 201 });
     }
     await ouvrirSession(compte.id);
     return NextResponse.json({ utilisateur: versSession(compte) }, { status: 201 });
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") return refus("Un compte existe déjà avec cette adresse. Connectez-vous.", 409);
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") return refus("Un compte existe déjà avec cette adresse. Connectez-vous, ou utilisez « Mot de passe oublié » si vous ne vous en souvenez plus.", 409);
     log.erreur("POST /api/auth/inscription", e);
     return refus("Le service est momentanément indisponible.", 503);
   }
