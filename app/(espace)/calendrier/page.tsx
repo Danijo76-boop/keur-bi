@@ -1,9 +1,11 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { CalendarPlus, ChevronLeft, ChevronRight, Printer, Trash2 } from "lucide-react";
+import { CalendarPlus, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
+import { BoutonExcel, BoutonPDF } from "@/components/BoutonsExport";
 import { genererIcs } from "@/lib/ics";
 import { telecharger } from "@/lib/telechargement";
+import { exporterExcel, exporterPDF, type Tableau } from "@/lib/export";
 import { LABELS_VISITE, lireVisites } from "@/lib/visites";
 import { useBiens } from "@/lib/annonces";
 import { User, estCoteVendeur, estNotariat } from "@/lib/auth";
@@ -81,6 +83,27 @@ function Contenu({ user }: { user: User }) {
     );
   }
 
+  // Rapport des évènements à venir, en PDF ou en Excel.
+  const TYPES: Record<Evenement["type"], string> = { fait: "Étape", rdv: "Rendez-vous", delai: "Échéance" };
+  const tableauAgenda = (): Tableau => ({
+    colonnes: ["Date", "Heure", "Type", "Évènement", "Détail"],
+    lignes: aVenir.map((e) => [
+      e.date.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "long", year: "numeric" }),
+      e.date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
+      TYPES[e.type],
+      e.titre,
+      e.detail ?? "",
+    ]),
+  });
+  const exporterAgendaPDF = () =>
+    exporterPDF("Agenda_KEUR_BI", {
+      titre: "Mon agenda KEUR BI",
+      sousTitre: `${user.nom} · ${aVenir.length} évènement${aVenir.length > 1 ? "s" : ""} à venir`,
+      paysage: true,
+      sections: [{ tableau: tableauAgenda() }],
+    });
+  const exporterAgendaExcel = () => exporterExcel("Agenda_KEUR_BI", tableauAgenda(), "Agenda");
+
   const joursAvant = (d: Date) => Math.ceil((d.getTime() - maintenant.getTime()) / 86_400_000);
 
   return (
@@ -91,12 +114,11 @@ function Contenu({ user }: { user: User }) {
           <p className="text-gray-500 text-sm">Vos rendez-vous et les échéances de vos dossiers</p>
         </div>
         <div className="flex gap-2 flex-wrap print:hidden">
-          <button onClick={exporterIcs} disabled={aVenir.length === 0} className="flex items-center gap-2 border border-gray-200 bg-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50 disabled:opacity-50">
+          <button onClick={exporterIcs} disabled={aVenir.length === 0} className="btn-navy flex items-center gap-2 text-sm disabled:opacity-50">
             <CalendarPlus size={16} /> Ajouter à mon agenda (.ics)
           </button>
-          <button onClick={() => window.print()} className="flex items-center gap-2 border border-gray-200 bg-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50">
-            <Printer size={16} /> Imprimer / PDF
-          </button>
+          <BoutonPDF onClick={exporterAgendaPDF} disabled={aVenir.length === 0} libelle="Agenda en PDF" />
+          <BoutonExcel onClick={exporterAgendaExcel} disabled={aVenir.length === 0} libelle="Agenda en Excel" />
         </div>
       </div>
 

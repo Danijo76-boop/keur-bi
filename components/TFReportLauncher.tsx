@@ -3,7 +3,8 @@ import { ReactNode, useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import Modal from "./Modal";
 import { Bien } from "@/lib/mock-data";
-import { telecharger } from "@/lib/telechargement";
+import { exporterPDF } from "@/lib/export";
+import { BoutonPDF } from "@/components/BoutonsExport";
 
 export default function TFReportLauncher({ bien, children, className }: { bien: Bien; children: ReactNode; className?: string }) {
   const [open, setOpen] = useState(false);
@@ -38,17 +39,20 @@ export default function TFReportLauncher({ bien, children, className }: { bien: 
               </div>
             ))}
           </dl>
-          <button
+          <BoutonPDF
+            libelle="Télécharger le rapport en PDF"
             onClick={() =>
-              telecharger(
-                `Rapport_${bien.reference}.txt`,
-                `RAPPORT DE DÉMONSTRATION, sans valeur juridique\n\n${lignes.map((l) => `${l.label} : ${l.val}`).join("\n")}\n`,
-              )
+              exporterPDF(`Rapport_TF_${bien.reference}`, {
+                titre: `Rapport Titre Foncier : ${bien.titre}`,
+                sousTitre: `Annonce ${bien.reference} · ${bien.quartier}, ${bien.ville}`,
+                avertissement: "Rapport de démonstration, sans valeur juridique.",
+                sections: [
+                  { titre: "Vérification", champs: lignes.map((l) => ({ label: l.label, valeur: l.val })) },
+                  { paragraphes: ["Vérification effectuée auprès de la Direction Générale des Impôts et des Domaines (DGID)."] },
+                ],
+              })
             }
-            className="btn-navy text-sm w-full"
-          >
-            ↓ Télécharger le rapport
-          </button>
+          />
         </Modal>
       )}
     </>

@@ -5,7 +5,8 @@ import { useBiens } from "@/lib/annonces";
 import { User } from "@/lib/auth";
 import { formatFCFA } from "@/lib/mock-data";
 import { lireDossiers, signalerIncident } from "@/lib/dossiers";
-import { telecharger } from "@/lib/telechargement";
+import { exporterPDF } from "@/lib/export";
+import { BoutonPDF } from "@/components/BoutonsExport";
 import { useParametres } from "@/lib/parametres";
 import { usePeut } from "@/lib/permissions";
 import { useStocke } from "@/lib/stockage";
@@ -200,17 +201,31 @@ function Contenu({ user }: { user: User }) {
                 {active.motif && <p className="mt-3 text-sm font-semibold text-red bg-red/10 rounded-lg px-3 py-2">Motif d&apos;invalidité : {active.motif}</p>}
                 <div className="flex gap-2 flex-wrap mt-3">
                   {active.statut !== "en_verification" && (
-                    <button
+                    <BoutonPDF
+                      taille="petit"
+                      libelle="Rapport en PDF"
                       onClick={() =>
-                        telecharger(
-                          `Rapport_TF_${active.numero.replace(/\s/g, "")}.txt`,
-                          `RAPPORT DE DÉMONSTRATION, sans valeur juridique\n\nTF ${active.numero}\nRégion : ${active.region}\nPropriétaire déclaré : ${active.proprietaire}\nDécision : ${LABELS_TF[active.statut]}\nMotif : ${active.motif ?? "—"}\nDate : ${active.traiteLe ? new Date(active.traiteLe).toLocaleDateString("fr-FR") : "—"}\n`,
-                        )
+                        exporterPDF(`Rapport_TF_${active.numero}`, {
+                          titre: `Rapport de vérification du Titre Foncier ${active.numero}`,
+                          sousTitre: `Décision : ${LABELS_TF[active.statut]}`,
+                          avertissement: "Rapport de démonstration, sans valeur juridique.",
+                          sections: [{
+                            titre: "Vérification",
+                            champs: [
+                              { label: "N° de Titre Foncier", valeur: active.numero },
+                              { label: "Région", valeur: active.region },
+                              { label: "Propriétaire déclaré", valeur: active.proprietaire },
+                              { label: "Demandeur", valeur: active.demandeur },
+                              { label: "Soumis le", valeur: new Date(active.soumisLe).toLocaleDateString("fr-FR") },
+                              { label: "Décision", valeur: LABELS_TF[active.statut] },
+                              { label: "Décision le", valeur: active.traiteLe ? new Date(active.traiteLe).toLocaleDateString("fr-FR") : "-" },
+                              { label: "Motif", valeur: active.motif ?? "-" },
+                              { label: "Relances", valeur: active.relances },
+                            ],
+                          }],
+                        })
                       }
-                      className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
-                    >
-                      ↓ Télécharger le rapport
-                    </button>
+                    />
                   )}
                   {peutDecider && active.statut === "invalide" && aSuspendre.length > 0 && (
                     <button
