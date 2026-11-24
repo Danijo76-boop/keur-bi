@@ -86,6 +86,106 @@
   to { width: 0; }
 }
 
+/* ───────────── Effets visuels (components/Dynamique.tsx) ───────────── */
+
+/* Apparition au défilement */
+.revelation-attente { opacity: 0; transform: translateY(28px); }
+.revelation-visible {
+  animation: revelation 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--revelation-delai, 0ms);
+}
+@keyframes revelation {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Entrée échelonnée du hero au chargement (sans JavaScript : simple animation CSS) */
+.entree { animation: revelation 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: var(--d, 0ms); }
+
+/* Mot qui change dans le titre */
+.mot-tournant { display: inline-grid; vertical-align: bottom; }
+.mot-tournant > * { grid-area: 1 / 1; }
+.mot-tournant-courant {
+  background: linear-gradient(90deg, #f7c548, #f0a500, #f7c548);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: mot-entree 0.6s cubic-bezier(0.22, 1, 0.36, 1) both, reflet-or 3s linear infinite;
+}
+@keyframes mot-entree {
+  from { opacity: 0; transform: translateY(0.45em); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes reflet-or {
+  to { background-position: -200% 0; }
+}
+
+/* Halo qui suit la souris dans le hero */
+.halo-souris {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: radial-gradient(520px circle at var(--x, 50%) var(--y, 50%), rgba(240, 165, 0, 0.16), rgba(46, 134, 171, 0.10) 40%, transparent 70%);
+}
+
+/* Lueurs colorées qui dérivent lentement */
+.lueur { position: absolute; border-radius: 9999px; filter: blur(64px); pointer-events: none; will-change: transform; }
+.lueur-1 { animation: derive-1 18s ease-in-out infinite alternate; }
+.lueur-2 { animation: derive-2 22s ease-in-out infinite alternate; }
+.lueur-3 { animation: derive-3 26s ease-in-out infinite alternate; }
+@keyframes derive-1 { to { transform: translate(90px, -60px) scale(1.15); } }
+@keyframes derive-2 { to { transform: translate(-110px, 70px) scale(0.9); } }
+@keyframes derive-3 { to { transform: translate(60px, 90px) scale(1.2); } }
+
+/* Carte inclinée en 3D, avec reflet */
+.inclinaison { transition: transform 0.25s ease-out; transform-style: preserve-3d; will-change: transform; }
+.inclinaison::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 2rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(400px circle at var(--reflet-x, 50%) var(--reflet-y, 50%), rgba(255, 255, 255, 0.22), transparent 60%);
+}
+.inclinaison:hover::after { opacity: 1; }
+
+/* Badges qui flottent */
+.flotte { animation: flotte 5s ease-in-out infinite; }
+.flotte-decale { animation: flotte 6s ease-in-out -2.5s infinite; }
+@keyframes flotte {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Halo de souris sur les cartes « outils » */
+.carte-halo { position: relative; isolation: isolate; }
+.carte-halo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(240, 165, 0, 0.14), transparent 70%);
+}
+.carte-halo:hover::before { opacity: 1; }
+
+/* Icône qui pivote légèrement au survol de sa carte */
+.group:hover .icone-vivante { transform: rotate(-8deg) scale(1.1); }
+.icone-vivante { transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* Moins d'animations demandées par l'appareil : tout s'affiche directement, sans mouvement. */
+@media (prefers-reduced-motion: reduce) {
+  .revelation-attente { opacity: 1; transform: none; }
+  .revelation-visible, .entree, .mot-tournant-courant, .lueur, .flotte, .flotte-decale { animation: none !important; }
+  .inclinaison, .icone-vivante { transition: none; transform: none !important; }
+}
+
 /* ───────────── Mode nuit ─────────────
    Les écrans utilisent des classes utilitaires claires (bg-white, text-gray-900…).
    Plutôt que de doubler chaque classe d'une variante sombre dans une soixantaine de fichiers,
