@@ -35,7 +35,8 @@ async function patch(requete: Request, ctx: { params: Promise<{ id: string }> })
       log.info("Modification d'annonce refusée", { annonceId: params.id, raison: resultat.erreur });
       return refus(resultat.erreur, resultat.status);
     }
-    if ("depublie" in corps && moi.role !== "vendeur" && moi.role !== "agence" && moi.role !== "agent") log.audit("Annonce retirée ou remise en ligne par l'équipe", { annonceId: params.id, depublie: corps.depublie, par: moi.role });
+    if ("depublie" in corps && moi.role !== "vendeur" && moi.role !== "agence" && moi.role !== "agent")
+      log.audit("Annonce retirée ou remise en ligne par l'équipe", { annonceId: params.id, depublie: corps.depublie, par: moi.role });
     else log.info("Annonce modifiée", { annonceId: params.id, champs: Object.keys(corps) });
     return NextResponse.json({ annonce: resultat.annonce });
   } catch (e) {

@@ -156,7 +156,15 @@ async function patch(requete: Request) {
       ...(fermerSessions ? [db.session.deleteMany({ where: { utilisateurId: cible.id } })] : []),
     ]);
     const champs = Object.keys(patch);
-    if (!soi || fermerSessions) log.audit("Compte modifié par l'équipe", { cible: cible.id, champs, ...("role" in patch && { role: patch.role }), ...("suspendu" in patch && { suspendu: patch.suspendu }), ...("whatsapp" in patch && { whatsapp: "remis à zéro" }), ...("statutKYC" in patch && { statutKYC: patch.statutKYC }) });
+    if (!soi || fermerSessions)
+      log.audit("Compte modifié par l'équipe", {
+        cible: cible.id,
+        champs,
+        ...("role" in patch && { role: patch.role }),
+        ...("suspendu" in patch && { suspendu: patch.suspendu }),
+        ...("whatsapp" in patch && { whatsapp: "remis à zéro" }),
+        ...("statutKYC" in patch && { statutKYC: patch.statutKYC }),
+      });
     else log.info("Profil modifié", { champs });
     return NextResponse.json({ utilisateur: versUtilisateur(maj) });
   } catch (e) {
@@ -185,7 +193,9 @@ async function post(requete: Request) {
     const motDePasseProvisoire = genererMotDePasseProvisoire();
     const compte = await db.utilisateur.create({
       data: {
-        nom, email, role,
+        nom,
+        email,
+        role,
         telephone: texte(corps?.telephone, 30) || null,
         suspendu: corps?.suspendu === true,
         statutKYC: corps?.statutKYC === "en_attente" ? "en_attente" : "non_soumis",

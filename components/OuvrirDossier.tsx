@@ -60,14 +60,23 @@ export default function OuvrirDossier() {
           Bien
           <select required value={bienId} onChange={(e) => setBienId(e.target.value)} className={champ}>
             <option value="">Choisir…</option>
-            {disponibles.map((b) => <option key={b.id} value={b.id}>{b.reference} · {b.titre} · {formatPrix(b.prix)}</option>)}
+            {disponibles.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.reference} · {b.titre} · {formatPrix(b.prix)}
+              </option>
+            ))}
           </select>
         </label>
         <label className={lib}>
           Acheteur
           <select required value={acheteur} onChange={(e) => setAcheteur(e.target.value)} className={champ}>
             <option value="">Choisir…</option>
-            {acheteurs.map((u) => <option key={u.email} value={u.email}>{u.nom}{u.statutKYC !== "verifie" ? " (KYC non vérifié)" : ""}</option>)}
+            {acheteurs.map((u) => (
+              <option key={u.email} value={u.email}>
+                {u.nom}
+                {u.statutKYC !== "verifie" ? " (KYC non vérifié)" : ""}
+              </option>
+            ))}
           </select>
         </label>
         <label className={lib}>
@@ -77,7 +86,11 @@ export default function OuvrirDossier() {
           ) : (
             <select value={notaireSlug} onChange={(e) => setNotaireSlug(e.target.value)} className={champ}>
               <option value="">À désigner plus tard</option>
-              {NOTAIRES.map((n) => <option key={n.slug} value={n.slug}>{n.nom}</option>)}
+              {NOTAIRES.map((n) => (
+                <option key={n.slug} value={n.slug}>
+                  {n.nom}
+                </option>
+              ))}
             </select>
           )}
         </label>
@@ -88,8 +101,12 @@ export default function OuvrirDossier() {
           : "Seuls les biens disponibles (sans offre acceptée) sont proposés. Le dossier démarre à l'étape « Brouillon »."}
       </p>
       <div className="flex gap-2">
-        <button type="submit" className="btn-navy text-sm">{existant ? "Ouvrir le dossier existant" : "Créer le dossier"}</button>
-        <button type="button" onClick={() => setOuvert(false)} className="border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50">Annuler</button>
+        <button type="submit" className="btn-navy text-sm">
+          {existant ? "Ouvrir le dossier existant" : "Créer le dossier"}
+        </button>
+        <button type="button" onClick={() => setOuvert(false)} className="border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50">
+          Annuler
+        </button>
       </div>
     </form>
   );

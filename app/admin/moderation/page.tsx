@@ -56,19 +56,36 @@ export default function ModerationPage() {
               <div key={id} className="card p-4 border-l-4 border-red">
                 <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
                   <div className="min-w-0">
-                    <Link href={`/annonces/${id}`} className="font-semibold text-sm text-gray-900 hover:text-navy">{bien?.titre ?? "Annonce supprimée"}</Link>
-                    {bien && <div className="text-xs text-gray-400">{bien.reference} · {bien.agence} · {formatFCFA(bien.prix)}</div>}
+                    <Link href={`/annonces/${id}`} className="font-semibold text-sm text-gray-900 hover:text-navy">
+                      {bien?.titre ?? "Annonce supprimée"}
+                    </Link>
+                    {bien && (
+                      <div className="text-xs text-gray-400">
+                        {bien.reference} · {bien.agence} · {formatFCFA(bien.prix)}
+                      </div>
+                    )}
                   </div>
                   <div className="flex gap-2 shrink-0">
-                    <button onClick={() => retirer(id)} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red text-white">Retirer l&apos;annonce</button>
-                    <button onClick={() => classer(id)} className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">Classer sans suite</button>
+                    <button onClick={() => retirer(id)} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red text-white">
+                      Retirer l&apos;annonce
+                    </button>
+                    <button
+                      onClick={() => classer(id)}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
+                    >
+                      Classer sans suite
+                    </button>
                   </div>
                 </div>
                 <ul className="flex flex-col gap-1 text-sm">
                   {liste.map((s) => (
                     <li key={s.id} className="text-gray-600 break-words">
-                      <strong className="text-gray-800">{s.motif}</strong>{s.detail && ` : ${s.detail}`}
-                      <span className="text-xs text-gray-400"> · {s.auteurEmail} · {new Date(s.date).toLocaleDateString("fr-FR")}</span>
+                      <strong className="text-gray-800">{s.motif}</strong>
+                      {s.detail && ` : ${s.detail}`}
+                      <span className="text-xs text-gray-400">
+                        {" "}
+                        · {s.auteurEmail} · {new Date(s.date).toLocaleDateString("fr-FR")}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -89,10 +106,18 @@ export default function ModerationPage() {
               return (
                 <div key={b.id} className="card p-4 flex items-center justify-between gap-3 flex-wrap">
                   <div className="min-w-0">
-                    <Link href={`/annonces/${b.id}`} className="font-semibold text-sm text-gray-900 hover:text-navy">{b.titre}</Link>
-                    <div className="text-xs text-gray-400">{b.agence} · {ICONES_TF[s]} {LABELS_TF[s]}{metas[b.id]?.depublie && " · Retirée"}</div>
+                    <Link href={`/annonces/${b.id}`} className="font-semibold text-sm text-gray-900 hover:text-navy">
+                      {b.titre}
+                    </Link>
+                    <div className="text-xs text-gray-400">
+                      {b.agence} · {ICONES_TF[s]} {LABELS_TF[s]}
+                      {metas[b.id]?.depublie && " · Retirée"}
+                    </div>
                   </div>
-                  <button onClick={() => basculer(b.id)} className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+                  <button
+                    onClick={() => basculer(b.id)}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
+                  >
                     {metas[b.id]?.depublie ? "Republier" : "Retirer"}
                   </button>
                 </div>
@@ -107,7 +132,9 @@ export default function ModerationPage() {
           <h2 className="font-bold text-gray-900 mb-3">Historique</h2>
           <ul className="card p-4 flex flex-col gap-1 text-sm text-gray-600">
             {traites.map((s) => (
-              <li key={s.id}>{biens.find((b) => b.id === s.bienId)?.titre ?? "Annonce"} · {s.motif} · {s.statut === "retire" ? "Annonce retirée" : "Classé sans suite"}</li>
+              <li key={s.id}>
+                {biens.find((b) => b.id === s.bienId)?.titre ?? "Annonce"} · {s.motif} · {s.statut === "retire" ? "Annonce retirée" : "Classé sans suite"}
+              </li>
             ))}
           </ul>
         </section>

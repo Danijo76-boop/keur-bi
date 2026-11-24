@@ -22,13 +22,16 @@ export default function DemandeVisite({ bienId, bienTitre }: { bienId: string; b
   const [erreur, setErreur] = useState("");
 
   const active = user ? visiteActive(bienId, user.email, visites) : undefined;
-  const classe = "flex items-center justify-center gap-2 w-full border border-navy text-navy font-semibold px-5 py-2.5 rounded-lg hover:bg-navy/5 transition-colors";
+  const classe =
+    "flex items-center justify-center gap-2 w-full border border-navy text-navy font-semibold px-5 py-2.5 rounded-lg hover:bg-navy/5 transition-colors";
 
   if (active) {
     return (
       <div className="text-sm bg-gray-50 rounded-lg px-3 py-2 text-center">
         <div className="font-semibold text-gray-800">Visite : {LABELS_VISITE[active.statut]}</div>
-        <div className="text-xs text-gray-500 capitalize">{new Date(active.date).toLocaleString("fr-FR", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}</div>
+        <div className="text-xs text-gray-500 capitalize">
+          {new Date(active.date).toLocaleString("fr-FR", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}
+        </div>
       </div>
     );
   }
@@ -73,7 +76,9 @@ export default function DemandeVisite({ bienId, bienTitre }: { bienId: string; b
               <label className="text-sm font-semibold text-gray-700">
                 Heure
                 <select value={heure} onChange={(e) => setHeure(e.target.value)} className={champ}>
-                  {CRENEAUX.map((c) => <option key={c}>{c}</option>)}
+                  {CRENEAUX.map((c) => (
+                    <option key={c}>{c}</option>
+                  ))}
                 </select>
               </label>
             </div>
@@ -82,7 +87,9 @@ export default function DemandeVisite({ bienId, bienTitre }: { bienId: string; b
               <textarea rows={2} value={message} onChange={(e) => setMessage(e.target.value)} className={`${champ} resize-none`} />
             </label>
             {erreur && <p className="text-red text-xs">{erreur}</p>}
-            <button type="submit" className="btn-navy text-sm">Envoyer la demande</button>
+            <button type="submit" className="btn-navy text-sm">
+              Envoyer la demande
+            </button>
           </form>
         </Modal>
       )}

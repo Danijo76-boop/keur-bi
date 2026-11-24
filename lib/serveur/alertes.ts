@@ -10,7 +10,14 @@ const MAX_ALERTES = 20;
 const TYPES = ["terrain", "villa", "appartement", "bureau"];
 
 export function versAlerte(a: LigneAlerte, email: string): Alerte {
-  return { id: a.id, email, nom: a.nom, criteres: a.criteres as CriteresAlerte, frequence: a.frequence === "Hebdomadaire" ? "Hebdomadaire" : "Quotidien", creeLe: a.creeLe.toISOString() };
+  return {
+    id: a.id,
+    email,
+    nom: a.nom,
+    criteres: a.criteres as CriteresAlerte,
+    frequence: a.frequence === "Hebdomadaire" ? "Hebdomadaire" : "Quotidien",
+    creeLe: a.creeLe.toISOString(),
+  };
 }
 
 // Ne garde que des critères connus et bien formés.
@@ -35,11 +42,14 @@ export async function listerAlertes(compte: Utilisateur): Promise<Alerte[]> {
 }
 
 export async function creerAlerte(compte: Utilisateur, corps: Record<string, unknown>): Promise<{ ok: true; alerte: Alerte } | { ok: false; erreur: string }> {
-  if ((await db.alerte.count({ where: { utilisateurId: compte.id, actif: true } })) >= MAX_ALERTES) return { ok: false, erreur: `Vous avez déjà ${MAX_ALERTES} alertes. Supprimez-en une pour en créer une autre.` };
+  if ((await db.alerte.count({ where: { utilisateurId: compte.id, actif: true } })) >= MAX_ALERTES)
+    return { ok: false, erreur: `Vous avez déjà ${MAX_ALERTES} alertes. Supprimez-en une pour en créer une autre.` };
   const nom = typeof corps.nom === "string" && corps.nom.trim() ? corps.nom.trim().slice(0, 120) : "Ma recherche";
   const frequence = corps.frequence === "Hebdomadaire" ? "Hebdomadaire" : "Quotidien";
   // Point de départ : seules les annonces publiées après la création de l'alerte seront envoyées.
-  const ligne = await db.alerte.create({ data: { utilisateurId: compte.id, nom, frequence, criteres: nettoyerCriteres(corps.criteres), dernierEnvoi: new Date() } });
+  const ligne = await db.alerte.create({
+    data: { utilisateurId: compte.id, nom, frequence, criteres: nettoyerCriteres(corps.criteres), dernierEnvoi: new Date() },
+  });
   return { ok: true, alerte: versAlerte(ligne, compte.email) };
 }
 
@@ -85,7 +95,9 @@ function composerEmail(nomPersonne: string, alerte: LigneAlerte, biens: LigneBie
   <p style="margin:0 0 20px;color:#555">Bonjour ${echapper(nomPersonne)}, voici ${biens.length > 1 ? "les nouvelles annonces qui correspondent" : "la nouvelle annonce qui correspond"} à votre alerte « ${echapper(alerte.nom)} ».</p>
   ${lignes
     .map(
-      (b) => `<a href="${site}/annonces/${encodeURIComponent(b.id)}" style="display:block;text-decoration:none;color:inherit;background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px">
+      (
+        b,
+      ) => `<a href="${site}/annonces/${encodeURIComponent(b.id)}" style="display:block;text-decoration:none;color:inherit;background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px">
     <span style="display:block;font-weight:bold">${echapper(b.titre)}</span>
     <span style="display:block;color:#777;font-size:13px">${echapper(b.quartier)}, ${echapper(b.ville)} · ${b.superficie.toLocaleString("fr-FR")} m²</span>
     <span style="display:block;font-weight:bold;color:#1b4f72;margin-top:6px">${prixTexte(b)}</span>
@@ -114,13 +126,17 @@ const DELAI_MS = { Quotidien: 20 * 60 * 60_000, Hebdomadaire: 6.5 * 24 * 60 * 60
 export async function traiterAlertes(): Promise<{ examinees: number; envoyees: number; echecs: number }> {
   const maintenant = Date.now();
   const alertes = await db.alerte.findMany({ where: { actif: true }, include: { utilisateur: { select: { email: true, nom: true, suspendu: true } } } });
-  let examinees = 0, envoyees = 0, echecs = 0;
+  let examinees = 0,
+    envoyees = 0,
+    echecs = 0;
   for (const a of alertes) {
     const depuis = a.dernierEnvoi ?? a.creeLe;
     const delai = DELAI_MS[a.frequence === "Hebdomadaire" ? "Hebdomadaire" : "Quotidien"];
     if (a.utilisateur.suspendu || maintenant - depuis.getTime() < delai) continue;
     examinees++;
-    const nouveaux = (await db.bien.findMany({ where: { depublie: false, publieLe: { gt: depuis } }, orderBy: { publieLe: "desc" }, take: 200 })).filter((b) => correspond(b, a.criteres as CriteresAlerte));
+    const nouveaux = (await db.bien.findMany({ where: { depublie: false, publieLe: { gt: depuis } }, orderBy: { publieLe: "desc" }, take: 200 })).filter((b) =>
+      correspond(b, a.criteres as CriteresAlerte),
+    );
     if (nouveaux.length > 0) {
       const email = composerEmail(a.utilisateur.nom, a, nouveaux);
       const r = await envoyerEmail({ a: a.utilisateur.email, ...email });

@@ -49,7 +49,9 @@ export default function RevenusPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-navy mb-1">Revenus</h1>
-      <p className="text-gray-500 text-sm mb-6">Estimation à partir de l&apos;activité enregistrée dans ce navigateur : aucun encaissement réel dans cette démo.</p>
+      <p className="text-gray-500 text-sm mb-6">
+        Estimation à partir de l&apos;activité enregistrée dans ce navigateur : aucun encaissement réel dans cette démo.
+      </p>
 
       <div className="grid grid-cols-2 xl:grid-cols-5 gap-3 mb-6">
         {tuiles.map((t) => (
@@ -69,8 +71,12 @@ export default function RevenusPage() {
           <table className="w-full text-sm min-w-[420px]">
             <thead>
               <tr className="text-left text-xs text-gray-400 border-b border-gray-100">
-                <th scope="col" className="p-3 font-semibold">Source</th>
-                <th scope="col" className="p-3 font-semibold text-right">Montant</th>
+                <th scope="col" className="p-3 font-semibold">
+                  Source
+                </th>
+                <th scope="col" className="p-3 font-semibold text-right">
+                  Montant
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -80,11 +86,16 @@ export default function RevenusPage() {
                     <span className="font-semibold text-gray-800">{l.label}</span>
                     <span className="block text-xs text-gray-400">{l.detail}</span>
                   </th>
-                  <td className="p-3 text-right font-semibold whitespace-nowrap">{formatFCFA(l.montant)}{l.recurrent && <span className="text-xs font-normal text-gray-400"> /mois</span>}</td>
+                  <td className="p-3 text-right font-semibold whitespace-nowrap">
+                    {formatFCFA(l.montant)}
+                    {l.recurrent && <span className="text-xs font-normal text-gray-400"> /mois</span>}
+                  </td>
                 </tr>
               ))}
               <tr>
-                <th scope="row" className="p-3 text-left font-bold text-navy">Total</th>
+                <th scope="row" className="p-3 text-left font-bold text-navy">
+                  Total
+                </th>
                 <td className="p-3 text-right font-bold text-navy whitespace-nowrap">{formatFCFA(total)}</td>
               </tr>
             </tbody>
@@ -100,12 +111,24 @@ export default function RevenusPage() {
         <table className="w-full text-sm min-w-[560px]">
           <thead>
             <tr className="text-left text-xs text-gray-400 border-b border-gray-100">
-              <th scope="col" className="p-3 font-semibold">Campagne</th>
-              <th scope="col" className="p-3 font-semibold text-right">Affichages</th>
-              <th scope="col" className="p-3 font-semibold text-right">Clics</th>
-              <th scope="col" className="p-3 font-semibold text-right">Taux de clic</th>
-              <th scope="col" className="p-3 font-semibold text-right">Prix du clic</th>
-              <th scope="col" className="p-3 font-semibold text-right">Revenu</th>
+              <th scope="col" className="p-3 font-semibold">
+                Campagne
+              </th>
+              <th scope="col" className="p-3 font-semibold text-right">
+                Affichages
+              </th>
+              <th scope="col" className="p-3 font-semibold text-right">
+                Clics
+              </th>
+              <th scope="col" className="p-3 font-semibold text-right">
+                Taux de clic
+              </th>
+              <th scope="col" className="p-3 font-semibold text-right">
+                Prix du clic
+              </th>
+              <th scope="col" className="p-3 font-semibold text-right">
+                Revenu
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -138,11 +161,15 @@ export default function RevenusPage() {
               <li key={c.id} className="bg-gray-50 rounded-lg p-3 text-sm flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="font-semibold text-gray-900">{SERVICES.find((s) => s.id === c.serviceId)?.titre ?? c.serviceId}</div>
-                  <div className="text-xs text-gray-500 break-words">{c.nom} · {c.telephone} · {jour(c.date)} · {formatFCFA(c.montant)}</div>
+                  <div className="text-xs text-gray-500 break-words">
+                    {c.nom} · {c.telephone} · {jour(c.date)} · {formatFCFA(c.montant)}
+                  </div>
                   {c.note && <div className="text-xs text-gray-400 break-words mt-0.5">{c.note}</div>}
                 </div>
                 {c.statut === "nouvelle" ? (
-                  <button onClick={() => traiterCommande(c.id)} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-navy text-white shrink-0">Marquer traitée</button>
+                  <button onClick={() => traiterCommande(c.id)} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-navy text-white shrink-0">
+                    Marquer traitée
+                  </button>
                 ) : (
                   <span className="text-xs font-semibold text-green shrink-0">✓ Traitée</span>
                 )}
@@ -159,11 +186,17 @@ export default function RevenusPage() {
             {leads.map((l) => (
               <li key={l.id} className="bg-gray-50 rounded-lg p-3 text-sm flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="font-semibold text-gray-900">{l.nom} · {formatFCFA(l.montant)} sur {l.duree} ans</div>
-                  <div className="text-xs text-gray-500 break-words">{OFFRES_FINANCEMENT.find((o) => o.id === l.offreId)?.nom} · {l.telephone} · {jour(l.date)}</div>
+                  <div className="font-semibold text-gray-900">
+                    {l.nom} · {formatFCFA(l.montant)} sur {l.duree} ans
+                  </div>
+                  <div className="text-xs text-gray-500 break-words">
+                    {OFFRES_FINANCEMENT.find((o) => o.id === l.offreId)?.nom} · {l.telephone} · {jour(l.date)}
+                  </div>
                 </div>
                 {l.statut === "nouvelle" ? (
-                  <button onClick={() => transmettreDemande(l.id)} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-navy text-white shrink-0">Transmettre</button>
+                  <button onClick={() => transmettreDemande(l.id)} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-navy text-white shrink-0">
+                    Transmettre
+                  </button>
                 ) : (
                   <span className="text-xs font-semibold text-green shrink-0">✓ Transmise</span>
                 )}

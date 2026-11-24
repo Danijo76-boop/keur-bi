@@ -22,10 +22,28 @@ const LIBELLES: Record<Evenement, string> = {
 
 // « Chrome sur Android » : assez pour reconnaître son appareil, sans conserver l'empreinte complète du navigateur.
 export function decrireAppareil(ua: string): string {
-  const navigateur = /Edg\//.test(ua) ? "Edge" : /OPR\/|Opera/.test(ua) ? "Opera" : /Firefox\//.test(ua) ? "Firefox"
-    : /Chrome\//.test(ua) ? "Chrome" : /Safari\//.test(ua) ? "Safari" : "un navigateur";
-  const systeme = /Android/.test(ua) ? "Android" : /iPhone|iPad/.test(ua) ? "iPhone" : /Windows/.test(ua) ? "Windows"
-    : /Mac OS X/.test(ua) ? "Mac" : /Linux/.test(ua) ? "Linux" : "un appareil inconnu";
+  const navigateur = /Edg\//.test(ua)
+    ? "Edge"
+    : /OPR\/|Opera/.test(ua)
+      ? "Opera"
+      : /Firefox\//.test(ua)
+        ? "Firefox"
+        : /Chrome\//.test(ua)
+          ? "Chrome"
+          : /Safari\//.test(ua)
+            ? "Safari"
+            : "un navigateur";
+  const systeme = /Android/.test(ua)
+    ? "Android"
+    : /iPhone|iPad/.test(ua)
+      ? "iPhone"
+      : /Windows/.test(ua)
+        ? "Windows"
+        : /Mac OS X/.test(ua)
+          ? "Mac"
+          : /Linux/.test(ua)
+            ? "Linux"
+            : "un appareil inconnu";
   return `${navigateur} sur ${systeme}`;
 }
 

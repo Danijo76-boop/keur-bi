@@ -138,7 +138,7 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
       acheteurEmail: dossier.acheteurEmail,
       acheteurNom: dossier.acheteurNom,
       avec,
-      interlocuteurNom: avec === "notaire" ? notaire?.nom ?? "Notaire" : bien.agence,
+      interlocuteurNom: avec === "notaire" ? (notaire?.nom ?? "Notaire") : bien.agence,
     });
     router.push(`/messages?c=${conversation.id}`);
   }
@@ -164,18 +164,25 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
         </div>
         <div className="flex gap-2 flex-wrap">
           {signatureOuverte && (
-            <Link href={`/dossiers/${dossierId}/signature`} className="btn-primary text-sm flex items-center gap-2"><PenLine size={15} /> Signer l&apos;acte</Link>
+            <Link href={`/dossiers/${dossierId}/signature`} className="btn-primary text-sm flex items-center gap-2">
+              <PenLine size={15} /> Signer l&apos;acte
+            </Link>
           )}
           {paiementPossible && (
-            <Link href={`/dossiers/${dossierId}/paiement`} className="btn-navy text-sm flex items-center gap-2"><CreditCard size={15} /> Paiement séquestre</Link>
+            <Link href={`/dossiers/${dossierId}/paiement`} className="btn-navy text-sm flex items-center gap-2">
+              <CreditCard size={15} /> Paiement séquestre
+            </Link>
           )}
-          <Link href="/calendrier" className="border border-gray-200 bg-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50 flex items-center gap-2"><CalendarDays size={15} /> Calendrier</Link>
+          <Link
+            href="/calendrier"
+            className="border border-gray-200 bg-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50 flex items-center gap-2"
+          >
+            <CalendarDays size={15} /> Calendrier
+          </Link>
         </div>
       </div>
 
-      {dossier.incident && (
-        <div className="mb-6 text-sm font-semibold px-4 py-3 rounded-lg bg-red/10 text-red">{INCIDENTS[dossier.incident]}</div>
-      )}
+      {dossier.incident && <div className="mb-6 text-sm font-semibold px-4 py-3 rounded-lg bg-red/10 text-red">{INCIDENTS[dossier.incident]}</div>}
 
       <div className="card p-5 mb-6">
         <h2 className="font-bold text-gray-900 mb-3">Parcours du contrat</h2>
@@ -193,11 +200,17 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
               <div className="font-semibold text-gray-800">Prochaine transition : {LABELS_ETAPE[prochaineEtape]}</div>
               {manque.length > 0 && (
                 <ul className="text-xs text-red mt-1 flex flex-col gap-0.5">
-                  {manque.map((m) => <li key={m}>En attente : {m}</li>)}
+                  {manque.map((m) => (
+                    <li key={m}>En attente : {m}</li>
+                  ))}
                 </ul>
               )}
             </div>
-            <button disabled={manque.length > 0} onClick={() => avancerEtape(dossierId)} className="btn-navy text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+            <button
+              disabled={manque.length > 0}
+              onClick={() => avancerEtape(dossierId)}
+              className="btn-navy text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Faire avancer →
             </button>
           </div>
@@ -219,7 +232,8 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                     o.statut === "en_attente" &&
                     !expiree &&
                     ((coteVendeur && o.auteur === "acheteur" && peutRepondreOffres) || (role === "acheteur" && o.auteur === "agence"));
-                  const peutRetirer = o.statut === "en_attente" && !expiree && ((role === "acheteur" && o.auteur === "acheteur") || (coteVendeur && o.auteur === "agence"));
+                  const peutRetirer =
+                    o.statut === "en_attente" && !expiree && ((role === "acheteur" && o.auteur === "acheteur") || (coteVendeur && o.auteur === "agence"));
                   const decote = ((bien.prix - o.montant) / bien.prix) * 100;
                   return (
                     <div key={o.id} className="border border-gray-100 rounded-lg p-3">
@@ -232,13 +246,21 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                             o.statut === "acceptee"
                               ? "bg-green/10 text-green"
                               : o.statut === "refusee" || expiree
-                              ? "bg-red/10 text-red"
-                              : o.statut === "retiree"
-                              ? "bg-gray-100 text-gray-500"
-                              : "bg-gold/20 text-navy-dark"
+                                ? "bg-red/10 text-red"
+                                : o.statut === "retiree"
+                                  ? "bg-gray-100 text-gray-500"
+                                  : "bg-gold/20 text-navy-dark"
                           }`}
                         >
-                          {o.statut === "acceptee" ? "Acceptée" : o.statut === "refusee" ? "Refusée" : o.statut === "retiree" ? "Retirée" : expiree ? "Expirée" : `Expire dans ${jours} j`}
+                          {o.statut === "acceptee"
+                            ? "Acceptée"
+                            : o.statut === "refusee"
+                              ? "Refusée"
+                              : o.statut === "retiree"
+                                ? "Retirée"
+                                : expiree
+                                  ? "Expirée"
+                                  : `Expire dans ${jours} j`}
                         </span>
                       </div>
                       <div className="font-bold text-navy">{formatFCFA(o.montant)}</div>
@@ -254,10 +276,16 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                       {o.message && <p className="text-sm text-gray-600 mt-1">{o.message}</p>}
                       {peutRepondre && (
                         <div className="flex gap-2 mt-2">
-                          <button onClick={() => repondreOffre(dossierId, o.id, "acceptee")} className="text-xs font-semibold px-3 py-1 rounded-lg bg-green text-white">
+                          <button
+                            onClick={() => repondreOffre(dossierId, o.id, "acceptee")}
+                            className="text-xs font-semibold px-3 py-1 rounded-lg bg-green text-white"
+                          >
                             Accepter
                           </button>
-                          <button onClick={() => repondreOffre(dossierId, o.id, "refusee")} className="text-xs font-semibold px-3 py-1 rounded-lg border border-gray-200 text-gray-600">
+                          <button
+                            onClick={() => repondreOffre(dossierId, o.id, "refusee")}
+                            className="text-xs font-semibold px-3 py-1 rounded-lg border border-gray-200 text-gray-600"
+                          >
                             Refuser
                           </button>
                         </div>
@@ -265,7 +293,9 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                       {peutRetirer && (
                         <button
                           onClick={() => {
-                            popup.confirmer("Retirer cette offre ?", "L'autre partie ne pourra plus l'accepter.", { libelleOk: "Retirer", danger: true }).then((oui) => oui && retirerOffre(dossierId, o.id));
+                            popup
+                              .confirmer("Retirer cette offre ?", "L'autre partie ne pourra plus l'accepter.", { libelleOk: "Retirer", danger: true })
+                              .then((oui) => oui && retirerOffre(dossierId, o.id));
                           }}
                           className="text-xs font-semibold text-gray-500 hover:text-red mt-2"
                         >
@@ -281,9 +311,13 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
             {accord ? (
               <p className="text-sm font-semibold text-green border-t border-gray-100 pt-4">✅ Accord trouvé à {formatFCFA(prix)}.</p>
             ) : limiteAtteinte ? (
-              <p className="text-sm text-gray-500 border-t border-gray-100 pt-4">Limite de {p.maxContreOffres} contre-offres atteinte : acceptez ou refusez la dernière offre.</p>
+              <p className="text-sm text-gray-500 border-t border-gray-100 pt-4">
+                Limite de {p.maxContreOffres} contre-offres atteinte : acceptez ou refusez la dernière offre.
+              </p>
             ) : coteVendeur && !peutRepondreOffres ? (
-              <p className="text-sm text-gray-500 border-t border-gray-100 pt-4">Votre rôle n&apos;est pas habilité à répondre aux offres. Contactez l&apos;administrateur.</p>
+              <p className="text-sm text-gray-500 border-t border-gray-100 pt-4">
+                Votre rôle n&apos;est pas habilité à répondre aux offres. Contactez l&apos;administrateur.
+              </p>
             ) : (
               (role === "acheteur" || coteVendeur) && (
                 <form onSubmit={soumettreOffre} className="flex flex-col gap-2 border-t border-gray-100 pt-4">
@@ -291,15 +325,45 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                     {coteVendeur ? `Faire une contre-offre (${nbContreOffres}/${p.maxContreOffres})` : "Nouvelle offre"}
                   </p>
                   <div className="flex gap-2">
-                    <input type="number" required placeholder="Montant (FCFA)" value={montant} onChange={(e) => setMontant(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy" />
-                    <input placeholder="Acompte (%)" value={acompte} onChange={(e) => setAcompte(e.target.value)} className="w-32 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy" />
+                    <input
+                      type="number"
+                      required
+                      placeholder="Montant (FCFA)"
+                      value={montant}
+                      onChange={(e) => setMontant(e.target.value)}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                    />
+                    <input
+                      placeholder="Acompte (%)"
+                      value={acompte}
+                      onChange={(e) => setAcompte(e.target.value)}
+                      className="w-32 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                    />
                   </div>
                   <div className="flex gap-2">
-                    <input placeholder="Délai souhaité" value={delai} onChange={(e) => setDelai(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy" />
-                    <input placeholder="Conditions" value={conditionsNego} onChange={(e) => setConditionsNego(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy" />
+                    <input
+                      placeholder="Délai souhaité"
+                      value={delai}
+                      onChange={(e) => setDelai(e.target.value)}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                    />
+                    <input
+                      placeholder="Conditions"
+                      value={conditionsNego}
+                      onChange={(e) => setConditionsNego(e.target.value)}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                    />
                   </div>
-                  <textarea placeholder="Message (optionnel)" value={messageNego} onChange={(e) => setMessageNego(e.target.value)} rows={2} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy resize-none" />
-                  <button type="submit" className="btn-navy text-sm self-start">Envoyer</button>
+                  <textarea
+                    placeholder="Message (optionnel)"
+                    value={messageNego}
+                    onChange={(e) => setMessageNego(e.target.value)}
+                    rows={2}
+                    className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy resize-none"
+                  />
+                  <button type="submit" className="btn-navy text-sm self-start">
+                    Envoyer
+                  </button>
                 </form>
               )
             )}
@@ -327,7 +391,9 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
               {documents.map((d) => (
                 <div key={d.nom} className="flex items-center justify-between gap-3 text-sm bg-gray-50 rounded-lg px-3 py-2">
                   <div className="min-w-0">
-                    <div className="font-semibold text-gray-800">{d.disponible ? "✅" : "⏳"} {d.nom}</div>
+                    <div className="font-semibold text-gray-800">
+                      {d.disponible ? "✅" : "⏳"} {d.nom}
+                    </div>
                     <div className="text-xs text-gray-400">{d.detail}</div>
                   </div>
                   {d.disponible && (
@@ -340,19 +406,21 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                           titre: d.nom,
                           sousTitre: `Dossier n° ${referenceDossier(dossier)}`,
                           avertissement: "Document de démonstration, sans valeur juridique.",
-                          sections: [{
-                            titre: "Informations du dossier",
-                            champs: [
-                              { label: "Bien", valeur: bien.titre },
-                              { label: "Localisation", valeur: `${bien.quartier}, ${bien.ville}` },
-                              { label: "Titre Foncier", valeur: bien.tf.numero || "Non renseigné" },
-                              { label: "Prix convenu", valeur: formatFCFA(prix) },
-                              { label: "Acheteur", valeur: dossier.acheteurNom },
-                              { label: "Vendeur", valeur: bien.agence },
-                              { label: "Notaire", valeur: notaire?.nom ?? "Non désigné" },
-                              { label: "Ouvert le", valeur: new Date(dossier.dateOuverture).toLocaleDateString("fr-FR") },
-                            ],
-                          }],
+                          sections: [
+                            {
+                              titre: "Informations du dossier",
+                              champs: [
+                                { label: "Bien", valeur: bien.titre },
+                                { label: "Localisation", valeur: `${bien.quartier}, ${bien.ville}` },
+                                { label: "Titre Foncier", valeur: bien.tf.numero || "Non renseigné" },
+                                { label: "Prix convenu", valeur: formatFCFA(prix) },
+                                { label: "Acheteur", valeur: dossier.acheteurNom },
+                                { label: "Vendeur", valeur: bien.agence },
+                                { label: "Notaire", valeur: notaire?.nom ?? "Non désigné" },
+                                { label: "Ouvert le", valeur: new Date(dossier.dateOuverture).toLocaleDateString("fr-FR") },
+                              ],
+                            },
+                          ],
                         })
                       }
                     />
@@ -362,7 +430,9 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
               {(dossier.pieces ?? []).map((f) => (
                 <div key={f.id} className="text-sm bg-gray-50 rounded-lg px-3 py-2">
                   <div className="font-semibold text-gray-800 break-all">📎 {f.nom}</div>
-                  <div className="text-xs text-gray-400">{f.auteur} · {new Date(f.date).toLocaleDateString("fr-FR")} · nom du fichier seulement, non transmis dans cette démo</div>
+                  <div className="text-xs text-gray-400">
+                    {f.auteur} · {new Date(f.date).toLocaleDateString("fr-FR")} · nom du fichier seulement, non transmis dans cette démo
+                  </div>
                 </div>
               ))}
             </div>
@@ -422,7 +492,12 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                   </button>
                   <button
                     onClick={() => {
-                      popup.confirmer("Résilier ce dossier ?", "Le bien sera remis en vente et le dossier ne pourra plus avancer.", { libelleOk: "Résilier", danger: true }).then((oui) => oui && signalerIncident(dossierId, "resilie"));
+                      popup
+                        .confirmer("Résilier ce dossier ?", "Le bien sera remis en vente et le dossier ne pourra plus avancer.", {
+                          libelleOk: "Résilier",
+                          danger: true,
+                        })
+                        .then((oui) => oui && signalerIncident(dossierId, "resilie"));
                     }}
                     disabled={dossier.incident === "resilie"}
                     className="text-xs font-semibold px-3 py-2 rounded-lg border border-red/30 text-red hover:bg-red/5 disabled:opacity-50"
@@ -461,19 +536,29 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                   className="w-full border border-gray-200 rounded-lg px-2 py-2 text-sm font-normal mt-1 outline-none focus:border-navy"
                 >
                   <option value="">Choisir…</option>
-                  {NOTAIRES.map((n) => <option key={n.slug} value={n.slug}>{n.nom}</option>)}
+                  {NOTAIRES.map((n) => (
+                    <option key={n.slug} value={n.slug}>
+                      {n.nom}
+                    </option>
+                  ))}
                 </select>
               </label>
             )}
             <div className="flex flex-col gap-2 mt-3">
               {role === "acheteur" && (
-                <button onClick={() => contacter("agence")} className="text-sm text-blue font-medium hover:underline flex items-center gap-1"><MessageSquare size={14} /> Écrire au vendeur</button>
+                <button onClick={() => contacter("agence")} className="text-sm text-blue font-medium hover:underline flex items-center gap-1">
+                  <MessageSquare size={14} /> Écrire au vendeur
+                </button>
               )}
               {!estNotariat(role) && notaire && (
-                <button onClick={() => contacter("notaire")} className="text-sm text-blue font-medium hover:underline flex items-center gap-1"><MessageSquare size={14} /> Écrire au notaire</button>
+                <button onClick={() => contacter("notaire")} className="text-sm text-blue font-medium hover:underline flex items-center gap-1">
+                  <MessageSquare size={14} /> Écrire au notaire
+                </button>
               )}
               {estNotariat(role) && (
-                <button onClick={() => contacter("notaire")} className="text-sm text-blue font-medium hover:underline flex items-center gap-1"><MessageSquare size={14} /> Écrire à l&apos;acheteur</button>
+                <button onClick={() => contacter("notaire")} className="text-sm text-blue font-medium hover:underline flex items-center gap-1">
+                  <MessageSquare size={14} /> Écrire à l&apos;acheteur
+                </button>
               )}
             </div>
           </div>
@@ -526,17 +611,32 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
           <div className="card p-5">
             <h2 className="font-bold text-gray-900 mb-3">Suivi des paiements</h2>
             <dl className="text-sm flex flex-col gap-2 mb-3">
-              <div className="flex justify-between gap-3"><dt className="text-gray-500">Acompte attendu</dt><dd className="font-semibold text-right">{formatFCFA(acompteDu)}</dd></div>
-              <div className="flex justify-between gap-3"><dt className="text-gray-500">Confirmé en séquestre</dt><dd className="font-semibold text-right">{formatFCFA(verse)}</dd></div>
-              <div className="flex justify-between gap-3"><dt className="text-gray-500">Solde restant</dt><dd className="font-semibold text-right">{formatFCFA(Math.max(prix - verse, 0))}</dd></div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-gray-500">Acompte attendu</dt>
+                <dd className="font-semibold text-right">{formatFCFA(acompteDu)}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-gray-500">Confirmé en séquestre</dt>
+                <dd className="font-semibold text-right">{formatFCFA(verse)}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-gray-500">Solde restant</dt>
+                <dd className="font-semibold text-right">{formatFCFA(Math.max(prix - verse, 0))}</dd>
+              </div>
             </dl>
             <div className="flex flex-col gap-2">
               {(dossier.paiements ?? []).map((x) => (
                 <div key={x.id} className="text-xs bg-gray-50 rounded-lg p-2">
-                  <div className="font-semibold text-gray-800">{formatFCFA(x.montant)} · {x.statut === "confirme" ? "✓ Confirmé" : "⏳ À confirmer"}</div>
-                  <div className="text-gray-400 break-all">{LABELS_MOYEN[x.moyen]} · {x.reference}</div>
+                  <div className="font-semibold text-gray-800">
+                    {formatFCFA(x.montant)} · {x.statut === "confirme" ? "✓ Confirmé" : "⏳ À confirmer"}
+                  </div>
+                  <div className="text-gray-400 break-all">
+                    {LABELS_MOYEN[x.moyen]} · {x.reference}
+                  </div>
                   {estNotaire && x.statut === "declare" && (
-                    <button onClick={() => confirmerPaiement(dossierId, x.id)} className="text-blue font-semibold hover:underline mt-1">Confirmer la réception</button>
+                    <button onClick={() => confirmerPaiement(dossierId, x.id)} className="text-blue font-semibold hover:underline mt-1">
+                      Confirmer la réception
+                    </button>
                   )}
                 </div>
               ))}
@@ -556,9 +656,7 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-500">Superficie cadastrale</dt>
-                <dd className="font-semibold">
-                  {bien.tf.superficie_cadastrale ? `${bien.tf.superficie_cadastrale} m²` : "—"}
-                </dd>
+                <dd className="font-semibold">{bien.tf.superficie_cadastrale ? `${bien.tf.superficie_cadastrale} m²` : "—"}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-500">Prix au m²</dt>

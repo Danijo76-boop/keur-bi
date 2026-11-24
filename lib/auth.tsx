@@ -21,7 +21,13 @@ export const REGLES_MOT_DE_PASSE: { texte: string; test: (mdp: string, email: st
   { texte: `${LONGUEUR_MIN_MOT_DE_PASSE} caractères minimum`, test: (m) => m.length >= LONGUEUR_MIN_MOT_DE_PASSE },
   { texte: "Au moins une lettre", test: (m) => /\p{L}/u.test(m) },
   { texte: "Au moins un chiffre", test: (m) => /\d/.test(m) },
-  { texte: "Ne contient pas votre adresse email", test: (m, e) => { const n = e.split("@")[0].toLowerCase(); return !m || n.length < 4 || !m.toLowerCase().includes(n); } },
+  {
+    texte: "Ne contient pas votre adresse email",
+    test: (m, e) => {
+      const n = e.split("@")[0].toLowerCase();
+      return !m || n.length < 4 || !m.toLowerCase().includes(n);
+    },
+  },
 ];
 export const motDePasseConforme = (m: string, e: string) => REGLES_MOT_DE_PASSE.every((r) => r.test(m, e));
 
@@ -75,8 +81,7 @@ export const estPlateforme = (role: Role | undefined) => famille(role) === "plat
 // « autres » : moyens que la personne peut demander à la place.
 export type Canal = "whatsapp" | "sms" | "email";
 export type EtapeOTP =
-  | { etape: "numero"; defi: string; autres: Canal[] }
-  | { etape: "code"; defi: string; destination: string; canal: Canal; autres: Canal[]; codeDemo?: string };
+  { etape: "numero"; defi: string; autres: Canal[] } | { etape: "code"; defi: string; destination: string; canal: Canal; autres: Canal[]; codeDemo?: string };
 export type ResultatAuth = { ok: true } | { ok: false; erreur: string } | { ok: "otp"; otp: EtapeOTP };
 export type ResultatEnvoiCode = { ok: true; otp: EtapeOTP } | { ok: false; erreur: string; expire?: boolean };
 export type DonneesInscription = { nom: string; email: string; motDePasse: string; role: Role; telephone?: string };
@@ -98,7 +103,11 @@ type AuthContextValue = {
 const STORAGE_KEY = "keurbi_user";
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-async function appeler(url: string, methode: "POST" | "PATCH", corps?: unknown): Promise<{ ok: boolean; statut?: number; donnees: { utilisateur?: User; erreur?: string; otp?: EtapeOTP } }> {
+async function appeler(
+  url: string,
+  methode: "POST" | "PATCH",
+  corps?: unknown,
+): Promise<{ ok: boolean; statut?: number; donnees: { utilisateur?: User; erreur?: string; otp?: EtapeOTP } }> {
   try {
     const r = await fetch(url, { method: methode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(corps ?? {}) });
     const donnees = await r.json().catch(() => ({}));
@@ -173,7 +182,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     appliquer(null);
   }
 
-  return <AuthContext.Provider value={{ user, pret, connexion, inscription, envoyerCode, verifierCode, reinitialiser, majProfil, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, pret, connexion, inscription, envoyerCode, verifierCode, reinitialiser, majProfil, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

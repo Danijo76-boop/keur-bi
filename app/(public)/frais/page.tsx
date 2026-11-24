@@ -52,7 +52,14 @@ function Simulateur() {
           <div className="card p-5">
             <div className="flex gap-1 mb-4" role="group" aria-label="Profil">
               {(["acheteur", "vendeur", "investisseur"] as Profil[]).map((x) => (
-                <button key={x} aria-pressed={profil === x} onClick={() => setProfil(x)} className={`flex-1 text-sm font-semibold py-2 rounded-lg capitalize ${profil === x ? "bg-navy text-white" : "text-gray-500 hover:bg-gray-50"}`}>{x}</button>
+                <button
+                  key={x}
+                  aria-pressed={profil === x}
+                  onClick={() => setProfil(x)}
+                  className={`flex-1 text-sm font-semibold py-2 rounded-lg capitalize ${profil === x ? "bg-navy text-white" : "text-gray-500 hover:bg-gray-50"}`}
+                >
+                  {x}
+                </button>
               ))}
             </div>
             <label className="text-sm font-semibold text-gray-700 block">
@@ -80,10 +87,22 @@ function Simulateur() {
           <div className="card p-5">
             <h2 className="font-bold text-gray-900 mb-3">Délais clés</h2>
             <ul className="text-sm flex flex-col gap-3">
-              <li><span className="font-semibold text-gray-800 block">📋 Promesse de vente</span><span className="text-xs text-gray-500">Validité max. 6 mois, renouvelable</span></li>
-              <li><span className="font-semibold text-gray-800 block">🏛️ Enregistrement DGID</span><span className="text-xs text-gray-500">{p.moisEnregistrement} mois après la signature de l&apos;acte</span></li>
-              <li><span className="font-semibold text-gray-800 block">⚠️ Pénalité de retard</span><span className="text-xs text-gray-500">+{p.penaliteRetard}% sur les droits d&apos;enregistrement</span></li>
-              <li><span className="font-semibold text-gray-800 block">🔖 Mutation TF</span><span className="text-xs text-gray-500">15–30 jours ouvrés après dépôt</span></li>
+              <li>
+                <span className="font-semibold text-gray-800 block">📋 Promesse de vente</span>
+                <span className="text-xs text-gray-500">Validité max. 6 mois, renouvelable</span>
+              </li>
+              <li>
+                <span className="font-semibold text-gray-800 block">🏛️ Enregistrement DGID</span>
+                <span className="text-xs text-gray-500">{p.moisEnregistrement} mois après la signature de l&apos;acte</span>
+              </li>
+              <li>
+                <span className="font-semibold text-gray-800 block">⚠️ Pénalité de retard</span>
+                <span className="text-xs text-gray-500">+{p.penaliteRetard}% sur les droits d&apos;enregistrement</span>
+              </li>
+              <li>
+                <span className="font-semibold text-gray-800 block">🔖 Mutation TF</span>
+                <span className="text-xs text-gray-500">15–30 jours ouvrés après dépôt</span>
+              </li>
             </ul>
           </div>
         </div>
@@ -95,21 +114,47 @@ function Simulateur() {
               <dl className="text-sm flex flex-col gap-3">
                 {lignes.map((l) => (
                   <div key={l.label} className="flex justify-between gap-3">
-                    <dt className="text-gray-600">{l.label}{l.note && <span className="block text-xs text-gray-400">{l.note}</span>}</dt>
+                    <dt className="text-gray-600">
+                      {l.label}
+                      {l.note && <span className="block text-xs text-gray-400">{l.note}</span>}
+                    </dt>
                     <dd className="font-semibold text-right shrink-0">{formatFCFA(l.val)}</dd>
                   </div>
                 ))}
-                {p.flags.cadastre && <div className="flex justify-between gap-3"><dt className="text-gray-600">Vérification TF (KEUR BI)</dt><dd className="font-semibold text-green">Inclus ✓</dd></div>}
+                {p.flags.cadastre && (
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-gray-600">Vérification TF (KEUR BI)</dt>
+                    <dd className="font-semibold text-green">Inclus ✓</dd>
+                  </div>
+                )}
                 <div className="flex justify-between gap-3 border-t border-gray-100 pt-3">
-                  <dt className="font-bold text-navy">Total acquisition{prix > 0 && <span className="block text-xs font-normal text-gray-400">soit +{((f.totalFrais / prix) * 100).toFixed(1).replace(".", ",")}% sur le prix</span>}</dt>
+                  <dt className="font-bold text-navy">
+                    Total acquisition
+                    {prix > 0 && (
+                      <span className="block text-xs font-normal text-gray-400">
+                        soit +{((f.totalFrais / prix) * 100).toFixed(1).replace(".", ",")}% sur le prix
+                      </span>
+                    )}
+                  </dt>
                   <dd className="font-bold text-navy text-right">{formatFCFA(f.totalAcquisition)}</dd>
                 </div>
               </dl>
             ) : (
               <dl className="text-sm flex flex-col gap-3">
-                <div className="flex justify-between gap-3"><dt className="text-gray-600">Prix de vente</dt><dd className="font-semibold text-right">{formatFCFA(prix)}</dd></div>
-                <div className="flex justify-between gap-3"><dt className="text-gray-600">Commission KEUR BI ({tauxCommissionPour(prix, p)}%)<span className="block text-xs text-gray-400">Due uniquement si la vente aboutit</span></dt><dd className="font-semibold text-right">−{formatFCFA(commission)}</dd></div>
-                <div className="flex justify-between gap-3 border-t border-gray-100 pt-3"><dt className="font-bold text-navy">Net vendeur estimé</dt><dd className="font-bold text-navy text-right">{formatFCFA(prix - commission)}</dd></div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-gray-600">Prix de vente</dt>
+                  <dd className="font-semibold text-right">{formatFCFA(prix)}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-gray-600">
+                    Commission KEUR BI ({tauxCommissionPour(prix, p)}%)<span className="block text-xs text-gray-400">Due uniquement si la vente aboutit</span>
+                  </dt>
+                  <dd className="font-semibold text-right">−{formatFCFA(commission)}</dd>
+                </div>
+                <div className="flex justify-between gap-3 border-t border-gray-100 pt-3">
+                  <dt className="font-bold text-navy">Net vendeur estimé</dt>
+                  <dd className="font-bold text-navy text-right">{formatFCFA(prix - commission)}</dd>
+                </div>
               </dl>
             )}
           </div>
@@ -117,28 +162,42 @@ function Simulateur() {
           {profil !== "vendeur" && (
             <div className="card p-5 bg-gold/10 border-gold/30 text-sm text-gray-700">
               <strong className="block mb-1">⚠️ Délai d&apos;enregistrement DGID</strong>
-              L&apos;acte doit être enregistré dans les {p.moisEnregistrement} mois suivant la signature. Au-delà, une pénalité de {p.penaliteRetard}% s&apos;applique sur les droits, soit +{formatFCFA(f.penaliteRetard)} dans votre cas.
+              L&apos;acte doit être enregistré dans les {p.moisEnregistrement} mois suivant la signature. Au-delà, une pénalité de {p.penaliteRetard}%
+              s&apos;applique sur les droits, soit +{formatFCFA(f.penaliteRetard)} dans votre cas.
             </div>
           )}
           <p className="text-xs text-gray-400">Estimation indicative. Seul votre notaire peut établir le décompte définitif.</p>
         </div>
 
         <div className="flex flex-col gap-4">
-          {profil === "acheteur" && <div className="-mb-6"><SimulateurCredit prix={prix} /></div>}
+          {profil === "acheteur" && (
+            <div className="-mb-6">
+              <SimulateurCredit prix={prix} />
+            </div>
+          )}
           <div className="card p-5">
             <h2 className="font-bold text-gray-900 mb-3">Barème des honoraires</h2>
             <table className="w-full text-xs">
               <thead>
                 <tr className="text-left text-gray-400">
-                  <th scope="col" className="pb-2 font-semibold">Tranche</th>
-                  <th scope="col" className="pb-2 font-semibold">Taux</th>
-                  <th scope="col" className="pb-2 font-semibold text-right">Cumul</th>
+                  <th scope="col" className="pb-2 font-semibold">
+                    Tranche
+                  </th>
+                  <th scope="col" className="pb-2 font-semibold">
+                    Taux
+                  </th>
+                  <th scope="col" className="pb-2 font-semibold text-right">
+                    Cumul
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {bareme.map((b) => (
                   <tr key={b.tranche} className={`border-t border-gray-100 ${b.votreCas ? "bg-gold/10 font-semibold" : ""}`}>
-                    <td className="py-2 pr-2">{b.tranche}{b.votreCas && <span className="block text-[11px] text-gray-500">← votre cas</span>}</td>
+                    <td className="py-2 pr-2">
+                      {b.tranche}
+                      {b.votreCas && <span className="block text-[11px] text-gray-500">← votre cas</span>}
+                    </td>
                     <td className="py-2 pr-2">{b.taux.toLocaleString("fr-FR")}%</td>
                     <td className="py-2 text-right whitespace-nowrap">{b.cumul}</td>
                   </tr>
@@ -156,7 +215,10 @@ function Simulateur() {
                   <div className="w-9 h-9 rounded-full bg-navy/10 text-navy font-bold text-xs flex items-center justify-center shrink-0">{n.initiales}</div>
                   <div>
                     <div className="text-sm font-semibold text-gray-900 group-hover:text-navy">{n.nom}</div>
-                    <div className="text-xs text-gray-400">{n.ville}{n.nbAvis > 0 && ` · ⭐ ${texteNote(n.note, n.nbAvis)}`}</div>
+                    <div className="text-xs text-gray-400">
+                      {n.ville}
+                      {n.nbAvis > 0 && ` · ⭐ ${texteNote(n.note, n.nbAvis)}`}
+                    </div>
                   </div>
                 </Link>
               ))}
@@ -165,8 +227,12 @@ function Simulateur() {
 
           <div className="card p-5 bg-navy text-white">
             <h2 className="font-bold mb-3">Prêt à acheter ?</h2>
-            <Link href="/annonces" className="btn-primary text-sm block text-center mb-2">Voir les annonces →</Link>
-            <Link href="/guides" className="text-sm text-white/80 hover:text-white block text-center">Lire le guide d&apos;achat</Link>
+            <Link href="/annonces" className="btn-primary text-sm block text-center mb-2">
+              Voir les annonces →
+            </Link>
+            <Link href="/guides" className="text-sm text-white/80 hover:text-white block text-center">
+              Lire le guide d&apos;achat
+            </Link>
           </div>
         </div>
       </div>

@@ -39,7 +39,14 @@ export async function envoyerPhotosVerifiees(dataUrls: string[]): Promise<{ adre
   const refus: string[] = [];
   resultats.forEach((r, i) => {
     if (r.status === "fulfilled") adresses.push(r.value);
-    else refus.push(dataUrls.length > 1 ? `Photo ${i + 1} : ${r.reason instanceof Error ? r.reason.message : "envoi impossible."}` : r.reason instanceof Error ? r.reason.message : "Envoi impossible.");
+    else
+      refus.push(
+        dataUrls.length > 1
+          ? `Photo ${i + 1} : ${r.reason instanceof Error ? r.reason.message : "envoi impossible."}`
+          : r.reason instanceof Error
+            ? r.reason.message
+            : "Envoi impossible.",
+      );
   });
   return { adresses, message: refus.join(" ") };
 }

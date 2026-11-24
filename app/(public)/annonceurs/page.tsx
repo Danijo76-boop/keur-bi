@@ -22,7 +22,13 @@ export default function AnnonceursPage() {
 
   function envoyer(e: React.FormEvent) {
     e.preventDefault();
-    ajouterMessage({ type: "message", agence: "Régie publicitaire KEUR BI", nom: `${nom.trim()} (${societe.trim()})`, contact: contact.trim(), message: `[Publicité · ${format}] ${message.trim()}` });
+    ajouterMessage({
+      type: "message",
+      agence: "Régie publicitaire KEUR BI",
+      nom: `${nom.trim()} (${societe.trim()})`,
+      contact: contact.trim(),
+      message: `[Publicité · ${format}] ${message.trim()}`,
+    });
     setSociete("");
     setNom("");
     setContact("");
@@ -34,13 +40,17 @@ export default function AnnonceursPage() {
       <div className="text-center mb-10">
         <p className="eyebrow mb-2">Espace annonceurs</p>
         <h1 className="text-3xl md:text-4xl font-extrabold text-navy-dark mb-2">Annoncez sur KEUR BI</h1>
-        <p className="text-gray-500 max-w-2xl mx-auto">Banques, assureurs, constructeurs, artisans, déménageurs : présentez votre offre au moment où vos futurs clients préparent leur achat.</p>
+        <p className="text-gray-500 max-w-2xl mx-auto">
+          Banques, assureurs, constructeurs, artisans, déménageurs : présentez votre offre au moment où vos futurs clients préparent leur achat.
+        </p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-5 mb-12">
         {ARGUMENTS.map((a) => (
           <div key={a.titre} className="card p-6">
-            <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-navy to-navy-dark text-gold flex items-center justify-center mb-4"><a.icone size={22} /></span>
+            <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-navy to-navy-dark text-gold flex items-center justify-center mb-4">
+              <a.icone size={22} />
+            </span>
             <h2 className="font-bold text-gray-900 mb-1">{a.titre}</h2>
             <p className="text-sm text-gray-500 leading-relaxed">{a.desc}</p>
           </div>
@@ -61,22 +71,38 @@ export default function AnnonceursPage() {
               </div>
             ))}
           </div>
-          <p className="text-xs text-gray-400 mt-3">Tarifs indicatifs hors taxes. Chaque encart porte la mention « Sponsorisé » : nous ne mélangeons jamais publicité et annonces.</p>
+          <p className="text-xs text-gray-400 mt-3">
+            Tarifs indicatifs hors taxes. Chaque encart porte la mention « Sponsorisé » : nous ne mélangeons jamais publicité et annonces.
+          </p>
 
           <h2 className="text-xl font-bold text-gray-900 mt-10 mb-4">À quoi ressemble un encart</h2>
-          <div className="max-w-sm"><EncartSponsorise emplacement="recherche" /></div>
+          <div className="max-w-sm">
+            <EncartSponsorise emplacement="recherche" />
+          </div>
         </div>
 
         <form onSubmit={envoyer} className="card p-6 flex flex-col gap-3 lg:sticky lg:top-24">
-          <h2 className="font-bold text-gray-900 flex items-center gap-2"><Megaphone size={18} className="text-gold" /> Recevoir une proposition</h2>
+          <h2 className="font-bold text-gray-900 flex items-center gap-2">
+            <Megaphone size={18} className="text-gold" /> Recevoir une proposition
+          </h2>
           <input required placeholder="Société" value={societe} onChange={(e) => setSociete(e.target.value)} className={champ} />
           <input required placeholder="Votre nom" value={nom} onChange={(e) => setNom(e.target.value)} className={champ} />
           <input required placeholder="Téléphone ou email" value={contact} onChange={(e) => setContact(e.target.value)} className={champ} />
           <select aria-label="Format souhaité" value={format} onChange={(e) => setFormat(e.target.value)} className={champ}>
-            {FORMATS_PUBLICITE.map((f) => <option key={f.id}>{f.nom}</option>)}
+            {FORMATS_PUBLICITE.map((f) => (
+              <option key={f.id}>{f.nom}</option>
+            ))}
           </select>
-          <textarea rows={3} placeholder="Votre activité, votre objectif, votre budget mensuel…" value={message} onChange={(e) => setMessage(e.target.value)} className={`${champ} resize-none`} />
-          <button type="submit" className="btn-primary">Envoyer ma demande</button>
+          <textarea
+            rows={3}
+            placeholder="Votre activité, votre objectif, votre budget mensuel…"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className={`${champ} resize-none`}
+          />
+          <button type="submit" className="btn-primary">
+            Envoyer ma demande
+          </button>
           <p className="text-xs text-gray-400">Réponse sous deux jours ouvrés.</p>
         </form>
       </div>

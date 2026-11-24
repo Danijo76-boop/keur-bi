@@ -4,9 +4,18 @@ import { useSearchParams } from "next/navigation";
 import { Mail, Lock, User as UserIcon, Phone, MessageCircle } from "lucide-react";
 import { suiteSure } from "@/lib/acces";
 import Link from "next/link";
-import { useAuth, ROLE_LABELS, Role, ROLES_INSCRIPTION, ROLE_DESCRIPTIONS, LONGUEUR_MIN_MOT_DE_PASSE, motDePasseConforme, type Canal, type EtapeOTP } from "@/lib/auth";
+import {
+  useAuth,
+  ROLE_LABELS,
+  Role,
+  ROLES_INSCRIPTION,
+  ROLE_DESCRIPTIONS,
+  LONGUEUR_MIN_MOT_DE_PASSE,
+  motDePasseConforme,
+  type Canal,
+  type EtapeOTP,
+} from "@/lib/auth";
 import ReglesMotDePasse from "@/components/ReglesMotDePasse";
-
 
 export default function ConnexionPage() {
   return (
@@ -72,7 +81,12 @@ function Formulaire() {
         numeroModifiable={mode === "inscription"}
         onChange={setOtp}
         onSucces={entrer}
-        onAbandon={(message) => { setOtp(null); setMotDePasse(""); setErreur(message ?? ""); if (mode === "inscription") setMode("connexion"); }}
+        onAbandon={(message) => {
+          setOtp(null);
+          setMotDePasse("");
+          setErreur(message ?? "");
+          if (mode === "inscription") setMode("connexion");
+        }}
       />
     );
   }
@@ -80,9 +94,7 @@ function Formulaire() {
   return (
     <div className="max-w-md mx-auto px-4 py-16">
       <div className="card p-8">
-        <h1 className="text-2xl font-bold text-navy mb-1 text-center">
-          {mode === "connexion" ? "Connexion" : "Créer un compte"}
-        </h1>
+        <h1 className="text-2xl font-bold text-navy mb-1 text-center">{mode === "connexion" ? "Connexion" : "Créer un compte"}</h1>
         <p className="text-gray-500 text-sm text-center mb-6">
           {mode === "connexion" ? "Accédez à votre espace KEUR BI" : "Rejoignez KEUR BI en quelques secondes"}
         </p>
@@ -95,39 +107,32 @@ function Formulaire() {
 
         <form onSubmit={soumettre} className="flex flex-col gap-3">
           {mode === "inscription" && (
-          <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-2">Je suis un(e)</label>
-            <div className="grid grid-cols-2 gap-2">
-              {ROLES_INSCRIPTION.map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setRole(r)}
-                  title={ROLE_DESCRIPTIONS[r]}
-                  aria-pressed={r === role}
-                  className={`text-xs px-2 py-2 rounded-lg border font-medium transition-colors ${
-                    r === role
-                      ? "bg-navy text-white border-navy"
-                      : "bg-white text-gray-600 border-gray-200 hover:border-navy hover:text-navy"
-                  }`}
-                >
-                  {ROLE_LABELS[r]}
-                </button>
-              ))}
+            <div>
+              <label className="text-sm font-semibold text-gray-700 block mb-2">Je suis un(e)</label>
+              <div className="grid grid-cols-2 gap-2">
+                {ROLES_INSCRIPTION.map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setRole(r)}
+                    title={ROLE_DESCRIPTIONS[r]}
+                    aria-pressed={r === role}
+                    className={`text-xs px-2 py-2 rounded-lg border font-medium transition-colors ${
+                      r === role ? "bg-navy text-white border-navy" : "bg-white text-gray-600 border-gray-200 hover:border-navy hover:text-navy"
+                    }`}
+                  >
+                    {ROLE_LABELS[r]}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 mt-2">{ROLE_DESCRIPTIONS[role]}</p>
             </div>
-            <p className="text-xs text-gray-500 mt-2">{ROLE_DESCRIPTIONS[role]}</p>
-          </div>
           )}
           {mode === "inscription" && (
             <>
               <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 focus-within:border-navy">
                 <UserIcon size={16} className="text-gray-400 shrink-0" />
-                <input
-                  value={nom}
-                  onChange={(e) => setNom(e.target.value)}
-                  placeholder="Nom complet"
-                  className="w-full text-sm outline-none"
-                />
+                <input value={nom} onChange={(e) => setNom(e.target.value)} placeholder="Nom complet" className="w-full text-sm outline-none" />
               </div>
               <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 focus-within:border-navy">
                 <Phone size={16} className="text-gray-400 shrink-0" />
@@ -167,12 +172,19 @@ function Formulaire() {
 
           {mode === "inscription" && <ReglesMotDePasse motDePasse={motDePasse} email={email.trim()} />}
           {mode === "connexion" && (
-            <Link href={`/mot-de-passe-oublie${email.trim() ? `?email=${encodeURIComponent(email.trim())}` : ""}`} className="text-xs text-blue font-medium hover:underline self-end">
+            <Link
+              href={`/mot-de-passe-oublie${email.trim() ? `?email=${encodeURIComponent(email.trim())}` : ""}`}
+              className="text-xs text-blue font-medium hover:underline self-end"
+            >
               Mot de passe oublié ?
             </Link>
           )}
 
-          {erreur && <p role="alert" className="text-red text-xs">{erreur}</p>}
+          {erreur && (
+            <p role="alert" className="text-red text-xs">
+              {erreur}
+            </p>
+          )}
 
           <button type="submit" disabled={envoi} className="btn-navy w-full mt-2 disabled:opacity-60">
             {envoi ? "Un instant…" : mode === "connexion" ? "Se connecter" : "Créer mon compte"}
@@ -183,14 +195,26 @@ function Formulaire() {
           {mode === "connexion" ? (
             <>
               Pas encore de compte ?{" "}
-              <button onClick={() => { setMode("inscription"); setErreur(""); }} className="text-blue font-medium hover:underline">
+              <button
+                onClick={() => {
+                  setMode("inscription");
+                  setErreur("");
+                }}
+                className="text-blue font-medium hover:underline"
+              >
                 Créer un compte
               </button>
             </>
           ) : (
             <>
               Déjà inscrit ?{" "}
-              <button onClick={() => { setMode("connexion"); setErreur(""); }} className="text-blue font-medium hover:underline">
+              <button
+                onClick={() => {
+                  setMode("connexion");
+                  setErreur("");
+                }}
+                className="text-blue font-medium hover:underline"
+              >
                 Se connecter
               </button>
             </>
@@ -206,7 +230,13 @@ const LIBELLE_CANAL: Record<Canal, string> = { whatsapp: "sur WhatsApp", sms: "p
 const TITRE_CANAL: Record<Canal, string> = { whatsapp: "Vérification WhatsApp", sms: "Vérification par SMS", email: "Vérification par email" };
 
 // Deuxième temps de la connexion : saisie du numéro WhatsApp (première fois) puis du code reçu.
-function EtapeCode({ otp, numeroModifiable, onChange, onSucces, onAbandon }: {
+function EtapeCode({
+  otp,
+  numeroModifiable,
+  onChange,
+  onSucces,
+  onAbandon,
+}: {
   otp: EtapeOTP;
   numeroModifiable: boolean;
   onChange: (o: EtapeOTP) => void;
@@ -274,10 +304,17 @@ function EtapeCode({ otp, numeroModifiable, onChange, onSucces, onAbandon }: {
         <h1 className="text-2xl font-bold text-navy mb-1 text-center">{titre}</h1>
 
         {saisieNumero ? (
-          <form onSubmit={(e) => { e.preventDefault(); if (numero.trim()) demanderCode(numero.trim()); else setErreur("Indiquez votre numéro WhatsApp."); }} className="flex flex-col gap-3">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (numero.trim()) demanderCode(numero.trim());
+              else setErreur("Indiquez votre numéro WhatsApp.");
+            }}
+            className="flex flex-col gap-3"
+          >
             <p className="text-gray-500 text-sm text-center mb-3">
-              Pour protéger votre compte, chaque connexion est confirmée par un code à usage unique. Indiquez votre numéro WhatsApp :
-              le code y sera envoyé (ou par SMS si vous n&apos;avez pas WhatsApp).
+              Pour protéger votre compte, chaque connexion est confirmée par un code à usage unique. Indiquez votre numéro WhatsApp : le code y sera envoyé (ou
+              par SMS si vous n&apos;avez pas WhatsApp).
             </p>
             <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 focus-within:border-navy">
               <Phone size={16} className="text-gray-400 shrink-0" />
@@ -291,7 +328,11 @@ function EtapeCode({ otp, numeroModifiable, onChange, onSucces, onAbandon }: {
                 className="w-full text-sm outline-none"
               />
             </div>
-            {erreur && <p role="alert" className="text-red text-xs">{erreur}</p>}
+            {erreur && (
+              <p role="alert" className="text-red text-xs">
+                {erreur}
+              </p>
+            )}
             <button type="submit" disabled={envoi} className="btn-navy w-full mt-2 disabled:opacity-60">
               {envoi ? "Envoi…" : "Recevoir le code"}
             </button>
@@ -301,53 +342,90 @@ function EtapeCode({ otp, numeroModifiable, onChange, onSucces, onAbandon }: {
               </button>
             )}
             {changerNumero && (
-              <button type="button" onClick={() => { setChangerNumero(false); setErreur(""); }} className="text-sm text-blue font-medium hover:underline">
+              <button
+                type="button"
+                onClick={() => {
+                  setChangerNumero(false);
+                  setErreur("");
+                }}
+                className="text-sm text-blue font-medium hover:underline"
+              >
                 Garder le numéro précédent
               </button>
             )}
           </form>
-        ) : otp.etape === "code" && (
-          <form onSubmit={valider} className="flex flex-col gap-3">
-            <p className="text-gray-500 text-sm text-center mb-3">
-              Saisissez le code à 6 chiffres envoyé {LIBELLE_CANAL[otp.canal]} à <span className="font-semibold text-gray-700 whitespace-nowrap">{otp.destination}</span>.
-              Il expire dans 10 minutes. Ne le communiquez à personne.
-            </p>
-            {otp.codeDemo && (
-              <p className="text-sm bg-gold/10 border border-gold/30 text-navy-dark rounded-lg px-3 py-2.5 text-center" role="status">
-                Mode démo, aucun moyen d&apos;envoi configuré : votre code est <span className="font-mono font-bold tracking-widest">{otp.codeDemo}</span>
+        ) : (
+          otp.etape === "code" && (
+            <form onSubmit={valider} className="flex flex-col gap-3">
+              <p className="text-gray-500 text-sm text-center mb-3">
+                Saisissez le code à 6 chiffres envoyé {LIBELLE_CANAL[otp.canal]} à{" "}
+                <span className="font-semibold text-gray-700 whitespace-nowrap">{otp.destination}</span>. Il expire dans 10 minutes. Ne le communiquez à
+                personne.
               </p>
-            )}
-            <input
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              aria-label="Code de vérification"
-              placeholder="••••••"
-              autoFocus
-              className="border border-gray-200 rounded-lg px-3 py-3 text-center text-2xl font-mono tracking-[0.5em] outline-none focus:border-navy"
-            />
-            {erreur && <p role="alert" className="text-red text-xs">{erreur}</p>}
-            {info && !erreur && <p role="status" className="text-green-700 text-xs">{info}</p>}
-            <button type="submit" disabled={envoi || code.length !== 6} className="btn-navy w-full mt-2 disabled:opacity-60">
-              {envoi ? "Vérification…" : "Valider"}
-            </button>
-            <div className="flex flex-col items-center gap-1 text-sm">
-              <button type="button" disabled={attente > 0 || envoi} onClick={() => demanderCode()} className="text-blue font-medium hover:underline disabled:text-gray-400 disabled:no-underline">
-                {attente > 0 ? `Renvoyer le code (${attente} s)` : "Renvoyer le code"}
-              </button>
-              {otp.autres.map((c) => (
-                <button key={c} type="button" disabled={envoi} onClick={() => demanderCode(undefined, c)} className="text-blue font-medium hover:underline disabled:text-gray-400">
-                  {otp.canal === "whatsapp" ? "Pas reçu sur WhatsApp ? " : "Pas reçu ? "}Recevoir {LIBELLE_CANAL[c]}
-                </button>
-              ))}
-              {numeroModifiable && (
-                <button type="button" onClick={() => { setChangerNumero(true); setErreur(""); setInfo(""); }} className="text-blue font-medium hover:underline">
-                  Changer de numéro
-                </button>
+              {otp.codeDemo && (
+                <p className="text-sm bg-gold/10 border border-gold/30 text-navy-dark rounded-lg px-3 py-2.5 text-center" role="status">
+                  Mode démo, aucun moyen d&apos;envoi configuré : votre code est <span className="font-mono font-bold tracking-widest">{otp.codeDemo}</span>
+                </p>
               )}
-            </div>
-          </form>
+              <input
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                aria-label="Code de vérification"
+                placeholder="••••••"
+                autoFocus
+                className="border border-gray-200 rounded-lg px-3 py-3 text-center text-2xl font-mono tracking-[0.5em] outline-none focus:border-navy"
+              />
+              {erreur && (
+                <p role="alert" className="text-red text-xs">
+                  {erreur}
+                </p>
+              )}
+              {info && !erreur && (
+                <p role="status" className="text-green-700 text-xs">
+                  {info}
+                </p>
+              )}
+              <button type="submit" disabled={envoi || code.length !== 6} className="btn-navy w-full mt-2 disabled:opacity-60">
+                {envoi ? "Vérification…" : "Valider"}
+              </button>
+              <div className="flex flex-col items-center gap-1 text-sm">
+                <button
+                  type="button"
+                  disabled={attente > 0 || envoi}
+                  onClick={() => demanderCode()}
+                  className="text-blue font-medium hover:underline disabled:text-gray-400 disabled:no-underline"
+                >
+                  {attente > 0 ? `Renvoyer le code (${attente} s)` : "Renvoyer le code"}
+                </button>
+                {otp.autres.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    disabled={envoi}
+                    onClick={() => demanderCode(undefined, c)}
+                    className="text-blue font-medium hover:underline disabled:text-gray-400"
+                  >
+                    {otp.canal === "whatsapp" ? "Pas reçu sur WhatsApp ? " : "Pas reçu ? "}Recevoir {LIBELLE_CANAL[c]}
+                  </button>
+                ))}
+                {numeroModifiable && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setChangerNumero(true);
+                      setErreur("");
+                      setInfo("");
+                    }}
+                    className="text-blue font-medium hover:underline"
+                  >
+                    Changer de numéro
+                  </button>
+                )}
+              </div>
+            </form>
+          )
         )}
 
         <p className="text-sm text-gray-500 text-center mt-5">

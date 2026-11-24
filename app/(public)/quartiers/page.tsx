@@ -65,14 +65,26 @@ export default function QuartiersPage() {
       <div className="flex gap-2 flex-wrap mb-6">
         <label className="flex items-center gap-2 flex-1 min-w-[12rem] border border-gray-200 rounded-xl px-3 bg-white">
           <Search size={15} className="text-gray-400 shrink-0" />
-          <input aria-label="Rechercher un quartier" placeholder="Rechercher un quartier ou une ville…" value={recherche} onChange={(e) => setRecherche(e.target.value)} className="w-full py-2.5 text-sm outline-none !shadow-none !bg-transparent" />
+          <input
+            aria-label="Rechercher un quartier"
+            placeholder="Rechercher un quartier ou une ville…"
+            value={recherche}
+            onChange={(e) => setRecherche(e.target.value)}
+            className="w-full py-2.5 text-sm outline-none !shadow-none !bg-transparent"
+          />
         </label>
         <select aria-label="Filtrer par région" value={region} onChange={(e) => setRegion(e.target.value)} className={select}>
           <option value="">Toutes les régions</option>
-          {regions.map((r) => <option key={r}>{r}</option>)}
+          {regions.map((r) => (
+            <option key={r}>{r}</option>
+          ))}
         </select>
         <select aria-label="Trier" value={tri} onChange={(e) => setTri(e.target.value as typeof tri)} className={select}>
-          {TRIS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+          {TRIS.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.label}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -81,14 +93,28 @@ export default function QuartiersPage() {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {visibles.map((q) => (
-            <Link key={q.cle} href={`/annonces?region=${encodeURIComponent(q.region)}&quartier=${encodeURIComponent(q.nom)}`} className="card card-hover group flex flex-col">
+            <Link
+              key={q.cle}
+              href={`/annonces?region=${encodeURIComponent(q.region)}&quartier=${encodeURIComponent(q.nom)}`}
+              className="card card-hover group flex flex-col"
+            >
               <div className="relative h-36 bg-gradient-to-br from-navy to-navy-dark overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                {!q.photo.startsWith("data:") && <img src={q.photo} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />}
+                {!q.photo.startsWith("data:") && (
+                  // Photo libre (lien ou image envoyée) : next/image exigerait de déclarer chaque domaine à l'avance.
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={q.photo}
+                    alt=""
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/90 via-navy-dark/30 to-transparent" />
                 <div className="absolute left-4 bottom-3 text-white">
                   <h2 className="font-bold text-lg leading-tight">{q.nom}</h2>
-                  <p className="text-xs text-white/75 flex items-center gap-1"><MapPin size={11} className="text-gold" /> {q.ville} · {q.region}</p>
+                  <p className="text-xs text-white/75 flex items-center gap-1">
+                    <MapPin size={11} className="text-gold" /> {q.ville} · {q.region}
+                  </p>
                 </div>
               </div>
               <div className="p-5 flex-1 flex flex-col">
@@ -107,11 +133,17 @@ export default function QuartiersPage() {
                   </div>
                   <div>
                     <dt className="text-xs text-gray-400">TF vérifiés</dt>
-                    <dd className="font-semibold text-gray-800">{q.tfVerifies} sur {q.nb}</dd>
+                    <dd className="font-semibold text-gray-800">
+                      {q.tfVerifies} sur {q.nb}
+                    </dd>
                   </div>
                 </dl>
                 <div className="flex gap-1.5 flex-wrap mt-4">
-                  {q.types.map((t) => <span key={t} className="text-xs capitalize bg-gray-100 text-gray-600 rounded-full px-2.5 py-1">{t}</span>)}
+                  {q.types.map((t) => (
+                    <span key={t} className="text-xs capitalize bg-gray-100 text-gray-600 rounded-full px-2.5 py-1">
+                      {t}
+                    </span>
+                  ))}
                 </div>
                 <span className="text-sm text-navy font-semibold mt-4">Voir les annonces →</span>
               </div>
@@ -119,7 +151,9 @@ export default function QuartiersPage() {
           ))}
         </div>
       )}
-      <p className="text-xs text-gray-400 text-center mt-8">Chiffres calculés sur les annonces en ligne. Avec peu d&apos;annonces dans un quartier, la médiane reste un simple repère.</p>
+      <p className="text-xs text-gray-400 text-center mt-8">
+        Chiffres calculés sur les annonces en ligne. Avec peu d&apos;annonces dans un quartier, la médiane reste un simple repère.
+      </p>
     </div>
   );
 }

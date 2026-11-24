@@ -27,10 +27,7 @@ export default function EstimerPage() {
   const [quartier, setQuartier] = useState("");
   const [superficie, setSuperficie] = useState("");
 
-  const quartiers = useMemo(
-    () => Array.from(new Set(biens.filter((b) => b.region === region).map((b) => b.quartier))).sort(),
-    [biens, region],
-  );
+  const quartiers = useMemo(() => Array.from(new Set(biens.filter((b) => b.region === region).map((b) => b.quartier))).sort(), [biens, region]);
   const surface = Number(superficie) || 0;
   const resultat = useMemo(
     () => (surface > 0 ? estimer({ type, region, quartier: quartier || undefined, superficie: surface }, biens) : null),
@@ -48,7 +45,9 @@ export default function EstimerPage() {
 
       <div className="grid lg:grid-cols-[22rem_1fr] gap-6 items-start">
         <form className="card p-6 flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-          <h2 className="font-bold text-gray-900 flex items-center gap-2"><Home size={18} className="text-gold" /> Votre bien</h2>
+          <h2 className="font-bold text-gray-900 flex items-center gap-2">
+            <Home size={18} className="text-gold" /> Votre bien
+          </h2>
           <div>
             <span className={lib}>Type de bien</span>
             <div className="flex flex-wrap gap-2 mt-2">
@@ -67,20 +66,39 @@ export default function EstimerPage() {
           </div>
           <label className={lib}>
             Région
-            <select value={region} onChange={(e) => { setRegion(e.target.value); setQuartier(""); }} className={champ}>
-              {REGIONS.map((r) => <option key={r}>{r}</option>)}
+            <select
+              value={region}
+              onChange={(e) => {
+                setRegion(e.target.value);
+                setQuartier("");
+              }}
+              className={champ}
+            >
+              {REGIONS.map((r) => (
+                <option key={r}>{r}</option>
+              ))}
             </select>
           </label>
           <label className={lib}>
             Quartier
             <select value={quartier} onChange={(e) => setQuartier(e.target.value)} className={champ}>
               <option value="">Autre / je ne sais pas</option>
-              {quartiers.map((q) => <option key={q}>{q}</option>)}
+              {quartiers.map((q) => (
+                <option key={q}>{q}</option>
+              ))}
             </select>
           </label>
           <label className={lib}>
             Superficie (m²)
-            <input type="number" min={1} inputMode="numeric" placeholder="Ex. : 300" value={superficie} onChange={(e) => setSuperficie(e.target.value)} className={champ} />
+            <input
+              type="number"
+              min={1}
+              inputMode="numeric"
+              placeholder="Ex. : 300"
+              value={superficie}
+              onChange={(e) => setSuperficie(e.target.value)}
+              className={champ}
+            />
           </label>
           <p className="text-xs text-gray-400">Aucune donnée n&apos;est enregistrée : le calcul se fait dans votre navigateur.</p>
         </form>
@@ -95,23 +113,36 @@ export default function EstimerPage() {
             <div className="card p-12 text-center text-gray-500">
               <p className="font-semibold text-gray-700 mb-1">Pas assez d&apos;annonces comparables</p>
               <p className="text-sm">Nous n&apos;avons pas encore assez de biens de ce type pour estimer le vôtre. Un notaire partenaire peut vous orienter.</p>
-              <Link href="/notaires" className="text-blue text-sm font-medium hover:underline mt-3 inline-block">Trouver un notaire →</Link>
+              <Link href="/notaires" className="text-blue text-sm font-medium hover:underline mt-3 inline-block">
+                Trouver un notaire →
+              </Link>
             </div>
           ) : (
             <>
               <div className="card p-6 md:p-8">
                 <div className="flex items-start justify-between gap-3 flex-wrap mb-1">
                   <p className="text-sm text-gray-500">Valeur estimée</p>
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${FIABILITE[resultat.fiabilite].classe}`}>{FIABILITE[resultat.fiabilite].texte}</span>
+                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${FIABILITE[resultat.fiabilite].classe}`}>
+                    {FIABILITE[resultat.fiabilite].texte}
+                  </span>
                 </div>
                 <div className="font-display text-4xl md:text-5xl font-extrabold text-navy-dark">{formatFCFA(resultat.estime)}</div>
                 <div className="mt-6">
                   <div className="relative h-2.5 rounded-full bg-gradient-to-r from-blue/30 via-gold to-blue/30">
-                    <span className="absolute -top-1 w-[18px] h-[18px] rounded-full bg-navy-dark border-[3px] border-white shadow -translate-x-1/2" style={{ left: `${position}%` }} />
+                    <span
+                      className="absolute -top-1 w-[18px] h-[18px] rounded-full bg-navy-dark border-[3px] border-white shadow -translate-x-1/2"
+                      style={{ left: `${position}%` }}
+                    />
                   </div>
                   <div className="flex justify-between text-sm mt-2">
-                    <span><span className="text-gray-400 text-xs block">Fourchette basse</span><span className="font-semibold text-gray-800">{formatPrix(resultat.bas)}</span></span>
-                    <span className="text-right"><span className="text-gray-400 text-xs block">Fourchette haute</span><span className="font-semibold text-gray-800">{formatPrix(resultat.haut)}</span></span>
+                    <span>
+                      <span className="text-gray-400 text-xs block">Fourchette basse</span>
+                      <span className="font-semibold text-gray-800">{formatPrix(resultat.bas)}</span>
+                    </span>
+                    <span className="text-right">
+                      <span className="text-gray-400 text-xs block">Fourchette haute</span>
+                      <span className="font-semibold text-gray-800">{formatPrix(resultat.haut)}</span>
+                    </span>
                   </div>
                 </div>
                 <dl className="grid sm:grid-cols-3 gap-3 mt-6 text-sm">
@@ -129,18 +160,28 @@ export default function EstimerPage() {
                   </div>
                 </dl>
                 <p className="text-xs text-gray-400 mt-4">
-                  Estimation indicative fondée sur les prix affichés, pas sur des ventes conclues. L&apos;emplacement précis, l&apos;état du bien et la situation du Titre Foncier peuvent la faire varier. Elle ne remplace pas l&apos;avis d&apos;un professionnel.
+                  Estimation indicative fondée sur les prix affichés, pas sur des ventes conclues. L&apos;emplacement précis, l&apos;état du bien et la
+                  situation du Titre Foncier peuvent la faire varier. Elle ne remplace pas l&apos;avis d&apos;un professionnel.
                 </p>
                 <div className="flex gap-3 flex-wrap mt-5">
-                  <Link href="/publier" className="btn-primary text-sm">Publier mon bien</Link>
-                  <Link href="/frais" className="border border-gray-200 bg-white rounded-xl px-5 py-2.5 text-sm font-semibold hover:bg-gray-50 flex items-center gap-2"><TrendingUp size={15} /> Simuler les frais de vente</Link>
+                  <Link href="/publier" className="btn-primary text-sm">
+                    Publier mon bien
+                  </Link>
+                  <Link
+                    href="/frais"
+                    className="border border-gray-200 bg-white rounded-xl px-5 py-2.5 text-sm font-semibold hover:bg-gray-50 flex items-center gap-2"
+                  >
+                    <TrendingUp size={15} /> Simuler les frais de vente
+                  </Link>
                 </div>
               </div>
 
               <div>
                 <h2 className="font-bold text-gray-900 mb-3">Annonces comparables</h2>
                 <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {resultat.comparables.map((b) => <PropertyCard key={b.id} bien={b} />)}
+                  {resultat.comparables.map((b) => (
+                    <PropertyCard key={b.id} bien={b} />
+                  ))}
                 </div>
               </div>
             </>

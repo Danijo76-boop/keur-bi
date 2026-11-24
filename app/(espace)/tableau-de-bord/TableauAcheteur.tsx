@@ -47,7 +47,8 @@ export default function TableauAcheteur({ user }: { user: User }) {
         return (
           <Link key={d.id} href={`/dossiers/${d.id}`} className="flex items-start gap-3 bg-red/10 text-red rounded-lg px-4 py-3 text-sm font-semibold">
             <TriangleAlert size={18} className="shrink-0" />
-            {j >= 0 ? `Délai DGID J-${j}` : "Délai DGID dépassé"} sur le dossier {referenceDossier(d)}. Pénalité de +{p.penaliteRetard}% après le {new Date(d.dateLimiteDGID!).toLocaleDateString("fr-FR")}.
+            {j >= 0 ? `Délai DGID J-${j}` : "Délai DGID dépassé"} sur le dossier {referenceDossier(d)}. Pénalité de +{p.penaliteRetard}% après le{" "}
+            {new Date(d.dateLimiteDGID!).toLocaleDateString("fr-FR")}.
           </Link>
         );
       })}
@@ -76,9 +77,7 @@ export default function TableauAcheteur({ user }: { user: User }) {
           <FileText size={18} className="text-navy" /> Mes dossiers ({dossiers.length})
         </h2>
         {dossiers.length === 0 ? (
-          <div className="card p-8 text-center text-gray-400">
-            Aucun dossier en cours. Faites une offre depuis une annonce pour en ouvrir un.
-          </div>
+          <div className="card p-8 text-center text-gray-400">Aucun dossier en cours. Faites une offre depuis une annonce pour en ouvrir un.</div>
         ) : (
           <div className="flex flex-col gap-3">
             {dossiers.map((d) => {
@@ -89,15 +88,11 @@ export default function TableauAcheteur({ user }: { user: User }) {
                 <Link key={d.id} href={`/dossiers/${d.id}`} className="card p-4 block hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between gap-4 mb-2">
                     <span className="font-semibold text-sm text-gray-900">{bien.titre}</span>
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-navy/10 text-navy shrink-0">
-                      {LABELS_ETAPE[d.statut]}
-                    </span>
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-navy/10 text-navy shrink-0">{LABELS_ETAPE[d.statut]}</span>
                   </div>
                   <ParcoursContrat statut={d.statut} />
                   {joursDGID !== null && joursDGID <= p.alerteDGID2 && (
-                    <p className="text-xs font-semibold text-red mt-2">
-                      {joursDGID >= 0 ? `⚠ J-${joursDGID} délai DGID` : `⚠ Délai DGID dépassé`}
-                    </p>
+                    <p className="text-xs font-semibold text-red mt-2">{joursDGID >= 0 ? `⚠ J-${joursDGID} délai DGID` : `⚠ Délai DGID dépassé`}</p>
                   )}
                 </Link>
               );
@@ -113,7 +108,11 @@ export default function TableauAcheteur({ user }: { user: User }) {
           <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             <Heart size={18} className="text-red" /> Mes favoris ({biensFavoris.length})
           </h2>
-          {biensFavoris.length > 0 && <Link href="/favoris" className="text-sm text-blue font-medium hover:underline">Tout voir →</Link>}
+          {biensFavoris.length > 0 && (
+            <Link href="/favoris" className="text-sm text-blue font-medium hover:underline">
+              Tout voir →
+            </Link>
+          )}
         </div>
         {biensFavoris.length === 0 ? (
           <div className="card p-8 text-center text-gray-400">Aucun favori pour le moment.</div>
@@ -134,8 +133,12 @@ export default function TableauAcheteur({ user }: { user: User }) {
             <MessageSquare size={18} className="text-blue" /> Mes messages envoyés ({messages.length})
           </h2>
           <div className="flex gap-3 text-sm font-medium">
-            <Link href="/messages" className="text-blue hover:underline">Messagerie →</Link>
-            <Link href="/calendrier" className="text-blue hover:underline flex items-center gap-1"><CalendarDays size={14} /> Calendrier</Link>
+            <Link href="/messages" className="text-blue hover:underline">
+              Messagerie →
+            </Link>
+            <Link href="/calendrier" className="text-blue hover:underline flex items-center gap-1">
+              <CalendarDays size={14} /> Calendrier
+            </Link>
           </div>
         </div>
         {messages.length === 0 ? (

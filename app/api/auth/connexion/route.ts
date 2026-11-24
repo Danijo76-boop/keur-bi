@@ -1,14 +1,10 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/serveur/db";
-import {
-  adresseClient, memeOrigine, normaliserEmail, ouvrirSession, verifierMotDePasse, versSession,
-} from "@/lib/serveur/auth";
+import { adresseClient, memeOrigine, normaliserEmail, ouvrirSession, verifierMotDePasse, versSession } from "@/lib/serveur/auth";
 import { alerterSecurite } from "@/lib/serveur/alertes-securite";
 import { avecJournal, log } from "@/lib/serveur/journal";
 import { otpActif, ouvrirDefi } from "@/lib/serveur/otp";
-import {
-  compterEssai, essaisRestants, LIMITES, limiteAtteinte, lireJson, minutesAvantDeblocage, oublierEssais,
-} from "@/lib/serveur/securite";
+import { compterEssai, essaisRestants, LIMITES, limiteAtteinte, lireJson, minutesAvantDeblocage, oublierEssais } from "@/lib/serveur/securite";
 
 const refus = (erreur: string, status = 400) => NextResponse.json({ erreur }, { status });
 
@@ -26,7 +22,10 @@ async function post(requete: Request) {
   if (await limiteAtteinte(cleCompte, LIMITES.connexionCompte)) {
     const minutes = await minutesAvantDeblocage(cleCompte, LIMITES.connexionCompte);
     log.warn("Connexion bloquée : trop d'essais sur le compte", { email });
-    return refus(`Trop de mots de passe erronés pour ce compte : par sécurité, la connexion est bloquée pendant encore ${minutes} minute${minutes > 1 ? "s" : ""}. Si vous avez oublié votre mot de passe, utilisez « Mot de passe oublié ».`, 429);
+    return refus(
+      `Trop de mots de passe erronés pour ce compte : par sécurité, la connexion est bloquée pendant encore ${minutes} minute${minutes > 1 ? "s" : ""}. Si vous avez oublié votre mot de passe, utilisez « Mot de passe oublié ».`,
+      429,
+    );
   }
   if (cleAdresse && (await limiteAtteinte(cleAdresse, LIMITES.connexionAdresse))) {
     log.warn("Connexion bloquée : trop d'essais depuis cette adresse", { email });
@@ -43,7 +42,11 @@ async function post(requete: Request) {
       const reste = await essaisRestants(cleCompte, LIMITES.connexionCompte);
       const minutes = Math.round(LIMITES.connexionCompte.fenetreMs / 60_000);
       if (reste === 0) return refus(`Email ou mot de passe incorrect. Par sécurité, la connexion à ce compte est maintenant bloquée ${minutes} minutes.`, 401);
-      if (reste <= 3) return refus(`Email ou mot de passe incorrect. Attention : encore ${reste} essai${reste > 1 ? "s" : ""}, puis la connexion sera bloquée ${minutes} minutes.`, 401);
+      if (reste <= 3)
+        return refus(
+          `Email ou mot de passe incorrect. Attention : encore ${reste} essai${reste > 1 ? "s" : ""}, puis la connexion sera bloquée ${minutes} minutes.`,
+          401,
+        );
       return refus("Email ou mot de passe incorrect.", 401);
     }
     if (compte.suspendu) {

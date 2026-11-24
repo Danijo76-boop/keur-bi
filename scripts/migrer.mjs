@@ -3,8 +3,7 @@
 // fournie par l'hébergeur si elle existe, sinon DATABASE_URL.
 import { spawnSync } from "node:child_process";
 
-const directe =
-  process.env.DATABASE_URL_UNPOOLED || process.env.POSTGRES_URL_NON_POOLING || process.env.DIRECT_URL || process.env.DATABASE_URL;
+const directe = process.env.DATABASE_URL_UNPOOLED || process.env.POSTGRES_URL_NON_POOLING || process.env.DIRECT_URL || process.env.DATABASE_URL;
 
 if (!directe) {
   console.error(

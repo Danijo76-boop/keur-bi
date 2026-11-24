@@ -22,7 +22,10 @@ export default function HeroSearch() {
   }
 
   return (
-    <form onSubmit={rechercher} className="bg-white rounded-2xl shadow-[0_24px_48px_-20px_rgba(0,0,0,0.5)] p-2 flex flex-col sm:flex-row gap-2 [&_input]:!shadow-none [&_select]:!shadow-none">
+    <form
+      onSubmit={rechercher}
+      className="bg-white rounded-2xl shadow-[0_24px_48px_-20px_rgba(0,0,0,0.5)] p-2 flex flex-col sm:flex-row gap-2 [&_input]:!shadow-none [&_select]:!shadow-none"
+    >
       <div className="flex-1 flex items-center gap-3 px-3">
         <Search size={18} className="text-gray-400 shrink-0" />
         <input

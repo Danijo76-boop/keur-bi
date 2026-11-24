@@ -3,23 +3,36 @@
 @tailwind utilities;
 
 @layer base {
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply font-sans text-gray-800 antialiased;
     background-color: #f7f5f0;
   }
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     font-family: var(--font-display), var(--font-inter), system-ui, sans-serif;
   }
-  h1, h2 { letter-spacing: -0.02em; }
-  ::selection { background: rgba(240, 165, 0, 0.3); }
+  h1,
+  h2 {
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background: rgba(240, 165, 0, 0.3);
+  }
 
   /* Champs : même finition partout, sans retoucher chaque écran. */
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
   select,
   textarea {
-    transition: border-color 0.15s, box-shadow 0.15s;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
   }
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus,
   select:focus,
@@ -32,24 +45,36 @@
     outline-offset: 2px;
     border-radius: 6px;
   }
-  table thead th { @apply uppercase tracking-wide; }
+  table thead th {
+    @apply uppercase tracking-wide;
+  }
 }
 
 @keyframes apparition {
-  from { opacity: 0; transform: translateY(12px) scale(0.98); }
-  to { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @layer components {
   .btn-primary {
     @apply bg-gold text-navy-dark font-semibold px-5 py-2.5 rounded-xl transition-all duration-150
            hover:bg-gold-light hover:-translate-y-px active:translate-y-0;
-    box-shadow: 0 1px 2px rgba(27, 42, 74, 0.12), 0 6px 16px -6px rgba(240, 165, 0, 0.55);
+    box-shadow:
+      0 1px 2px rgba(27, 42, 74, 0.12),
+      0 6px 16px -6px rgba(240, 165, 0, 0.55);
   }
   .btn-navy {
     @apply bg-navy text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-150
            hover:bg-navy-light hover:-translate-y-px active:translate-y-0;
-    box-shadow: 0 1px 2px rgba(27, 42, 74, 0.15), 0 6px 16px -8px rgba(27, 79, 114, 0.6);
+    box-shadow:
+      0 1px 2px rgba(27, 42, 74, 0.15),
+      0 6px 16px -8px rgba(27, 79, 114, 0.6);
   }
   .btn-primary:disabled,
   .btn-navy:disabled {
@@ -64,13 +89,17 @@
   .card {
     @apply bg-white rounded-2xl overflow-hidden;
     border: 1px solid rgba(27, 42, 74, 0.07);
-    box-shadow: 0 1px 2px rgba(27, 42, 74, 0.04), 0 8px 24px -12px rgba(27, 42, 74, 0.12);
+    box-shadow:
+      0 1px 2px rgba(27, 42, 74, 0.04),
+      0 8px 24px -12px rgba(27, 42, 74, 0.12);
   }
   .card-hover {
     @apply transition-all duration-200 hover:-translate-y-1;
   }
   .card-hover:hover {
-    box-shadow: 0 2px 4px rgba(27, 42, 74, 0.05), 0 20px 40px -16px rgba(27, 42, 74, 0.25);
+    box-shadow:
+      0 2px 4px rgba(27, 42, 74, 0.05),
+      0 20px 40px -16px rgba(27, 42, 74, 0.25);
   }
   .eyebrow {
     @apply inline-block text-xs font-bold uppercase text-gold;
@@ -82,43 +111,76 @@
 }
 
 @keyframes decompte {
-  from { width: 100%; }
-  to { width: 0; }
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0;
+  }
 }
 
 /* ───────────── Effets visuels (components/Dynamique.tsx) ───────────── */
 
 /* Apparition au défilement */
-.revelation-attente { opacity: 0; transform: translateY(28px); }
+.revelation-attente {
+  opacity: 0;
+  transform: translateY(28px);
+}
 .revelation-visible {
   animation: revelation 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--revelation-delai, 0ms);
 }
 @keyframes revelation {
-  from { opacity: 0; transform: translateY(28px); }
-  to { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Entrée échelonnée du hero au chargement (sans JavaScript : simple animation CSS) */
-.entree { animation: revelation 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: var(--d, 0ms); }
+.entree {
+  animation: revelation 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--d, 0ms);
+}
 
 /* Mot qui change dans le titre */
-.mot-tournant { display: inline-grid; vertical-align: bottom; }
-.mot-tournant > * { grid-area: 1 / 1; }
+.mot-tournant {
+  display: inline-grid;
+  vertical-align: bottom;
+}
+.mot-tournant > * {
+  grid-area: 1 / 1;
+}
 .mot-tournant-courant {
   background: linear-gradient(90deg, #f7c548, #f0a500, #f7c548);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: mot-entree 0.6s cubic-bezier(0.22, 1, 0.36, 1) both, reflet-or 3s linear infinite;
+  animation:
+    mot-entree 0.6s cubic-bezier(0.22, 1, 0.36, 1) both,
+    reflet-or 3s linear infinite;
 }
 @keyframes mot-entree {
-  from { opacity: 0; transform: translateY(0.45em); filter: blur(6px); }
-  to { opacity: 1; transform: none; filter: none; }
+  from {
+    opacity: 0;
+    transform: translateY(0.45em);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
 }
 @keyframes reflet-or {
-  to { background-position: -200% 0; }
+  to {
+    background-position: -200% 0;
+  }
 }
 
 /* Halo qui suit la souris dans le hero */
@@ -128,20 +190,48 @@
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.4s ease;
-  background: radial-gradient(520px circle at var(--x, 50%) var(--y, 50%), rgba(240, 165, 0, 0.16), rgba(46, 134, 171, 0.10) 40%, transparent 70%);
+  background: radial-gradient(520px circle at var(--x, 50%) var(--y, 50%), rgba(240, 165, 0, 0.16), rgba(46, 134, 171, 0.1) 40%, transparent 70%);
 }
 
 /* Lueurs colorées qui dérivent lentement */
-.lueur { position: absolute; border-radius: 9999px; filter: blur(64px); pointer-events: none; will-change: transform; }
-.lueur-1 { animation: derive-1 18s ease-in-out infinite alternate; }
-.lueur-2 { animation: derive-2 22s ease-in-out infinite alternate; }
-.lueur-3 { animation: derive-3 26s ease-in-out infinite alternate; }
-@keyframes derive-1 { to { transform: translate(90px, -60px) scale(1.15); } }
-@keyframes derive-2 { to { transform: translate(-110px, 70px) scale(0.9); } }
-@keyframes derive-3 { to { transform: translate(60px, 90px) scale(1.2); } }
+.lueur {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(64px);
+  pointer-events: none;
+  will-change: transform;
+}
+.lueur-1 {
+  animation: derive-1 18s ease-in-out infinite alternate;
+}
+.lueur-2 {
+  animation: derive-2 22s ease-in-out infinite alternate;
+}
+.lueur-3 {
+  animation: derive-3 26s ease-in-out infinite alternate;
+}
+@keyframes derive-1 {
+  to {
+    transform: translate(90px, -60px) scale(1.15);
+  }
+}
+@keyframes derive-2 {
+  to {
+    transform: translate(-110px, 70px) scale(0.9);
+  }
+}
+@keyframes derive-3 {
+  to {
+    transform: translate(60px, 90px) scale(1.2);
+  }
+}
 
 /* Carte inclinée en 3D, avec reflet */
-.inclinaison { transition: transform 0.25s ease-out; transform-style: preserve-3d; will-change: transform; }
+.inclinaison {
+  transition: transform 0.25s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
 .inclinaison::after {
   content: "";
   position: absolute;
@@ -152,18 +242,32 @@
   transition: opacity 0.3s ease;
   background: radial-gradient(400px circle at var(--reflet-x, 50%) var(--reflet-y, 50%), rgba(255, 255, 255, 0.22), transparent 60%);
 }
-.inclinaison:hover::after { opacity: 1; }
+.inclinaison:hover::after {
+  opacity: 1;
+}
 
 /* Badges qui flottent */
-.flotte { animation: flotte 5s ease-in-out infinite; }
-.flotte-decale { animation: flotte 6s ease-in-out -2.5s infinite; }
+.flotte {
+  animation: flotte 5s ease-in-out infinite;
+}
+.flotte-decale {
+  animation: flotte 6s ease-in-out -2.5s infinite;
+}
 @keyframes flotte {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* Halo de souris sur les cartes « outils » */
-.carte-halo { position: relative; isolation: isolate; }
+.carte-halo {
+  position: relative;
+  isolation: isolate;
+}
 .carte-halo::before {
   content: "";
   position: absolute;
@@ -173,17 +277,37 @@
   transition: opacity 0.3s ease;
   background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(240, 165, 0, 0.14), transparent 70%);
 }
-.carte-halo:hover::before { opacity: 1; }
+.carte-halo:hover::before {
+  opacity: 1;
+}
 
 /* Icône qui pivote légèrement au survol de sa carte */
-.group:hover .icone-vivante { transform: rotate(-8deg) scale(1.1); }
-.icone-vivante { transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.group:hover .icone-vivante {
+  transform: rotate(-8deg) scale(1.1);
+}
+.icone-vivante {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
 /* Moins d'animations demandées par l'appareil : tout s'affiche directement, sans mouvement. */
 @media (prefers-reduced-motion: reduce) {
-  .revelation-attente { opacity: 1; transform: none; }
-  .revelation-visible, .entree, .mot-tournant-courant, .lueur, .flotte, .flotte-decale { animation: none !important; }
-  .inclinaison, .icone-vivante { transition: none; transform: none !important; }
+  .revelation-attente {
+    opacity: 1;
+    transform: none;
+  }
+  .revelation-visible,
+  .entree,
+  .mot-tournant-courant,
+  .lueur,
+  .flotte,
+  .flotte-decale {
+    animation: none !important;
+  }
+  .inclinaison,
+  .icone-vivante {
+    transition: none;
+    transform: none !important;
+  }
 }
 
 /* ───────────── Mode nuit ─────────────
@@ -191,63 +315,152 @@
    Plutôt que de doubler chaque classe d'une variante sombre dans une soixantaine de fichiers,
    la palette est remappée ici, en un seul endroit, quand <html> porte la classe "dark". */
 @media screen {
-  html.dark { color-scheme: dark; }
-  html.dark body { background-color: #0e1524; color: #e5e9f0; }
+  html.dark {
+    color-scheme: dark;
+  }
+  html.dark body {
+    background-color: #0e1524;
+    color: #e5e9f0;
+  }
 
   /* Surfaces */
   html.dark .card {
     background-color: #182236;
     border-color: rgba(255, 255, 255, 0.07);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px -14px rgba(0, 0, 0, 0.7);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 12px 28px -14px rgba(0, 0, 0, 0.7);
   }
-  html.dark .card-hover:hover { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35), 0 24px 44px -16px rgba(0, 0, 0, 0.85); }
-  html.dark .bg-white { background-color: #182236; }
-  html.dark .bg-white\/90 { background-color: rgba(24, 34, 54, 0.9); }
-  html.dark .bg-gray-50 { background-color: #1f2b42; }
-  html.dark .bg-gray-100 { background-color: #25324b; }
-  html.dark .bg-gray-200 { background-color: #2d3b56; }
+  html.dark .card-hover:hover {
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.35),
+      0 24px 44px -16px rgba(0, 0, 0, 0.85);
+  }
+  html.dark .bg-white {
+    background-color: #182236;
+  }
+  html.dark .bg-white\/90 {
+    background-color: rgba(24, 34, 54, 0.9);
+  }
+  html.dark .bg-gray-50 {
+    background-color: #1f2b42;
+  }
+  html.dark .bg-gray-100 {
+    background-color: #25324b;
+  }
+  html.dark .bg-gray-200 {
+    background-color: #2d3b56;
+  }
   html.dark .hover\:bg-gray-50:hover,
-  html.dark .hover\:bg-white:hover { background-color: #25324b; }
-  html.dark .hover\:bg-gray-100:hover { background-color: #2d3b56; }
-  html.dark .bg-navy\/5 { background-color: rgba(142, 197, 234, 0.08); }
-  html.dark .bg-navy\/10 { background-color: rgba(142, 197, 234, 0.14); }
-  html.dark .hover\:bg-navy\/5:hover { background-color: rgba(142, 197, 234, 0.1); }
-  html.dark .bg-navy { background-color: #23618c; }
-  html.dark .btn-navy { background-color: #23618c; }
-  html.dark .btn-navy:hover, html.dark .hover\:bg-navy-light:hover { background-color: #2e7bb0; }
+  html.dark .hover\:bg-white:hover {
+    background-color: #25324b;
+  }
+  html.dark .hover\:bg-gray-100:hover {
+    background-color: #2d3b56;
+  }
+  html.dark .bg-navy\/5 {
+    background-color: rgba(142, 197, 234, 0.08);
+  }
+  html.dark .bg-navy\/10 {
+    background-color: rgba(142, 197, 234, 0.14);
+  }
+  html.dark .hover\:bg-navy\/5:hover {
+    background-color: rgba(142, 197, 234, 0.1);
+  }
+  html.dark .bg-navy {
+    background-color: #23618c;
+  }
+  html.dark .btn-navy {
+    background-color: #23618c;
+  }
+  html.dark .btn-navy:hover,
+  html.dark .hover\:bg-navy-light:hover {
+    background-color: #2e7bb0;
+  }
 
   /* Textes */
-  html.dark .text-gray-900 { color: #f3f6fa; }
-  html.dark .text-gray-800 { color: #e5e9f0; }
-  html.dark .text-gray-700 { color: #cdd5e0; }
-  html.dark .text-gray-600 { color: #b1bccb; }
-  html.dark .text-gray-500 { color: #93a0b4; }
-  html.dark .text-gray-400 { color: #7b889d; }
-  html.dark .text-gray-300 { color: #5c697e; }
+  html.dark .text-gray-900 {
+    color: #f3f6fa;
+  }
+  html.dark .text-gray-800 {
+    color: #e5e9f0;
+  }
+  html.dark .text-gray-700 {
+    color: #cdd5e0;
+  }
+  html.dark .text-gray-600 {
+    color: #b1bccb;
+  }
+  html.dark .text-gray-500 {
+    color: #93a0b4;
+  }
+  html.dark .text-gray-400 {
+    color: #7b889d;
+  }
+  html.dark .text-gray-300 {
+    color: #5c697e;
+  }
   html.dark .text-navy,
   html.dark .hover\:text-navy:hover,
-  html.dark .group:hover .group-hover\:text-navy { color: #8ec5ea; }
+  html.dark .group:hover .group-hover\:text-navy {
+    color: #8ec5ea;
+  }
   html.dark .text-navy-dark,
-  html.dark .section-title { color: #f3f6fa; }
-  html.dark .text-navy\/30 { color: rgba(142, 197, 234, 0.35); }
-  html.dark .text-blue, html.dark .hover\:text-blue:hover { color: #62bbe0; }
-  html.dark .text-green { color: #5fd08a; }
-  html.dark .text-red, html.dark .hover\:text-red:hover { color: #f28d80; }
-  html.dark .hover\:text-gray-600:hover { color: #cdd5e0; }
+  html.dark .section-title {
+    color: #f3f6fa;
+  }
+  html.dark .text-navy\/30 {
+    color: rgba(142, 197, 234, 0.35);
+  }
+  html.dark .text-blue,
+  html.dark .hover\:text-blue:hover {
+    color: #62bbe0;
+  }
+  html.dark .text-green {
+    color: #5fd08a;
+  }
+  html.dark .text-red,
+  html.dark .hover\:text-red:hover {
+    color: #f28d80;
+  }
+  html.dark .hover\:text-gray-600:hover {
+    color: #cdd5e0;
+  }
   /* Sur un fond doré plein, le texte reste sombre pour rester lisible. */
   html.dark :is(.bg-gold, .bg-gold-light, .btn-primary, [class*="from-gold"]).text-navy-dark,
   html.dark :is(.bg-gold, .bg-gold-light, .btn-primary, [class*="from-gold"]) .text-navy-dark,
-  html.dark .btn-primary { color: #1b2a4a; }
-  html.dark .bg-navy.text-white, html.dark .bg-navy .text-white { color: #fff; }
+  html.dark .btn-primary {
+    color: #1b2a4a;
+  }
+  html.dark .bg-navy.text-white,
+  html.dark .bg-navy .text-white {
+    color: #fff;
+  }
 
   /* Bordures */
-  html.dark .border-gray-50 { border-color: rgba(255, 255, 255, 0.05); }
-  html.dark .border-gray-100 { border-color: rgba(255, 255, 255, 0.08); }
-  html.dark .border-gray-200 { border-color: rgba(255, 255, 255, 0.13); }
-  html.dark .border-gray-300 { border-color: rgba(255, 255, 255, 0.2); }
-  html.dark .border-navy\/20 { border-color: rgba(142, 197, 234, 0.3); }
-  html.dark .border-navy, html.dark .hover\:border-navy:hover, html.dark .focus\:border-navy:focus { border-color: #5b9fcb; }
-  html.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(255, 255, 255, 0.08); }
+  html.dark .border-gray-50 {
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+  html.dark .border-gray-100 {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  html.dark .border-gray-200 {
+    border-color: rgba(255, 255, 255, 0.13);
+  }
+  html.dark .border-gray-300 {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  html.dark .border-navy\/20 {
+    border-color: rgba(142, 197, 234, 0.3);
+  }
+  html.dark .border-navy,
+  html.dark .hover\:border-navy:hover,
+  html.dark .focus\:border-navy:focus {
+    border-color: #5b9fcb;
+  }
+  html.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
 
   /* Champs de saisie */
   html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
@@ -256,21 +469,44 @@
     background-color: #111a2c;
     color: #e5e9f0;
   }
-  html.dark input::placeholder, html.dark textarea::placeholder { color: #6c7a90; }
+  html.dark input::placeholder,
+  html.dark textarea::placeholder {
+    color: #6c7a90;
+  }
   html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus,
   html.dark select:focus,
-  html.dark textarea:focus { box-shadow: 0 0 0 3px rgba(142, 197, 234, 0.2); }
+  html.dark textarea:focus {
+    box-shadow: 0 0 0 3px rgba(142, 197, 234, 0.2);
+  }
 
   /* Fonds teintés : un peu plus soutenus pour rester visibles sur fond sombre */
-  html.dark .bg-green\/10, html.dark .bg-green\/5 { background-color: rgba(95, 208, 138, 0.13); }
-  html.dark .bg-red\/10 { background-color: rgba(242, 141, 128, 0.14); }
-  html.dark .hover\:bg-red\/5:hover { background-color: rgba(242, 141, 128, 0.1); }
-  html.dark .bg-blue\/10 { background-color: rgba(98, 187, 224, 0.14); }
-  html.dark .border-red\/30 { border-color: rgba(242, 141, 128, 0.4); }
+  html.dark .bg-green\/10,
+  html.dark .bg-green\/5 {
+    background-color: rgba(95, 208, 138, 0.13);
+  }
+  html.dark .bg-red\/10 {
+    background-color: rgba(242, 141, 128, 0.14);
+  }
+  html.dark .hover\:bg-red\/5:hover {
+    background-color: rgba(242, 141, 128, 0.1);
+  }
+  html.dark .bg-blue\/10 {
+    background-color: rgba(98, 187, 224, 0.14);
+  }
+  html.dark .border-red\/30 {
+    border-color: rgba(242, 141, 128, 0.4);
+  }
 
   /* Carte */
-  html.dark .leaflet-tile { filter: brightness(0.75) contrast(1.1) saturate(0.85); }
+  html.dark .leaflet-tile {
+    filter: brightness(0.75) contrast(1.1) saturate(0.85);
+  }
   html.dark .leaflet-popup-content-wrapper,
-  html.dark .leaflet-popup-tip { background: #182236; color: #e5e9f0; }
-  html.dark .leaflet-container { background: #111a2c; }
+  html.dark .leaflet-popup-tip {
+    background: #182236;
+    color: #e5e9f0;
+  }
+  html.dark .leaflet-container {
+    background: #111a2c;
+  }
 }

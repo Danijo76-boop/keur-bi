@@ -35,14 +35,22 @@ export function textePDF(v: Cellule | null | undefined): string {
   return String(v ?? "")
     .replace(/[\u00a0\u2009\u202f]/g, " ") // espaces insécables et fines (nombres en français)
     .replace(/[\u2018\u2019]/g, "'")
-    .replace(/\u00ab\s*/g, '"').replace(/\s*\u00bb/g, '"').replace(/[\u201c\u201d]/g, '"')
+    .replace(/\u00ab\s*/g, '"')
+    .replace(/\s*\u00bb/g, '"')
+    .replace(/[\u201c\u201d]/g, '"')
     .replace(/[\u2013\u2014]/g, "-")
     .replace(/\u2026/g, "...")
-    .replace(/\u0153/g, "oe").replace(/\u0152/g, "OE")
+    .replace(/\u0153/g, "oe")
+    .replace(/\u0152/g, "OE")
     .replace(/\u20ac/g, "EUR")
-    .replace(/[\u2192\u27f6\u21d2]/g, "->").replace(/[\u2190\u27f5]/g, "<-")
-    .replace(/\u2264/g, "<=").replace(/\u2265/g, ">=").replace(/\u2260/g, "!=").replace(/\u221e/g, "infini")
-    .replace(/[\u2705\u2714]/g, "[OK]").replace(/[\u274c\u2716]/g, "[X]")
+    .replace(/[\u2192\u27f6\u21d2]/g, "->")
+    .replace(/[\u2190\u27f5]/g, "<-")
+    .replace(/\u2264/g, "<=")
+    .replace(/\u2265/g, ">=")
+    .replace(/\u2260/g, "!=")
+    .replace(/\u221e/g, "infini")
+    .replace(/[\u2705\u2714]/g, "[OK]")
+    .replace(/[\u274c\u2716]/g, "[X]")
     .replace(/[\u2190-\u21ff\u2300-\u2bff\u{1f000}-\u{1faff}\ufe0f]/gu, "") // autres flèches, symboles, émojis
     .replace(/[^\x09\x0a\x0d\x20-\x7e\u00a0-\u00ff]/g, "") // tout ce que la police ne sait pas dessiner
     .replace(/ {2,}/g, " ")
@@ -51,7 +59,12 @@ export function textePDF(v: Cellule | null | undefined): string {
 
 const dateFichier = () => new Date().toISOString().slice(0, 10);
 export const nomFichier = (base: string, extension: "pdf" | "xlsx") =>
-  `${base.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w-]+/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "")}_${dateFichier()}.${extension}`;
+  `${base
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\w-]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "")}_${dateFichier()}.${extension}`;
 
 export async function exporterPDF(base: string, d: DocumentPDF): Promise<string> {
   const [{ jsPDF }, { autoTable }] = await Promise.all([import("jspdf"), import("jspdf-autotable")]);
@@ -72,11 +85,23 @@ export async function exporterPDF(base: string, d: DocumentPDF): Promise<string>
   doc.text(textePDF(`Généré le ${new Date().toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}`), largeur - marge, 14, { align: "right" });
 
   let y = 34;
-  doc.setFont("helvetica", "bold").setFontSize(17).setTextColor(...NAVY);
-  for (const l of doc.splitTextToSize(textePDF(d.titre), utile)) { doc.text(l, marge, y); y += 7.5; }
+  doc
+    .setFont("helvetica", "bold")
+    .setFontSize(17)
+    .setTextColor(...NAVY);
+  for (const l of doc.splitTextToSize(textePDF(d.titre), utile)) {
+    doc.text(l, marge, y);
+    y += 7.5;
+  }
   if (d.sousTitre) {
-    doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(...GRIS);
-    for (const l of doc.splitTextToSize(textePDF(d.sousTitre), utile)) { doc.text(l, marge, y); y += 5; }
+    doc
+      .setFont("helvetica", "normal")
+      .setFontSize(10)
+      .setTextColor(...GRIS);
+    for (const l of doc.splitTextToSize(textePDF(d.sousTitre), utile)) {
+      doc.text(l, marge, y);
+      y += 5;
+    }
   }
   y += 2;
   if (d.avertissement) {
@@ -89,16 +114,25 @@ export async function exporterPDF(base: string, d: DocumentPDF): Promise<string>
   }
 
   const placeLibre = (besoin: number) => {
-    if (y + besoin > hauteur - 18) { doc.addPage(); y = 20; }
+    if (y + besoin > hauteur - 18) {
+      doc.addPage();
+      y = 20;
+    }
   };
 
   for (const s of d.sections) {
     if (s.titre) {
       placeLibre(14);
       y += 3;
-      doc.setFont("helvetica", "bold").setFontSize(12).setTextColor(...NAVY);
+      doc
+        .setFont("helvetica", "bold")
+        .setFontSize(12)
+        .setTextColor(...NAVY);
       doc.text(textePDF(s.titre), marge, y);
-      doc.setDrawColor(...OR).setLineWidth(0.6).line(marge, y + 2, marge + 18, y + 2);
+      doc
+        .setDrawColor(...OR)
+        .setLineWidth(0.6)
+        .line(marge, y + 2, marge + 18, y + 2);
       y += 8;
     }
     if (s.champs?.length) {
@@ -111,7 +145,7 @@ export async function exporterPDF(base: string, d: DocumentPDF): Promise<string>
         columnStyles: { 0: { cellWidth: 60, textColor: GRIS }, 1: { fontStyle: "bold" } },
         alternateRowStyles: { fillColor: [247, 248, 250] },
       });
-      y = ((doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY) + 6;
+      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
     }
     for (const p of s.paragraphes ?? []) {
       doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(40, 44, 52);
@@ -125,12 +159,14 @@ export async function exporterPDF(base: string, d: DocumentPDF): Promise<string>
         startY: y,
         margin: { left: marge, right: marge, top: 20 },
         head: [s.tableau.colonnes.map(textePDF)],
-        body: s.tableau.lignes.length ? s.tableau.lignes.map((l) => l.map(textePDF)) : [[{ content: "Aucune donnée", colSpan: s.tableau.colonnes.length, styles: { halign: "center", textColor: GRIS } }]],
+        body: s.tableau.lignes.length
+          ? s.tableau.lignes.map((l) => l.map(textePDF))
+          : [[{ content: "Aucune donnée", colSpan: s.tableau.colonnes.length, styles: { halign: "center", textColor: GRIS } }]],
         styles: { fontSize: 8.5, cellPadding: 2, overflow: "linebreak", textColor: [40, 44, 52] },
         headStyles: { fillColor: NAVY, textColor: [255, 255, 255], fontStyle: "bold" },
         alternateRowStyles: { fillColor: [247, 248, 250] },
       });
-      y = ((doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY) + 8;
+      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
     }
   }
 
@@ -138,7 +174,10 @@ export async function exporterPDF(base: string, d: DocumentPDF): Promise<string>
   const pages = doc.getNumberOfPages();
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
-    doc.setFont("helvetica", "normal").setFontSize(8).setTextColor(...GRIS);
+    doc
+      .setFont("helvetica", "normal")
+      .setFontSize(8)
+      .setTextColor(...GRIS);
     doc.text("KEUR BI - La plateforme immobiliere de confiance au Senegal", marge, hauteur - 8);
     doc.text(`Page ${i} / ${pages}`, largeur - marge, hauteur - 8, { align: "right" });
   }

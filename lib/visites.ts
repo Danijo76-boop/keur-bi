@@ -37,7 +37,10 @@ export function demanderVisite(v: Omit<Visite, "id" | "statut" | "creeLe">) {
 
 export function changerStatutVisite(id: string, statut: StatutVisite) {
   popup.succes({ demandee: "Visite demandée", confirmee: "Visite confirmée", refusee: "Visite refusée", annulee: "Visite annulée" }[statut]);
-  ecrire(CLE, lireVisites().map((v) => (v.id === id ? { ...v, statut } : v)));
+  ecrire(
+    CLE,
+    lireVisites().map((v) => (v.id === id ? { ...v, statut } : v)),
+  );
 }
 
 export function visiteActive(bienId: string, email: string, visites: Visite[]): Visite | undefined {

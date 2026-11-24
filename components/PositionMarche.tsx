@@ -10,7 +10,13 @@ const NIVEAUX = {
   dessus: { texte: "Au-dessus du marché", icone: TrendingUp, classe: "bg-gold/20 text-navy-dark" },
 };
 
-export default function PositionMarche({ bien, className = "" }: { bien: Pick<Bien, "type" | "region" | "prix" | "superficie" | "transaction"> & { id?: string }; className?: string }) {
+export default function PositionMarche({
+  bien,
+  className = "",
+}: {
+  bien: Pick<Bien, "type" | "region" | "prix" | "superficie" | "transaction"> & { id?: string };
+  className?: string;
+}) {
   const biens = useBiens();
   const p = positionPrix(bien, biens);
   if (!p) return null;
@@ -18,10 +24,12 @@ export default function PositionMarche({ bien, className = "" }: { bien: Pick<Bi
   return (
     <div className={`rounded-lg px-4 py-3 ${n.classe} ${className}`}>
       <div className="flex items-center gap-2 font-semibold text-sm">
-        <n.icone size={16} /> {n.texte} ({p.ecart > 0 ? "+" : ""}{p.ecart} %)
+        <n.icone size={16} /> {n.texte} ({p.ecart > 0 ? "+" : ""}
+        {p.ecart} %)
       </div>
       <p className="text-xs mt-0.5 opacity-80">
-        Médiane : {formatFCFA(p.medianeM2)} / m² sur {p.nbComparables} annonces comparables ({p.perimetre}). Repère indicatif : l&apos;emplacement et l&apos;état du bien comptent aussi.
+        Médiane : {formatFCFA(p.medianeM2)} / m² sur {p.nbComparables} annonces comparables ({p.perimetre}). Repère indicatif : l&apos;emplacement et
+        l&apos;état du bien comptent aussi.
       </p>
     </div>
   );

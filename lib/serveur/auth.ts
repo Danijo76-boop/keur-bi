@@ -36,7 +36,12 @@ export async function verifierMotDePasse(motDePasse: string, empreinte: string |
 
 const empreinteJeton = (jeton: string) => createHash("sha256").update(jeton).digest("hex");
 
-export const versSession = (u: Pick<Utilisateur, "id" | "nom" | "email" | "role">): UtilisateurSession => ({ id: u.id, nom: u.nom, email: u.email, role: u.role });
+export const versSession = (u: Pick<Utilisateur, "id" | "nom" | "email" | "role">): UtilisateurSession => ({
+  id: u.id,
+  nom: u.nom,
+  email: u.email,
+  role: u.role,
+});
 
 export async function ouvrirSession(utilisateurId: string) {
   const jeton = randomBytes(32).toString("base64url");
@@ -91,12 +96,9 @@ export async function memeOrigine(): Promise<boolean> {
   }
 }
 
-
 // Adresse du visiteur telle que transmise par l'hébergeur. Absente en local : on ne limite alors que par compte,
 // sinon tous les visiteurs partageraient le même compteur.
 export async function adresseClient(): Promise<string | undefined> {
   const h = await headers();
   return h.get("x-forwarded-for")?.split(",")[0].trim() || h.get("x-real-ip") || undefined;
 }
-
-

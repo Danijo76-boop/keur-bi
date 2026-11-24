@@ -2,7 +2,17 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
 
-type Entree = { id: string; date: string; niveau: string; categorie: string | null; message: string; details: unknown; requeteId: string | null; route: string | null; utilisateurId: string | null };
+type Entree = {
+  id: string;
+  date: string;
+  niveau: string;
+  categorie: string | null;
+  message: string;
+  details: unknown;
+  requeteId: string | null;
+  route: string | null;
+  utilisateurId: string | null;
+};
 
 const NIVEAUX = [
   { val: "", label: "Tout" },
@@ -54,7 +64,11 @@ export default function JournalTechniquePage() {
 
       <div className="flex gap-2 flex-wrap mb-4">
         <select aria-label="Type d'entrée" value={filtre} onChange={(e) => setFiltre(e.target.value)} className={champ}>
-          {NIVEAUX.map((n) => <option key={n.val} value={n.val}>{n.label}</option>)}
+          {NIVEAUX.map((n) => (
+            <option key={n.val} value={n.val}>
+              {n.label}
+            </option>
+          ))}
         </select>
         <input
           value={recherche}
@@ -63,10 +77,16 @@ export default function JournalTechniquePage() {
           placeholder="Code, référence, message ou route…"
           className={`${champ} flex-1 min-w-[14rem]`}
         />
-        <button onClick={charger} className="btn-navy text-sm px-3 py-2 flex items-center gap-1"><RefreshCw size={14} /> Actualiser</button>
+        <button onClick={charger} className="btn-navy text-sm px-3 py-2 flex items-center gap-1">
+          <RefreshCw size={14} /> Actualiser
+        </button>
       </div>
 
-      {erreur && <p role="alert" className="text-red text-sm mb-3">{erreur}</p>}
+      {erreur && (
+        <p role="alert" className="text-red text-sm mb-3">
+          {erreur}
+        </p>
+      )}
       {!entrees && !erreur && <p className="text-gray-400 text-sm">Chargement…</p>}
       {entrees?.length === 0 && <div className="card p-8 text-center text-gray-400">Aucune entrée.</div>}
 
@@ -75,11 +95,21 @@ export default function JournalTechniquePage() {
           <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="text-left text-xs text-gray-400 border-b border-gray-100">
-                <th scope="col" className="p-3 font-semibold">Date</th>
-                <th scope="col" className="p-3 font-semibold">Type</th>
-                <th scope="col" className="p-3 font-semibold">Message</th>
-                <th scope="col" className="p-3 font-semibold">Route</th>
-                <th scope="col" className="p-3 font-semibold">Référence</th>
+                <th scope="col" className="p-3 font-semibold">
+                  Date
+                </th>
+                <th scope="col" className="p-3 font-semibold">
+                  Type
+                </th>
+                <th scope="col" className="p-3 font-semibold">
+                  Message
+                </th>
+                <th scope="col" className="p-3 font-semibold">
+                  Route
+                </th>
+                <th scope="col" className="p-3 font-semibold">
+                  Référence
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -90,16 +120,23 @@ export default function JournalTechniquePage() {
                     <tr onClick={() => setOuverte(ouverte === e.id ? undefined : e.id)} className="border-b border-gray-50 cursor-pointer hover:bg-gray-50">
                       <td className="p-3 whitespace-nowrap text-gray-500">{new Date(e.date).toLocaleString("fr-FR")}</td>
                       <td className="p-3">
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded ${COULEUR[e.niveau] ?? COULEUR.info}`}>{e.categorie === "audit" ? "Action admin" : e.niveau === "erreur" ? "Erreur" : e.niveau === "warn" ? "Avertissement" : "Info"}</span>
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded ${COULEUR[e.niveau] ?? COULEUR.info}`}>
+                          {e.categorie === "audit" ? "Action admin" : e.niveau === "erreur" ? "Erreur" : e.niveau === "warn" ? "Avertissement" : "Info"}
+                        </span>
                       </td>
-                      <td className="p-3 text-gray-800">{e.message}{details?.code && <span className="text-gray-400"> · code {details.code}</span>}</td>
+                      <td className="p-3 text-gray-800">
+                        {e.message}
+                        {details?.code && <span className="text-gray-400"> · code {details.code}</span>}
+                      </td>
                       <td className="p-3 text-gray-500 whitespace-nowrap">{e.route ?? "—"}</td>
                       <td className="p-3 font-mono text-xs text-gray-500">{e.requeteId?.slice(0, 8) ?? "—"}</td>
                     </tr>
                     {ouverte === e.id && (
                       <tr className="border-b border-gray-100 bg-gray-50">
                         <td colSpan={5} className="p-3">
-                          <pre className="text-xs whitespace-pre-wrap break-all text-gray-700">{JSON.stringify({ requete: e.requeteId, utilisateur: e.utilisateurId, details: e.details }, null, 2)}</pre>
+                          <pre className="text-xs whitespace-pre-wrap break-all text-gray-700">
+                            {JSON.stringify({ requete: e.requeteId, utilisateur: e.utilisateurId, details: e.details }, null, 2)}
+                          </pre>
                         </td>
                       </tr>
                     )}

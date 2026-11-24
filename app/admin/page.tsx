@@ -85,7 +85,9 @@ export default function AdminPage() {
         <div className="card p-5">
           <h2 className="font-bold text-gray-900 mb-3">Répartition des utilisateurs</h2>
           <BarresHorizontales donnees={parRole} />
-          <p className="text-xs text-gray-500 mt-3">KYC vérifié : {utilisateurs.filter((u) => u.statutKYC === "verifie").length} sur {utilisateurs.length}</p>
+          <p className="text-xs text-gray-500 mt-3">
+            KYC vérifié : {utilisateurs.filter((u) => u.statutKYC === "verifie").length} sur {utilisateurs.length}
+          </p>
         </div>
         <div className="card p-5">
           <h2 className="font-bold text-gray-900 mb-3">Annonces par région</h2>
@@ -97,8 +99,14 @@ export default function AdminPage() {
         <div className="card p-5">
           <h2 className="font-bold text-gray-900 mb-3">Revenus estimés</h2>
           <dl className="text-sm flex flex-col gap-2">
-            <div className="flex justify-between gap-3"><dt className="text-gray-500">Commissions sur actes signés</dt><dd className="font-semibold text-right">{formatFCFA(commissions)}</dd></div>
-            <div className="flex justify-between gap-3"><dt className="text-gray-500">Vérifications TF prioritaires demandées</dt><dd className="font-semibold text-right">{formatFCFA(demandes.filter((d) => d.prioritaire).length * p.prixTFPrioritaire)}</dd></div>
+            <div className="flex justify-between gap-3">
+              <dt className="text-gray-500">Commissions sur actes signés</dt>
+              <dd className="font-semibold text-right">{formatFCFA(commissions)}</dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt className="text-gray-500">Vérifications TF prioritaires demandées</dt>
+              <dd className="font-semibold text-right">{formatFCFA(demandes.filter((d) => d.prioritaire).length * p.prixTFPrioritaire)}</dd>
+            </div>
           </dl>
           <p className="text-xs text-gray-400 mt-2">Estimation : aucun encaissement réel dans cette démo.</p>
         </div>
@@ -107,8 +115,14 @@ export default function AdminPage() {
           <ul className="flex flex-col gap-2 text-sm">
             {alertes.map((a) => (
               <li key={a.texte} className="flex items-center justify-between gap-3">
-                <span className={a.n > 0 ? "text-gray-800" : "text-gray-400"}>{a.n > 0 ? "⚠" : "✓"} {a.n} {a.texte}</span>
-                {a.n > 0 && <Link href={a.lien} className="text-blue font-medium hover:underline shrink-0">Voir →</Link>}
+                <span className={a.n > 0 ? "text-gray-800" : "text-gray-400"}>
+                  {a.n > 0 ? "⚠" : "✓"} {a.n} {a.texte}
+                </span>
+                {a.n > 0 && (
+                  <Link href={a.lien} className="text-blue font-medium hover:underline shrink-0">
+                    Voir →
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

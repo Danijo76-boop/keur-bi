@@ -4,15 +4,7 @@ import { useState } from "react";
 export type Barre = { label: string; valeur: number; detail?: string };
 
 // Série unique : le titre de la carte nomme la mesure, la valeur est écrite en bout de barre.
-export default function BarresHorizontales({
-  donnees,
-  unite,
-  format,
-}: {
-  donnees: Barre[];
-  unite?: string;
-  format?: (v: number) => string;
-}) {
+export default function BarresHorizontales({ donnees, unite, format }: { donnees: Barre[]; unite?: string; format?: (v: number) => string }) {
   const [survol, setSurvol] = useState<string | null>(null);
   const max = Math.max(...donnees.map((d) => d.valeur), 1);
   const texte = (v: number) => (format ? format(v) : `${v.toLocaleString("fr-FR")}${unite ? ` ${unite}` : ""}`);

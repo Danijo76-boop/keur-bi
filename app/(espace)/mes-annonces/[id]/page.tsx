@@ -50,7 +50,9 @@ function Gestion({ bien, user }: { bien: Bien; user: User }) {
       <div className="card p-5 mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-xl font-bold text-gray-900">{bien.titre}</h1>
-          <p className="text-sm text-gray-400 mb-2">{bien.superficie.toLocaleString("fr-FR")} m² · {bien.ville} · Réf {bien.reference}</p>
+          <p className="text-sm text-gray-400 mb-2">
+            {bien.superficie.toLocaleString("fr-FR")} m² · {bien.ville} · Réf {bien.reference}
+          </p>
           <div className="flex items-center gap-2 flex-wrap">
             <TFBadge bien={bien} />
             {meta.depublie && <span className="bg-gray-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Dépubliée</span>}
@@ -61,9 +63,16 @@ function Gestion({ bien, user }: { bien: Bien; user: User }) {
           <div className="text-xl font-bold text-navy">{formatFCFA(bien.prix)}</div>
           {peutModifier && (
             <div className="flex gap-2 mt-2 justify-end flex-wrap">
-              <Link href={`/annonces/${bien.id}`} className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-gray-50">Voir</Link>
-              <button onClick={() => setEdition(!edition)} className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-gray-50">Modifier</button>
-              <button onClick={() => basculerPublication(bien.id)} className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-gray-50">
+              <Link href={`/annonces/${bien.id}`} className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-gray-50">
+                Voir
+              </Link>
+              <button onClick={() => setEdition(!edition)} className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-gray-50">
+                Modifier
+              </button>
+              <button
+                onClick={() => basculerPublication(bien.id)}
+                className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-gray-50"
+              >
                 {meta.depublie ? "Republier" : "Dépublier"}
               </button>
             </div>
@@ -82,13 +91,26 @@ function Gestion({ bien, user }: { bien: Bien; user: User }) {
         >
           <label className="text-sm font-semibold text-gray-700">
             Titre
-            <input required value={titre} onChange={(e) => setTitre(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-normal mt-1 outline-none focus:border-navy" />
+            <input
+              required
+              value={titre}
+              onChange={(e) => setTitre(e.target.value)}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-normal mt-1 outline-none focus:border-navy"
+            />
           </label>
           <label className="text-sm font-semibold text-gray-700">
             Description
-            <textarea required rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-normal mt-1 outline-none focus:border-navy resize-none" />
+            <textarea
+              required
+              rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-normal mt-1 outline-none focus:border-navy resize-none"
+            />
           </label>
-          <button type="submit" className="btn-navy text-sm self-start">Enregistrer</button>
+          <button type="submit" className="btn-navy text-sm self-start">
+            Enregistrer
+          </button>
         </form>
       )}
 
@@ -158,8 +180,18 @@ function Gestion({ bien, user }: { bien: Bien; user: User }) {
                 }}
                 className="flex gap-2"
               >
-                <input type="number" min={1} aria-label="Nouveau prix en FCFA" placeholder="Nouveau prix" value={nouveauPrix} onChange={(e) => setNouveauPrix(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy" />
-                <button type="submit" className="btn-navy text-sm px-3 py-2">OK</button>
+                <input
+                  type="number"
+                  min={1}
+                  aria-label="Nouveau prix en FCFA"
+                  placeholder="Nouveau prix"
+                  value={nouveauPrix}
+                  onChange={(e) => setNouveauPrix(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy"
+                />
+                <button type="submit" className="btn-navy text-sm px-3 py-2">
+                  OK
+                </button>
               </form>
             )}
           </div>

@@ -23,7 +23,8 @@ export const AGENCES: Agence[] = [
     slug: "foncier-plus",
     nom: "Foncier Plus Immobilier",
     initiales: "FP",
-    description: "Agence spécialisée dans les terrains et villas au Sénégal. Elle accompagne ses clients de la recherche jusqu'à la signature, avec une vérification systématique du Titre Foncier.",
+    description:
+      "Agence spécialisée dans les terrains et villas au Sénégal. Elle accompagne ses clients de la recherche jusqu'à la signature, avec une vérification systématique du Titre Foncier.",
     fondee: 2018,
     telephone: "+221 77 123 45 67",
     email: "contact@foncierplus.example.sn",

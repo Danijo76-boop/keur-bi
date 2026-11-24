@@ -114,11 +114,7 @@ export function recommander(biens: Bien[], consultes: string[], favoris: string[
     .filter((b) => !consultes.includes(b.id) && !favoris.includes(b.id) && statutVente(b.id, dossiers) === "disponible")
     .map((b) => ({
       b,
-      score:
-        (types.has(b.type) ? 3 : 0) +
-        (regions.has(b.region) ? 2 : 0) +
-        (Math.abs(b.prix - budget) <= budget * 0.5 ? 2 : 0) +
-        (b.is_verified_tf ? 1 : 0),
+      score: (types.has(b.type) ? 3 : 0) + (regions.has(b.region) ? 2 : 0) + (Math.abs(b.prix - budget) <= budget * 0.5 ? 2 : 0) + (b.is_verified_tf ? 1 : 0),
     }))
     .sort((x, y) => y.score - x.score)
     .slice(0, nb)

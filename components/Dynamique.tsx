@@ -1,20 +1,24 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 
 /* ── Effets visuels de l'accueil ──
    Légers (aucune bibliothèque), et coupés pour les personnes qui ont demandé moins d'animations
    à leur appareil (prefers-reduced-motion) : le contenu s'affiche alors directement, sans mouvement.
    Sans JavaScript, tout reste visible : rien n'est caché tant que le script n'a pas pris la main. */
 
-const mouvementReduit = () =>
-  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const mouvementReduit = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // useLayoutEffect côté navigateur (évite un clignotement), sans avertissement côté serveur.
 const useEffetAvantAffichage = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 /* Apparition au défilement : l'élément glisse vers le haut en apparaissant quand il entre à l'écran.
    Ce qui est déjà visible au chargement n'est pas caché (pas de clignotement). */
-export function Revelation({ children, delai = 0, className = "", as: Balise = "div" }: {
+export function Revelation({
+  children,
+  delai = 0,
+  className = "",
+  as: Balise = "div",
+}: {
   children: ReactNode;
   delai?: number;
   className?: string;
@@ -40,8 +44,7 @@ export function Revelation({ children, delai = 0, className = "", as: Balise = "
     return () => obs.disconnect();
   }, []);
   return (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    <Balise ref={ref as any} className={className} style={{ "--revelation-delai": `${delai}ms` } as CSSProperties}>
+    <Balise ref={ref as RefObject<never>} className={className} style={{ "--revelation-delai": `${delai}ms` } as CSSProperties}>
       {children}
     </Balise>
   );
@@ -61,13 +64,19 @@ export function MotTournant({ mots, intervalle = 2600, className = "" }: { mots:
     <span className={`mot-tournant ${className}`} aria-hidden>
       {/* Réserve la largeur du mot le plus long : la ligne ne saute pas quand le mot change. */}
       <span className="invisible">{plusLong}</span>
-      <span key={i} className="mot-tournant-courant">{mots[i]}</span>
+      <span key={i} className="mot-tournant-courant">
+        {mots[i]}
+      </span>
     </span>
   );
 }
 
 /* Chiffre qui défile de 0 à sa valeur quand il apparaît à l'écran. */
-export function Compteur({ valeur, format = (n) => Math.round(n).toLocaleString("fr-FR"), duree = 1400 }: {
+export function Compteur({
+  valeur,
+  format = (n) => Math.round(n).toLocaleString("fr-FR"),
+  duree = 1400,
+}: {
   valeur: number;
   format?: (n: number) => string;
   duree?: number;
@@ -95,7 +104,10 @@ export function Compteur({ valeur, format = (n) => Math.round(n).toLocaleString(
       raf = requestAnimationFrame(pas);
     });
     obs.observe(el);
-    return () => { obs.disconnect(); cancelAnimationFrame(raf); };
+    return () => {
+      obs.disconnect();
+      cancelAnimationFrame(raf);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valeur, duree]);
   return (
@@ -122,10 +134,16 @@ export function HaloSouris({ className = "" }: { className?: string }) {
         el.style.opacity = "1";
       });
     };
-    const quitter = () => { el.style.opacity = "0"; };
+    const quitter = () => {
+      el.style.opacity = "0";
+    };
     zone.addEventListener("pointermove", suivre);
     zone.addEventListener("pointerleave", quitter);
-    return () => { zone.removeEventListener("pointermove", suivre); zone.removeEventListener("pointerleave", quitter); cancelAnimationFrame(raf); };
+    return () => {
+      zone.removeEventListener("pointermove", suivre);
+      zone.removeEventListener("pointerleave", quitter);
+      cancelAnimationFrame(raf);
+    };
   }, []);
   return <div ref={ref} className={`halo-souris ${className}`} aria-hidden />;
 }
@@ -148,12 +166,23 @@ export function Inclinaison({ children, className = "", force = 8 }: { children:
         el.style.setProperty("--reflet-y", `${(py + 0.5) * 100}%`);
       });
     };
-    const revenir = () => { cancelAnimationFrame(raf); el.style.transform = ""; };
+    const revenir = () => {
+      cancelAnimationFrame(raf);
+      el.style.transform = "";
+    };
     el.addEventListener("pointermove", bouger);
     el.addEventListener("pointerleave", revenir);
-    return () => { el.removeEventListener("pointermove", bouger); el.removeEventListener("pointerleave", revenir); cancelAnimationFrame(raf); };
+    return () => {
+      el.removeEventListener("pointermove", bouger);
+      el.removeEventListener("pointerleave", revenir);
+      cancelAnimationFrame(raf);
+    };
   }, [force]);
-  return <div ref={ref} className={`inclinaison ${className}`}>{children}</div>;
+  return (
+    <div ref={ref} className={`inclinaison ${className}`}>
+      {children}
+    </div>
+  );
 }
 
 /* Halo qui suit la souris sur les cartes portant la classe « carte-halo » (un seul écouteur pour toute la page). */
@@ -174,7 +203,12 @@ export function HalosCartes() {
 }
 
 /* Grille dont les éléments apparaissent l'un après l'autre (décalage « pas » en ms) quand elle entre à l'écran. */
-export function GrilleRevelee({ children, className = "", pas = 110, as: Balise = "div" }: {
+export function GrilleRevelee({
+  children,
+  className = "",
+  pas = 110,
+  as: Balise = "div",
+}: {
   children: ReactNode;
   className?: string;
   pas?: number;
@@ -194,7 +228,10 @@ export function GrilleRevelee({ children, className = "", pas = 110, as: Balise 
     const obs = new IntersectionObserver(
       ([e]) => {
         if (!e.isIntersecting) return;
-        enfants.forEach((c) => { c.classList.add("revelation-visible"); c.classList.remove("revelation-attente"); });
+        enfants.forEach((c) => {
+          c.classList.add("revelation-visible");
+          c.classList.remove("revelation-attente");
+        });
         obs.disconnect();
       },
       { rootMargin: "0px 0px -10% 0px" },
@@ -202,6 +239,9 @@ export function GrilleRevelee({ children, className = "", pas = 110, as: Balise 
     obs.observe(el);
     return () => obs.disconnect();
   }, [pas]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return <Balise ref={ref as any} className={className}>{children}</Balise>;
+  return (
+    <Balise ref={ref as RefObject<never>} className={className}>
+      {children}
+    </Balise>
+  );
 }

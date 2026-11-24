@@ -28,7 +28,15 @@ export function versProgramme(l: Ligne): Programme {
     lat: l.lat ?? undefined,
     lng: l.lng ?? undefined,
     publie: l.publie,
-    lots: l.lots.map((x) => ({ id: x.id, type: x.type, libelle: x.libelle, superficie: x.superficie, nbPieces: x.nbPieces ?? undefined, prix: Number(x.prix), disponible: x.disponible })),
+    lots: l.lots.map((x) => ({
+      id: x.id,
+      type: x.type,
+      libelle: x.libelle,
+      superficie: x.superficie,
+      nbPieces: x.nbPieces ?? undefined,
+      prix: Number(x.prix),
+      disponible: x.disponible,
+    })),
   };
 }
 
@@ -54,12 +62,23 @@ const texte = (v: unknown, max: number) => (typeof v === "string" ? v.trim().sli
 const entier = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? Math.round(v) : NaN);
 
 function slugDe(nom: string): string {
-  const base = nom.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "programme";
+  const base =
+    nom
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 60) || "programme";
   return `${base}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
 const CENTRES: Record<string, [number, number]> = {
-  Dakar: [14.7167, -17.4677], "Thiès": [14.791, -16.9256], "Saint-Louis": [16.0179, -16.4896], Ziguinchor: [12.5681, -16.2719], Kaolack: [14.1652, -16.0726],
+  Dakar: [14.7167, -17.4677],
+  Thiès: [14.791, -16.9256],
+  "Saint-Louis": [16.0179, -16.4896],
+  Ziguinchor: [12.5681, -16.2719],
+  Kaolack: [14.1652, -16.0726],
 };
 
 export type ResultatProgramme = { ok: true; programme: Programme } | { ok: false; erreur: string; status: number };
@@ -95,15 +114,34 @@ export async function creerProgramme(compte: Utilisateur, corps: Record<string, 
     const superficie = entier(lot.superficie);
     const prix = entier(lot.prix);
     const nbPieces = entier(lot.nbPieces);
-    if (!type || !libelle || !(superficie >= 1 && superficie <= 1_000_000) || !(prix >= 1 && prix <= 1_000_000_000_000)) return refus(`Lot ${i + 1} : type, libellé, superficie et prix sont obligatoires.`);
-    lotsPropres.push({ type, libelle, superficie, prix: BigInt(prix), nbPieces: nbPieces >= 1 && nbPieces <= 50 ? nbPieces : null, disponible: lot.disponible !== false });
+    if (!type || !libelle || !(superficie >= 1 && superficie <= 1_000_000) || !(prix >= 1 && prix <= 1_000_000_000_000))
+      return refus(`Lot ${i + 1} : type, libellé, superficie et prix sont obligatoires.`);
+    lotsPropres.push({
+      type,
+      libelle,
+      superficie,
+      prix: BigInt(prix),
+      nbPieces: nbPieces >= 1 && nbPieces <= 50 ? nbPieces : null,
+      disponible: lot.disponible !== false,
+    });
   }
 
   const [lat, lng] = CENTRES[region];
   const ligne = await db.programme.create({
     data: {
-      slug: slugDe(nom), nom, promoteur, region, ville, quartier, description, livraison, avancement,
-      photo: photos[0], photos, lat: lat + (Math.random() - 0.5) * 0.04, lng: lng + (Math.random() - 0.5) * 0.04,
+      slug: slugDe(nom),
+      nom,
+      promoteur,
+      region,
+      ville,
+      quartier,
+      description,
+      livraison,
+      avancement,
+      photo: photos[0],
+      photos,
+      lat: lat + (Math.random() - 0.5) * 0.04,
+      lng: lng + (Math.random() - 0.5) * 0.04,
       auteurId: compte.id,
       lots: { create: lotsPropres },
     },

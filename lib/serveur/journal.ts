@@ -29,7 +29,13 @@ export function noterUtilisateur(id: string) {
 const CLES_SECRETES = /mot.?de.?passe|password|hash|jeton|token|cookie|secret|authorization|dataurl|donnees/i;
 
 function nettoyer(valeur: unknown, profondeur = 0): unknown {
-  if (valeur instanceof Error) return { nom: valeur.name, message: valeur.message, pile: valeur.stack?.split("\n").slice(0, 8).join("\n"), ...("code" in valeur ? { code: (valeur as { code: unknown }).code } : {}) };
+  if (valeur instanceof Error)
+    return {
+      nom: valeur.name,
+      message: valeur.message,
+      pile: valeur.stack?.split("\n").slice(0, 8).join("\n"),
+      ...("code" in valeur ? { code: (valeur as { code: unknown }).code } : {}),
+    };
   if (typeof valeur === "bigint") return valeur.toString();
   if (typeof valeur === "string") return valeur.length > 2000 ? valeur.slice(0, 2000) + "…" : valeur;
   if (!valeur || typeof valeur !== "object") return valeur;
@@ -59,7 +65,9 @@ async function conserver(niveau: Niveau, message: string, details: unknown, cate
     });
   } catch (e) {
     // Jamais de boucle : si la base est en panne, on l'écrit seulement à l'écran.
-    console.error(JSON.stringify({ date: new Date().toISOString(), niveau: "erreur", message: "Journal technique : écriture en base impossible", erreur: String(e) }));
+    console.error(
+      JSON.stringify({ date: new Date().toISOString(), niveau: "erreur", message: "Journal technique : écriture en base impossible", erreur: String(e) }),
+    );
   }
 }
 
@@ -68,7 +76,14 @@ function ecrire(niveau: Niveau, message: string, details?: unknown, categorie?: 
   if (ORDRE[niveau] < seuil && !garder) return;
   const propre = details === undefined ? undefined : nettoyer(details);
   const c = contexte.getStore();
-  const ligne = { date: new Date().toISOString(), niveau, message, ...(categorie && { categorie }), ...(c && { requete: c.requeteId, route: c.route, utilisateur: c.utilisateurId }), ...(propre !== undefined && { details: propre }) };
+  const ligne = {
+    date: new Date().toISOString(),
+    niveau,
+    message,
+    ...(categorie && { categorie }),
+    ...(c && { requete: c.requeteId, route: c.route, utilisateur: c.utilisateurId }),
+    ...(propre !== undefined && { details: propre }),
+  };
   if (ORDRE[niveau] >= seuil || garder) (niveau === "erreur" ? console.error : niveau === "warn" ? console.warn : console.log)(JSON.stringify(ligne));
   if (garder) void conserver(niveau, message, propre, categorie);
 }

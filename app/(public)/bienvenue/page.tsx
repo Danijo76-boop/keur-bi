@@ -26,9 +26,14 @@ export default function BienvenuePage() {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-10 -mb-16" style={{ background: "linear-gradient(135deg, #1B2A4A 0%, #1B4F72 60%, #2E86AB 100%)" }}>
+    <div
+      className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-10 -mb-16"
+      style={{ background: "linear-gradient(135deg, #1B2A4A 0%, #1B4F72 60%, #2E86AB 100%)" }}
+    >
       <div className="w-full max-w-md text-white text-center">
-        <h1 className="text-4xl font-extrabold">KEUR<span className="text-gold">BI</span></h1>
+        <h1 className="text-4xl font-extrabold">
+          KEUR<span className="text-gold">BI</span>
+        </h1>
         <p className="text-white/70 mb-6">Votre maison, au Sénégal</p>
         <div className="grid grid-cols-3 gap-3 mb-8">
           {chiffres.map((c) => (
@@ -48,7 +53,9 @@ export default function BienvenuePage() {
               onClick={() => setRole(p.role)}
               className={`flex items-center gap-3 text-left rounded-xl p-4 border-2 transition-colors ${role === p.role ? "bg-white text-navy-dark border-gold" : "bg-white/5 border-white/20 hover:bg-white/10"}`}
             >
-              <span className="text-2xl" aria-hidden>{p.icone}</span>
+              <span className="text-2xl" aria-hidden>
+                {p.icone}
+              </span>
               <span>
                 <span className="block font-bold">{p.titre}</span>
                 <span className={`block text-sm ${role === p.role ? "text-gray-500" : "text-white/60"}`}>{p.desc}</span>
@@ -56,9 +63,14 @@ export default function BienvenuePage() {
             </button>
           ))}
         </div>
-        <Link href={`/connexion?mode=inscription&role=${role}`} className="btn-primary block">Commencer →</Link>
+        <Link href={`/connexion?mode=inscription&role=${role}`} className="btn-primary block">
+          Commencer →
+        </Link>
         <p className="text-sm text-white/70 mt-4">
-          Déjà inscrit ? <Link href={`/connexion?role=${role}`} className="text-gold font-semibold hover:underline">Se connecter</Link>
+          Déjà inscrit ?{" "}
+          <Link href={`/connexion?role=${role}`} className="text-gold font-semibold hover:underline">
+            Se connecter
+          </Link>
         </p>
       </div>
     </div>

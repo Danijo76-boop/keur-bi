@@ -55,7 +55,10 @@ export function lireComparaison(): string[] {
 export function basculerComparaison(id: string): boolean {
   const actuels = lireComparaison();
   if (actuels.includes(id)) {
-    ecrire(CLE_COMPARATEUR, actuels.filter((x) => x !== id));
+    ecrire(
+      CLE_COMPARATEUR,
+      actuels.filter((x) => x !== id),
+    );
     return true;
   }
   if (actuels.length >= MAX_COMPARAISON) return false;
@@ -114,7 +117,11 @@ export function viderAlertes() {
 
 export async function creerAlerte(_email: string, nom: string, criteres: CriteresAlerte, frequence: Alerte["frequence"] = "Quotidien") {
   try {
-    const r = await fetch("/api/alertes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nom, criteres, frequence }) });
+    const r = await fetch("/api/alertes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nom, criteres, frequence }),
+    });
     const d = await r.json().catch(() => ({}));
     if (!r.ok || !d.alerte) return popup.erreur("Alerte non créée", d.erreur ?? "Le serveur a refusé la demande.");
     alertes = [d.alerte, ...alertes];
@@ -167,7 +174,11 @@ export function resumeCriteres(c: CriteresAlerte): string {
     c.type,
     c.region,
     c.tfVerifie ? "TF vérifié" : undefined,
-    c.prixMax ? (c.transaction === "location" ? `loyer < ${c.prixMax.toLocaleString("fr-FR")} FCFA` : `< ${Math.round(c.prixMax / 1_000_000)} M FCFA`) : undefined,
+    c.prixMax
+      ? c.transaction === "location"
+        ? `loyer < ${c.prixMax.toLocaleString("fr-FR")} FCFA`
+        : `< ${Math.round(c.prixMax / 1_000_000)} M FCFA`
+      : undefined,
     c.superficieMin || c.superficieMax ? `${c.superficieMin ?? 0}–${c.superficieMax ?? "∞"} m²` : undefined,
   ].filter(Boolean);
   return parts.join(" · ") || "Tous les biens";
@@ -198,7 +209,10 @@ export function ajouterRendezVous(r: Omit<RendezVous, "id">) {
 
 export function annulerRendezVous(id: string) {
   popup.succes("Rendez-vous annulé");
-  ecrire(CLE_RDV, lireRendezVous().filter((r) => r.id !== id));
+  ecrire(
+    CLE_RDV,
+    lireRendezVous().filter((r) => r.id !== id),
+  );
 }
 
 /* ── Notifications : état lu / préférences de canaux ── */

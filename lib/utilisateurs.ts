@@ -56,13 +56,61 @@ export type Utilisateur = {
 
 // Comptes d'exemple chargés dans la base par `npm run db:seed`.
 export const COMPTES_DEMO: Utilisateur[] = [
-  { email: "d.badiane@exemple.sn", nom: "Daniel Badiane", role: "acheteur", telephone: "+221 77 123 45 67", ville: "Dakar", statutKYC: "verifie", inscritLe: "2026-09-05T10:00:00.000Z" },
-  { email: "m.sarr@exemple.sn", nom: "Moussa Sarr", role: "agence", telephone: "+221 77 987 65 43", ville: "Thiès", statutKYC: "verifie", inscritLe: "2026-10-02T10:00:00.000Z" },
+  {
+    email: "d.badiane@exemple.sn",
+    nom: "Daniel Badiane",
+    role: "acheteur",
+    telephone: "+221 77 123 45 67",
+    ville: "Dakar",
+    statutKYC: "verifie",
+    inscritLe: "2026-09-05T10:00:00.000Z",
+  },
+  {
+    email: "m.sarr@exemple.sn",
+    nom: "Moussa Sarr",
+    role: "agence",
+    telephone: "+221 77 987 65 43",
+    ville: "Thiès",
+    statutKYC: "verifie",
+    inscritLe: "2026-10-02T10:00:00.000Z",
+  },
   { email: "a.diallo@exemple.sn", nom: "Me. Amadou Diallo", role: "notaire", ville: "Dakar", statutKYC: "verifie", inscritLe: "2026-08-15T10:00:00.000Z" },
-  { email: "f.ndiaye@exemple.sn", nom: "Fatou Ndiaye", role: "acheteur", telephone: "+221 76 543 21 09", statutKYC: "en_attente", kyc: { typeDocument: "Carte Nationale d'Identité", recto: "cni_recto.jpg", verso: "cni_verso.jpg", soumisLe: "2026-10-13T10:00:00.000Z" }, inscritLe: "2026-10-13T09:00:00.000Z" },
-  { email: "a.ba@exemple.sn", nom: "Aïssatou Ba", role: "vendeur", telephone: "+221 70 111 22 33", ville: "Mbour", statutKYC: "verifie", inscritLe: "2026-10-20T10:00:00.000Z" },
-  { email: "c.gueye@exemple.sn", nom: "Cheikh Gueye", role: "agent", rattachement: "Foncier Plus Immobilier", ville: "Dakar", statutKYC: "verifie", inscritLe: "2026-10-08T10:00:00.000Z" },
-  { email: "n.sow@exemple.sn", nom: "Ndèye Sow", role: "clerc", rattachement: "Étude Diallo", ville: "Dakar", statutKYC: "verifie", inscritLe: "2026-09-12T10:00:00.000Z" },
+  {
+    email: "f.ndiaye@exemple.sn",
+    nom: "Fatou Ndiaye",
+    role: "acheteur",
+    telephone: "+221 76 543 21 09",
+    statutKYC: "en_attente",
+    kyc: { typeDocument: "Carte Nationale d'Identité", recto: "cni_recto.jpg", verso: "cni_verso.jpg", soumisLe: "2026-10-13T10:00:00.000Z" },
+    inscritLe: "2026-10-13T09:00:00.000Z",
+  },
+  {
+    email: "a.ba@exemple.sn",
+    nom: "Aïssatou Ba",
+    role: "vendeur",
+    telephone: "+221 70 111 22 33",
+    ville: "Mbour",
+    statutKYC: "verifie",
+    inscritLe: "2026-10-20T10:00:00.000Z",
+  },
+  {
+    email: "c.gueye@exemple.sn",
+    nom: "Cheikh Gueye",
+    role: "agent",
+    rattachement: "Foncier Plus Immobilier",
+    ville: "Dakar",
+    statutKYC: "verifie",
+    inscritLe: "2026-10-08T10:00:00.000Z",
+  },
+  {
+    email: "n.sow@exemple.sn",
+    nom: "Ndèye Sow",
+    role: "clerc",
+    rattachement: "Étude Diallo",
+    ville: "Dakar",
+    statutKYC: "verifie",
+    inscritLe: "2026-09-12T10:00:00.000Z",
+  },
   { email: "o.kane@exemple.sn", nom: "Oumar Kane", role: "moderateur", ville: "Dakar", statutKYC: "verifie", inscritLe: "2026-08-20T10:00:00.000Z" },
   { email: "i.fall@exemple.sn", nom: "Ibrahima Fall", role: "agence", suspendu: true, statutKYC: "non_soumis", inscritLe: "2026-09-01T10:00:00.000Z" },
 ];
@@ -96,7 +144,10 @@ export function viderUtilisateurs() {
   signalerMaj();
 }
 
-async function envoyer(methode: "PATCH" | "POST", corps: unknown): Promise<{ ok: boolean; donnees: { utilisateur?: Utilisateur; motDePasseProvisoire?: string; erreur?: string } }> {
+async function envoyer(
+  methode: "PATCH" | "POST",
+  corps: unknown,
+): Promise<{ ok: boolean; donnees: { utilisateur?: Utilisateur; motDePasseProvisoire?: string; erreur?: string } }> {
   try {
     const r = await fetch("/api/utilisateurs", { method: methode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(corps) });
     const donnees = await r.json().catch(() => ({}));
@@ -132,7 +183,10 @@ export async function ajouterUtilisateur(u: Pick<Utilisateur, "email" | "nom" | 
   }
   comptes = [donnees.utilisateur, ...comptes.filter((x) => x.email !== u.email)];
   signalerMaj();
-  popup.succes("Utilisateur créé", `${u.nom} · mot de passe provisoire : ${donnees.motDePasseProvisoire}. Notez-le et transmettez-le : il ne sera plus affiché.`);
+  popup.succes(
+    "Utilisateur créé",
+    `${u.nom} · mot de passe provisoire : ${donnees.motDePasseProvisoire}. Notez-le et transmettez-le : il ne sera plus affiché.`,
+  );
   return true;
 }
 

@@ -60,7 +60,14 @@ export function journalComplet(): EntreeJournal[] {
   }));
   const tf = lireDemandesTF().flatMap((d) => {
     const lignes: EntreeJournal[] = [
-      { id: `tf-${d.id}`, date: d.soumisLe, auteur: d.demandeur, categorie: "tf", detail: `Vérification demandée : TF ${d.numero}${d.prioritaire ? " (prioritaire)" : ""}`, lien: "/verification-tf" },
+      {
+        id: `tf-${d.id}`,
+        date: d.soumisLe,
+        auteur: d.demandeur,
+        categorie: "tf",
+        detail: `Vérification demandée : TF ${d.numero}${d.prioritaire ? " (prioritaire)" : ""}`,
+        lien: "/verification-tf",
+      },
     ];
     if (d.traiteLe) {
       lignes.push({

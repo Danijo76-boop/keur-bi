@@ -3,16 +3,7 @@ import { useMemo, useState } from "react";
 import { BoutonsExport } from "@/components/BoutonsExport";
 import { ROLE_LABELS } from "@/lib/auth";
 import { useBiens, useMetasAnnonces } from "@/lib/annonces";
-import {
-  ETAPES_DOSSIER,
-  joursRestantsDGID,
-  LABELS_ETAPE,
-  lireDossiers,
-  prixRetenu,
-  referenceDossier,
-  StatutDossier,
-  totalConfirme,
-} from "@/lib/dossiers";
+import { ETAPES_DOSSIER, joursRestantsDGID, LABELS_ETAPE, lireDossiers, prixRetenu, referenceDossier, StatutDossier, totalConfirme } from "@/lib/dossiers";
 import { notaireParSlug } from "@/lib/notaires";
 import { calculerFrais, commissionVente, useParametres } from "@/lib/parametres";
 import { lire, ecrire, nouvelId, useStocke } from "@/lib/stockage";
@@ -32,11 +23,40 @@ const dateFr = (iso?: string) => (iso ? new Date(iso).toLocaleDateString("fr-FR"
 const col = (groupe: string, defs: [string, string, boolean?][]): Colonne[] => defs.map(([id, label, defaut]) => ({ id, label, groupe, defaut }));
 
 const COLONNES_DOSSIERS: Colonne[] = [
-  ...col("📋 Identification", [["ref", "N° Dossier", true], ["ouverture", "Date ouverture", true], ["statut", "Statut contrat", true], ["notaire", "Notaire assigné"]]),
-  ...col("🏡 Bien", [["adresse", "Localité", true], ["region", "Région", true], ["superficie", "Superficie (m²)"], ["tf", "N° TF", true], ["statutTF", "Statut TF"], ["type", "Type de bien"]]),
-  ...col("👤 Parties", [["acheteur", "Acheteur", true], ["emailAcheteur", "Email acheteur"], ["vendeur", "Vendeur", true]]),
-  ...col("💰 Financier", [["prix", "Prix vente (FCFA)", true], ["commission", "Commission (FCFA)", true], ["honoraires", "Honoraires notaire (FCFA)"], ["droits", "Droits DGID (FCFA)"], ["tva", "TVA (FCFA)"], ["cout", "Coût total acquéreur (FCFA)"], ["verse", "Versements confirmés (FCFA)"]]),
-  ...col("📅 Dates clés", [["compromis", "Date compromis"], ["acte", "Date acte"], ["limite", "Limite DGID"], ["jours", "Jours restants DGID"]]),
+  ...col("📋 Identification", [
+    ["ref", "N° Dossier", true],
+    ["ouverture", "Date ouverture", true],
+    ["statut", "Statut contrat", true],
+    ["notaire", "Notaire assigné"],
+  ]),
+  ...col("🏡 Bien", [
+    ["adresse", "Localité", true],
+    ["region", "Région", true],
+    ["superficie", "Superficie (m²)"],
+    ["tf", "N° TF", true],
+    ["statutTF", "Statut TF"],
+    ["type", "Type de bien"],
+  ]),
+  ...col("👤 Parties", [
+    ["acheteur", "Acheteur", true],
+    ["emailAcheteur", "Email acheteur"],
+    ["vendeur", "Vendeur", true],
+  ]),
+  ...col("💰 Financier", [
+    ["prix", "Prix vente (FCFA)", true],
+    ["commission", "Commission (FCFA)", true],
+    ["honoraires", "Honoraires notaire (FCFA)"],
+    ["droits", "Droits DGID (FCFA)"],
+    ["tva", "TVA (FCFA)"],
+    ["cout", "Coût total acquéreur (FCFA)"],
+    ["verse", "Versements confirmés (FCFA)"],
+  ]),
+  ...col("📅 Dates clés", [
+    ["compromis", "Date compromis"],
+    ["acte", "Date acte"],
+    ["limite", "Limite DGID"],
+    ["jours", "Jours restants DGID"],
+  ]),
 ];
 
 export default function ReportingPage() {
@@ -110,47 +130,118 @@ export default function ReportingPage() {
       {
         id: "annonces",
         label: "Annonces publiées",
-        colonnes: col("🏡 Annonce", [["ref", "Référence", true], ["titre", "Titre", true], ["type", "Type", true], ["region", "Région", true], ["quartier", "Quartier"], ["superficie", "Superficie (m²)", true], ["prix", "Prix (FCFA)", true], ["prixM2", "Prix / m² (FCFA)"], ["vues", "Vues", true], ["tf", "Statut TF", true], ["vendeur", "Vendeur"], ["etat", "État", true]]),
+        colonnes: col("🏡 Annonce", [
+          ["ref", "Référence", true],
+          ["titre", "Titre", true],
+          ["type", "Type", true],
+          ["region", "Région", true],
+          ["quartier", "Quartier"],
+          ["superficie", "Superficie (m²)", true],
+          ["prix", "Prix (FCFA)", true],
+          ["prixM2", "Prix / m² (FCFA)"],
+          ["vues", "Vues", true],
+          ["tf", "Statut TF", true],
+          ["vendeur", "Vendeur"],
+          ["etat", "État", true],
+        ]),
         lignes: biens.map((b) => ({
           id: b.id,
           region: b.region,
           date: b.publieLe,
-          valeurs: { ref: b.reference, titre: b.titre, type: b.type, region: b.region, quartier: b.quartier, superficie: b.superficie, prix: b.prix, prixM2: Math.round(b.prix / b.superficie), vues: b.nb_vues, tf: LABELS_TF[statutTF(b, overrides, demandes)], vendeur: b.agence, etat: metas[b.id]?.depublie ? "Dépubliée" : "Publiée" },
+          valeurs: {
+            ref: b.reference,
+            titre: b.titre,
+            type: b.type,
+            region: b.region,
+            quartier: b.quartier,
+            superficie: b.superficie,
+            prix: b.prix,
+            prixM2: Math.round(b.prix / b.superficie),
+            vues: b.nb_vues,
+            tf: LABELS_TF[statutTF(b, overrides, demandes)],
+            vendeur: b.agence,
+            etat: metas[b.id]?.depublie ? "Dépubliée" : "Publiée",
+          },
         })),
         totaux: [{ label: "Total prix affichés", id: "prix" }],
       },
       {
         id: "utilisateurs",
         label: "Utilisateurs",
-        colonnes: col("👤 Utilisateur", [["nom", "Nom", true], ["email", "Email", true], ["telephone", "Téléphone"], ["ville", "Ville"], ["role", "Rôle", true], ["kyc", "KYC", true], ["etat", "État", true], ["inscrit", "Inscription", true], ["connexion", "Dernière connexion"]]),
+        colonnes: col("👤 Utilisateur", [
+          ["nom", "Nom", true],
+          ["email", "Email", true],
+          ["telephone", "Téléphone"],
+          ["ville", "Ville"],
+          ["role", "Rôle", true],
+          ["kyc", "KYC", true],
+          ["etat", "État", true],
+          ["inscrit", "Inscription", true],
+          ["connexion", "Dernière connexion"],
+        ]),
         lignes: utilisateurs.map((u) => ({
           id: u.email,
           date: u.inscritLe,
-          valeurs: { nom: u.nom, email: u.email, telephone: u.telephone ?? "", ville: u.ville ?? "", role: ROLE_LABELS[u.role], kyc: LABELS_KYC[u.statutKYC], etat: u.suspendu ? "Suspendu" : "Actif", inscrit: dateFr(u.inscritLe), connexion: dateFr(u.derniereConnexion) },
+          valeurs: {
+            nom: u.nom,
+            email: u.email,
+            telephone: u.telephone ?? "",
+            ville: u.ville ?? "",
+            role: ROLE_LABELS[u.role],
+            kyc: LABELS_KYC[u.statutKYC],
+            etat: u.suspendu ? "Suspendu" : "Actif",
+            inscrit: dateFr(u.inscritLe),
+            connexion: dateFr(u.derniereConnexion),
+          },
         })),
       },
       {
         id: "financier",
         label: "Financier / Commissions",
-        colonnes: COLONNES_DOSSIERS.filter((c) => ["ref", "statut", "vendeur", "prix", "commission", "honoraires", "droits", "tva", "verse", "acte"].includes(c.id)).map((c) => ({ ...c, defaut: true })),
+        colonnes: COLONNES_DOSSIERS.filter((c) =>
+          ["ref", "statut", "vendeur", "prix", "commission", "honoraires", "droits", "tva", "verse", "acte"].includes(c.id),
+        ).map((c) => ({ ...c, defaut: true })),
         lignes: lignesDossiers.filter((l) => ETAPES_DOSSIER.indexOf(l.statut!) >= indexActe),
         totaux: totauxFinanciers,
       },
       {
         id: "tf",
         label: "TF & DGID",
-        colonnes: col("📜 Vérification", [["numero", "N° TF", true], ["region", "Région", true], ["proprietaire", "Propriétaire déclaré", true], ["demandeur", "Demandeur"], ["statut", "Statut", true], ["soumis", "Soumis le", true], ["decision", "Décision le", true], ["motif", "Motif"], ["relances", "Relances"]]),
+        colonnes: col("📜 Vérification", [
+          ["numero", "N° TF", true],
+          ["region", "Région", true],
+          ["proprietaire", "Propriétaire déclaré", true],
+          ["demandeur", "Demandeur"],
+          ["statut", "Statut", true],
+          ["soumis", "Soumis le", true],
+          ["decision", "Décision le", true],
+          ["motif", "Motif"],
+          ["relances", "Relances"],
+        ]),
         lignes: demandes.map((d) => ({
           id: d.id,
           region: d.region,
           date: d.soumisLe,
-          valeurs: { numero: d.numero, region: d.region, proprietaire: d.proprietaire, demandeur: d.demandeur, statut: LABELS_TF[d.statut], soumis: dateFr(d.soumisLe), decision: dateFr(d.traiteLe), motif: d.motif ?? "", relances: d.relances },
+          valeurs: {
+            numero: d.numero,
+            region: d.region,
+            proprietaire: d.proprietaire,
+            demandeur: d.demandeur,
+            statut: LABELS_TF[d.statut],
+            soumis: dateFr(d.soumisLe),
+            decision: dateFr(d.traiteLe),
+            motif: d.motif ?? "",
+            relances: d.relances,
+          },
         })),
       },
       {
         id: "alertes",
         label: "Alertes DGID",
-        colonnes: COLONNES_DOSSIERS.filter((c) => ["ref", "adresse", "acheteur", "notaire", "acte", "limite", "jours", "droits"].includes(c.id)).map((c) => ({ ...c, defaut: true })),
+        colonnes: COLONNES_DOSSIERS.filter((c) => ["ref", "adresse", "acheteur", "notaire", "acte", "limite", "jours", "droits"].includes(c.id)).map((c) => ({
+          ...c,
+          defaut: true,
+        })),
         lignes: lignesDossiers.filter((l) => typeof l.valeurs.jours === "number" && l.valeurs.jours <= p.alerteDGID1),
       },
     ];
@@ -196,7 +287,9 @@ export default function ReportingPage() {
     statut && `Statut : ${LABELS_ETAPE[statut]}`,
     debut && `Depuis le ${new Date(debut).toLocaleDateString("fr-FR")}`,
     fin && `Jusqu'au ${new Date(fin).toLocaleDateString("fr-FR")}`,
-  ].filter(Boolean).join(" · ");
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   async function telechargerPDF() {
     const t = tableau();
@@ -205,7 +298,17 @@ export default function ReportingPage() {
       sousTitre: `${lignes.length} ligne${lignes.length > 1 ? "s" : ""}${filtres ? ` · ${filtres}` : " · aucun filtre"}`,
       paysage: t.colonnes.length > 5,
       sections: [
-        ...(rapport.totaux ? [{ titre: "Totaux", champs: rapport.totaux.map((x) => ({ label: x.label, valeur: `${lignes.reduce((s, l) => s + Number(l.valeurs[x.id] ?? 0), 0).toLocaleString("fr-FR")} FCFA` })) }] : []),
+        ...(rapport.totaux
+          ? [
+              {
+                titre: "Totaux",
+                champs: rapport.totaux.map((x) => ({
+                  label: x.label,
+                  valeur: `${lignes.reduce((s, l) => s + Number(l.valeurs[x.id] ?? 0), 0).toLocaleString("fr-FR")} FCFA`,
+                })),
+              },
+            ]
+          : []),
         { titre: "Détail", tableau: { ...t, lignes: t.lignes.map((l) => l.map((v) => (typeof v === "number" ? v.toLocaleString("fr-FR") : v))) } },
       ],
     });
@@ -241,13 +344,19 @@ export default function ReportingPage() {
         {aRegion && (
           <select aria-label="Région" value={region} onChange={(e) => setRegion(e.target.value)} className={select}>
             <option value="">Toutes les régions</option>
-            {regions.map((r) => <option key={r}>{r}</option>)}
+            {regions.map((r) => (
+              <option key={r}>{r}</option>
+            ))}
           </select>
         )}
         {aStatut && (
           <select aria-label="Statut" value={statut} onChange={(e) => setStatut(e.target.value as StatutDossier | "")} className={select}>
             <option value="">Tous les statuts</option>
-            {ETAPES_DOSSIER.map((e) => <option key={e} value={e}>{LABELS_ETAPE[e]}</option>)}
+            {ETAPES_DOSSIER.map((e) => (
+              <option key={e} value={e}>
+                {LABELS_ETAPE[e]}
+              </option>
+            ))}
           </select>
         )}
         <input aria-label="À partir du" type="date" value={debut} onChange={(e) => setDebut(e.target.value)} className={select} />
@@ -259,24 +368,30 @@ export default function ReportingPage() {
       <details className="card p-5 mb-4 print:hidden" open>
         <summary className="font-bold text-gray-900 cursor-pointer">Colonnes à exporter ({choisies.length})</summary>
         <div className="flex gap-3 text-xs mt-2 mb-3">
-          <button onClick={() => definirColonnes(rapport.colonnes.map((c) => c.id))} className="text-blue font-medium hover:underline">Tout sélectionner</button>
-          <button onClick={() => definirColonnes(rapport.colonnes.filter((c) => c.defaut).map((c) => c.id))} className="text-blue font-medium hover:underline">Réinitialiser</button>
+          <button onClick={() => definirColonnes(rapport.colonnes.map((c) => c.id))} className="text-blue font-medium hover:underline">
+            Tout sélectionner
+          </button>
+          <button onClick={() => definirColonnes(rapport.colonnes.filter((c) => c.defaut).map((c) => c.id))} className="text-blue font-medium hover:underline">
+            Réinitialiser
+          </button>
         </div>
         <div className="grid sm:grid-cols-2 xl:grid-cols-5 gap-4">
           {groupes.map((g) => (
             <fieldset key={g}>
               <legend className="text-xs font-bold text-gray-700 mb-1">{g}</legend>
-              {rapport.colonnes.filter((c) => c.groupe === g).map((c) => (
-                <label key={c.id} className="flex items-center gap-2 text-xs text-gray-600 py-0.5 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="accent-navy"
-                    checked={colonnes.includes(c.id)}
-                    onChange={() => definirColonnes(colonnes.includes(c.id) ? colonnes.filter((i) => i !== c.id) : [...colonnes, c.id])}
-                  />
-                  {c.label}
-                </label>
-              ))}
+              {rapport.colonnes
+                .filter((c) => c.groupe === g)
+                .map((c) => (
+                  <label key={c.id} className="flex items-center gap-2 text-xs text-gray-600 py-0.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="accent-navy"
+                      checked={colonnes.includes(c.id)}
+                      onChange={() => definirColonnes(colonnes.includes(c.id) ? colonnes.filter((i) => i !== c.id) : [...colonnes, c.id])}
+                    />
+                    {c.label}
+                  </label>
+                ))}
             </fieldset>
           ))}
         </div>
@@ -285,13 +400,22 @@ export default function ReportingPage() {
       <div className="card mb-4">
         <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap print:hidden">
           <h2 className="font-bold text-gray-900">Prévisualisation, 5 premières lignes sur {lignes.length}</h2>
-          <BoutonsExport onPDF={telechargerPDF} onExcel={telechargerExcel} disabled={exportImpossible} raison={choisies.length === 0 ? "Choisissez au moins une colonne." : "Aucune ligne pour ces filtres."} />
+          <BoutonsExport
+            onPDF={telechargerPDF}
+            onExcel={telechargerExcel}
+            disabled={exportImpossible}
+            raison={choisies.length === 0 ? "Choisissez au moins une colonne." : "Aucune ligne pour ces filtres."}
+          />
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr className="text-left text-gray-500 border-b border-gray-100">
-                {choisies.map((c) => <th scope="col" key={c.id} className="p-2 font-semibold whitespace-nowrap">{c.label}</th>)}
+                {choisies.map((c) => (
+                  <th scope="col" key={c.id} className="p-2 font-semibold whitespace-nowrap">
+                    {c.label}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -299,11 +423,21 @@ export default function ReportingPage() {
                 <tr key={l.id} className="border-b border-gray-50">
                   {choisies.map((c) => {
                     const v = l.valeurs[c.id] ?? "";
-                    return <td key={c.id} className={`p-2 whitespace-nowrap ${typeof v === "number" ? "text-right tabular-nums" : ""}`}>{typeof v === "number" ? v.toLocaleString("fr-FR") : v}</td>;
+                    return (
+                      <td key={c.id} className={`p-2 whitespace-nowrap ${typeof v === "number" ? "text-right tabular-nums" : ""}`}>
+                        {typeof v === "number" ? v.toLocaleString("fr-FR") : v}
+                      </td>
+                    );
                   })}
                 </tr>
               ))}
-              {lignes.length === 0 && <tr><td colSpan={Math.max(choisies.length, 1)} className="p-8 text-center text-gray-400">Aucune ligne pour ces filtres.</td></tr>}
+              {lignes.length === 0 && (
+                <tr>
+                  <td colSpan={Math.max(choisies.length, 1)} className="p-8 text-center text-gray-400">
+                    Aucune ligne pour ces filtres.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -314,7 +448,9 @@ export default function ReportingPage() {
           {rapport.totaux.map((t) => (
             <div key={t.id} className="card p-4">
               <div className="text-xs text-gray-500">{t.label}</div>
-              <div className="font-bold text-navy tabular-nums">{lignes.reduce((s, l) => s + Number(l.valeurs[t.id] ?? 0), 0).toLocaleString("fr-FR")} FCFA</div>
+              <div className="font-bold text-navy tabular-nums">
+                {lignes.reduce((s, l) => s + Number(l.valeurs[t.id] ?? 0), 0).toLocaleString("fr-FR")} FCFA
+              </div>
             </div>
           ))}
         </div>
@@ -326,7 +462,11 @@ export default function ReportingPage() {
           <p className="text-sm text-gray-400">Aucun export pour le moment.</p>
         ) : (
           <ul className="text-sm flex flex-col gap-1">
-            {historique.map((h) => <li key={h.id} className="text-gray-600 break-all">{h.nom} · {new Date(h.date).toLocaleDateString("fr-FR")} · {h.lignes} lignes</li>)}
+            {historique.map((h) => (
+              <li key={h.id} className="text-gray-600 break-all">
+                {h.nom} · {new Date(h.date).toLocaleDateString("fr-FR")} · {h.lignes} lignes
+              </li>
+            ))}
           </ul>
         )}
       </div>

@@ -97,8 +97,7 @@ export const NOTAIRES: Notaire[] = [
     satisfaction: 96,
     delaiTF: "72h",
     specialites: ["Terrains agricoles", "Mutations immobilières", "Lotissements"],
-    presentation:
-      "Étude de référence pour les terrains de Thiès et de la Petite-Côte, habituée aux parcelles agricoles et aux opérations de lotissement.",
+    presentation: "Étude de référence pour les terrains de Thiès et de la Petite-Côte, habituée aux parcelles agricoles et aux opérations de lotissement.",
     tarifs: TARIFS,
     avis: [],
     creneaux: [

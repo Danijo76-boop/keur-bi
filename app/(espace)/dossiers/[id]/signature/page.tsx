@@ -70,7 +70,9 @@ function Pad({ onChange }: { onChange: (dataUrl: string | null) => void }) {
         onPointerUp={fin}
         className="w-full h-36 border-2 border-dashed border-gray-300 rounded-lg bg-white touch-none cursor-crosshair"
       />
-      <button type="button" onClick={effacer} className="text-xs text-gray-400 hover:text-red mt-1">✕ Effacer</button>
+      <button type="button" onClick={effacer} className="text-xs text-gray-400 hover:text-red mt-1">
+        ✕ Effacer
+      </button>
     </div>
   );
 }
@@ -123,21 +125,46 @@ function Formulaire({ id, bien, user }: { id: string; bien: Bien; user: User }) 
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <Link href={`/dossiers/${id}`} className="text-sm text-blue hover:underline mb-4 inline-block">← Retour au dossier</Link>
+      <Link href={`/dossiers/${id}`} className="text-sm text-blue hover:underline mb-4 inline-block">
+        ← Retour au dossier
+      </Link>
       <h1 className="text-2xl font-bold text-navy mb-1">Signature de l&apos;acte</h1>
       <p className="text-gray-500 text-sm mb-4">Dossier #{referenceDossier(dossier)} · Toutes les parties doivent signer pour finaliser la transaction.</p>
-      <BandeauDemo>Parcours de démonstration : cette signature n&apos;a aucune valeur juridique. L&apos;acte authentique reste à signer devant le notaire.</BandeauDemo>
+      <BandeauDemo>
+        Parcours de démonstration : cette signature n&apos;a aucune valeur juridique. L&apos;acte authentique reste à signer devant le notaire.
+      </BandeauDemo>
 
       <div className="grid lg:grid-cols-3 gap-6">
         <article className="lg:col-span-2 card p-8 text-sm text-gray-700 leading-relaxed">
           <h2 className="text-center font-bold text-gray-900 tracking-wide mb-1">PROJET D&apos;ACTE DE VENTE</h2>
-          <p className="text-center text-xs text-gray-400 mb-6">{notaire?.etude ?? "Étude à désigner"} · {notaire?.ville ?? ""}</p>
+          <p className="text-center text-xs text-gray-400 mb-6">
+            {notaire?.etude ?? "Étude à désigner"} · {notaire?.ville ?? ""}
+          </p>
           <dl className="flex flex-col gap-3 mb-6">
-            <div><dt className="font-semibold text-gray-900">Vendeur</dt><dd>{nomPartie.vendeur}</dd></div>
-            <div><dt className="font-semibold text-gray-900">Acheteur</dt><dd>{nomPartie.acheteur}</dd></div>
-            <div><dt className="font-semibold text-gray-900">Bien immobilier</dt><dd>{bien.titre} · {bien.superficie.toLocaleString("fr-FR")} m² · {bien.quartier}, {bien.ville}</dd></div>
-            <div><dt className="font-semibold text-gray-900">Titre Foncier</dt><dd>N° {bien.tf.numero ?? "en attente"} · Conservation {bien.tf.conservation ?? "—"}</dd></div>
-            <div><dt className="font-semibold text-gray-900">Prix de vente convenu</dt><dd className="font-bold text-navy">{formatFCFA(prix)}</dd></div>
+            <div>
+              <dt className="font-semibold text-gray-900">Vendeur</dt>
+              <dd>{nomPartie.vendeur}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-gray-900">Acheteur</dt>
+              <dd>{nomPartie.acheteur}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-gray-900">Bien immobilier</dt>
+              <dd>
+                {bien.titre} · {bien.superficie.toLocaleString("fr-FR")} m² · {bien.quartier}, {bien.ville}
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-gray-900">Titre Foncier</dt>
+              <dd>
+                N° {bien.tf.numero ?? "en attente"} · Conservation {bien.tf.conservation ?? "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-gray-900">Prix de vente convenu</dt>
+              <dd className="font-bold text-navy">{formatFCFA(prix)}</dd>
+            </div>
           </dl>
           <p className="text-xs text-gray-500 mb-4">Les parties reconnaissent avoir pris connaissance des clauses de cet acte et y adhèrent sans réserve.</p>
           <div className="grid sm:grid-cols-3 gap-4">
@@ -166,7 +193,9 @@ function Formulaire({ id, bien, user }: { id: string; bien: Bien; user: User }) 
             <h3 className="font-bold text-gray-900 mb-3">Conditions préalables</h3>
             <ul className="text-sm flex flex-col gap-2">
               {conditions.map((c) => (
-                <li key={c.label} className={c.ok ? "text-green" : "text-gray-500"}>{c.ok ? "✓" : "⏳"} {c.label}</li>
+                <li key={c.label} className={c.ok ? "text-green" : "text-gray-500"}>
+                  {c.ok ? "✓" : "⏳"} {c.label}
+                </li>
               ))}
             </ul>
           </div>
@@ -186,12 +215,19 @@ function Formulaire({ id, bien, user }: { id: string; bien: Bien; user: User }) 
                 J&apos;ai lu et j&apos;approuve l&apos;intégralité de l&apos;acte de vente
               </label>
               {!code ? (
-                <button type="button" disabled={!image || !lu} onClick={envoyerCode} className="btn-navy text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                <button
+                  type="button"
+                  disabled={!image || !lu}
+                  onClick={envoyerCode}
+                  className="btn-navy text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   Recevoir le code de confirmation
                 </button>
               ) : (
                 <>
-                  <p className="text-xs bg-gray-50 rounded-lg p-2 text-gray-600">Démo, aucun SMS envoyé. Votre code : <strong className="text-navy">{code}</strong></p>
+                  <p className="text-xs bg-gray-50 rounded-lg p-2 text-gray-600">
+                    Démo, aucun SMS envoyé. Votre code : <strong className="text-navy">{code}</strong>
+                  </p>
                   <input
                     inputMode="numeric"
                     maxLength={6}
@@ -203,7 +239,9 @@ function Formulaire({ id, bien, user }: { id: string; bien: Bien; user: User }) 
                     className="border border-gray-200 rounded-lg px-3 py-2 text-center tracking-widest outline-none focus:border-navy"
                   />
                   {erreur && <p className="text-red text-xs">{erreur}</p>}
-                  <button type="submit" className="btn-primary text-sm">🔐 Signer & valider</button>
+                  <button type="submit" className="btn-primary text-sm">
+                    🔐 Signer & valider
+                  </button>
                 </>
               )}
             </form>
@@ -224,9 +262,7 @@ export default function SignaturePage() {
   return (
     <SiActif flag="signature">
       <Protege>
-        {(user) =>
-          bien ? <Formulaire id={id} bien={bien} user={user} /> : <div className="py-16 text-center text-gray-400">Dossier introuvable.</div>
-        }
+        {(user) => (bien ? <Formulaire id={id} bien={bien} user={user} /> : <div className="py-16 text-center text-gray-400">Dossier introuvable.</div>)}
       </Protege>
     </SiActif>
   );

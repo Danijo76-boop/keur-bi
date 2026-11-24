@@ -31,7 +31,9 @@ export default function SimulationFrais({ prix }: { prix: number }) {
       </dl>
       <p className="text-xs text-gray-400 mt-3">
         Estimation indicative, soit +{((f.totalFrais / prix) * 100).toFixed(1).replace(".", ",")}% sur le prix.{" "}
-        <Link href={`/frais?prix=${prix}`} className="text-blue hover:underline">Ouvrir le simulateur complet</Link>
+        <Link href={`/frais?prix=${prix}`} className="text-blue hover:underline">
+          Ouvrir le simulateur complet
+        </Link>
       </p>
     </div>
   );

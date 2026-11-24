@@ -25,7 +25,13 @@ export async function envoyerEmail(e: Email): Promise<ResultatEmail> {
     const r = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${cle}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: process.env.EMAIL_EXPEDITEUR || "KEUR BI <onboarding@resend.dev>", to: [e.a], subject: e.sujet, html: e.html, text: e.texte }),
+      body: JSON.stringify({
+        from: process.env.EMAIL_EXPEDITEUR || "KEUR BI <onboarding@resend.dev>",
+        to: [e.a],
+        subject: e.sujet,
+        html: e.html,
+        text: e.texte,
+      }),
       signal: AbortSignal.timeout(10_000),
     });
     if (!r.ok) {

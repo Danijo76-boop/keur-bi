@@ -63,8 +63,7 @@ export const masquerEmail = (e: string) => e.replace(/^(.)(.*)(@.*)$/, (_, a: st
 // Réponse renvoyée au navigateur tant que la vérification n'est pas terminée.
 // « autres » : moyens que la personne peut demander à la place (boutons « Recevoir par SMS / par email »).
 export type EtapeOTP =
-  | { etape: "numero"; defi: string; autres: Canal[] }
-  | { etape: "code"; defi: string; destination: string; canal: Canal; autres: Canal[]; codeDemo?: string };
+  { etape: "numero"; defi: string; autres: Canal[] } | { etape: "code"; defi: string; destination: string; canal: Canal; autres: Canal[]; codeDemo?: string };
 
 export type ResultatOTP<T> = { ok: true; valeur: T } | { ok: false; erreur: string; status: number };
 const echec = (erreur: string, status = 400): { ok: false; erreur: string; status: number } => ({ ok: false, erreur, status });
@@ -130,7 +129,9 @@ async function envoyer(defiId: string, jeton: string, compte: Utilisateur, numer
     return {
       ok: true,
       valeur: {
-        etape: "code", defi: jeton, canal,
+        etape: "code",
+        defi: jeton,
+        canal,
         destination: canal === "email" ? masquerEmail(compte.email) : masquerNumero(numero!),
         autres: possibles.filter((c) => c !== canal),
         ...(codeDemo && { codeDemo }),
@@ -144,9 +145,11 @@ async function envoyer(defiId: string, jeton: string, compte: Utilisateur, numer
   }
   for (const canal of ordre) {
     const r =
-      canal === "whatsapp" ? await envoyerCodeWhatsApp(numero!, code)
-      : canal === "sms" ? await envoyerCodeSMS(numero!, code)
-      : await envoyerEmail({ a: compte.email, ...texteEmail(code, defi.but as But) });
+      canal === "whatsapp"
+        ? await envoyerCodeWhatsApp(numero!, code)
+        : canal === "sms"
+          ? await envoyerCodeSMS(numero!, code)
+          : await envoyerEmail({ a: compte.email, ...texteEmail(code, defi.but as But) });
     if (r.ok) return reussi(canal);
     log.info(`Code non parti par ${canal}`, { utilisateurId: compte.id });
   }
@@ -164,7 +167,7 @@ export async function renvoyerCode(jeton: unknown, but: But, numeroSaisi: string
   const defi = await lireDefi(jeton, but);
   if (!defi) return echec("La vérification a expiré. Recommencez depuis le début.", 410);
   const compte = defi.utilisateur;
-  const numero = compte.whatsapp ?? (but === "connexion" ? numeroSaisi ?? defi.numero : null);
+  const numero = compte.whatsapp ?? (but === "connexion" ? (numeroSaisi ?? defi.numero) : null);
   if (!numero && canalDemande !== "email") {
     if (!canauxPossibles(null).includes("email")) return echec("Indiquez votre numéro WhatsApp.");
     canalDemande = "email";

@@ -23,7 +23,9 @@ export default function EncartSponsorise({ emplacement, className = "" }: { empl
   return (
     <aside aria-label="Contenu sponsorisé" className={`card p-5 flex flex-col border-dashed ${className}`}>
       <div className="flex items-center justify-between gap-2 mb-3">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1"><Megaphone size={12} /> Sponsorisé</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1">
+          <Megaphone size={12} /> Sponsorisé
+        </span>
         <span className="text-xs text-gray-400 truncate">{campagne.annonceur}</span>
       </div>
       <h3 className="font-bold text-gray-900 leading-snug">{campagne.titre}</h3>

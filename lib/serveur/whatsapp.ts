@@ -58,11 +58,16 @@ async function envoyerModele(numero: string, modele: string, components: unknown
 }
 
 export function envoyerCodeWhatsApp(numero: string, code: string): Promise<ResultatEnvoi> {
-  return envoyerModele(numero, process.env.WHATSAPP_MODELE || "code_connexion", [
-    { type: "body", parameters: [{ type: "text", text: code }] },
-    // Bouton « Copier le code » des modèles d'authentification.
-    { type: "button", sub_type: "url", index: "0", parameters: [{ type: "text", text: code }] },
-  ], "code");
+  return envoyerModele(
+    numero,
+    process.env.WHATSAPP_MODELE || "code_connexion",
+    [
+      { type: "body", parameters: [{ type: "text", text: code }] },
+      // Bouton « Copier le code » des modèles d'authentification.
+      { type: "button", sub_type: "url", index: "0", parameters: [{ type: "text", text: code }] },
+    ],
+    "code",
+  );
 }
 
 // Alerte de sécurité (nouvelle connexion, mot de passe changé). Nécessite un second modèle, de catégorie « Utilité »,
@@ -70,7 +75,18 @@ export function envoyerCodeWhatsApp(numero: string, code: string): Promise<Resul
 export const alerteWhatsAppConfiguree = () => whatsappConfigure() && !!process.env.WHATSAPP_MODELE_ALERTE;
 
 export function envoyerAlerteWhatsApp(numero: string, evenement: string, details: string): Promise<ResultatEnvoi> {
-  return envoyerModele(numero, process.env.WHATSAPP_MODELE_ALERTE!, [
-    { type: "body", parameters: [{ type: "text", text: evenement }, { type: "text", text: details }] },
-  ], "alerte de sécurité");
+  return envoyerModele(
+    numero,
+    process.env.WHATSAPP_MODELE_ALERTE!,
+    [
+      {
+        type: "body",
+        parameters: [
+          { type: "text", text: evenement },
+          { type: "text", text: details },
+        ],
+      },
+    ],
+    "alerte de sécurité",
+  );
 }

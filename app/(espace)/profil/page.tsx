@@ -56,13 +56,17 @@ function Contenu({ user }: { user: User }) {
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 flex flex-col gap-4">
           <div className="card p-5 flex items-center gap-5 flex-wrap">
-            <div className="w-20 h-20 rounded-full bg-navy text-gold font-extrabold text-2xl flex items-center justify-center shrink-0" aria-hidden>{score}</div>
+            <div className="w-20 h-20 rounded-full bg-navy text-gold font-extrabold text-2xl flex items-center justify-center shrink-0" aria-hidden>
+              {score}
+            </div>
             <div className="flex-1 min-w-[12rem]">
               <h2 className="font-bold text-gray-900">Score de confiance : {score}/100</h2>
               <p className="text-sm text-gray-500 mb-2">{appreciation}</p>
               <ul className="grid sm:grid-cols-2 gap-x-4 gap-y-1 text-xs">
                 {lignes.map((l) => (
-                  <li key={l.label} className={l.acquis ? "text-green" : "text-gray-400"}>{l.acquis ? "✓" : "○"} {l.label} (+{l.points})</li>
+                  <li key={l.label} className={l.acquis ? "text-green" : "text-gray-400"}>
+                    {l.acquis ? "✓" : "○"} {l.label} (+{l.points})
+                  </li>
                 ))}
               </ul>
             </div>
@@ -71,13 +75,50 @@ function Contenu({ user }: { user: User }) {
           <form onSubmit={enregistrer} className="card p-5">
             <h2 className="font-bold text-gray-900 mb-3">Informations personnelles</h2>
             <div className="grid sm:grid-cols-2 gap-4 mb-4">
-              <label className="text-sm font-semibold text-gray-700">Nom complet<input required value={nom} onChange={(e) => { setNom(e.target.value); setOk(false); }} className={champ} /></label>
-              <label className="text-sm font-semibold text-gray-700">Email<input value={user.email} disabled className={`${champ} bg-gray-50 text-gray-500`} /></label>
-              <label className="text-sm font-semibold text-gray-700">Téléphone<input type="tel" value={telephone} onChange={(e) => { setTelephone(e.target.value); setOk(false); }} className={champ} /></label>
-              <label className="text-sm font-semibold text-gray-700">Ville<input value={ville} onChange={(e) => { setVille(e.target.value); setOk(false); }} className={champ} /></label>
+              <label className="text-sm font-semibold text-gray-700">
+                Nom complet
+                <input
+                  required
+                  value={nom}
+                  onChange={(e) => {
+                    setNom(e.target.value);
+                    setOk(false);
+                  }}
+                  className={champ}
+                />
+              </label>
+              <label className="text-sm font-semibold text-gray-700">
+                Email
+                <input value={user.email} disabled className={`${champ} bg-gray-50 text-gray-500`} />
+              </label>
+              <label className="text-sm font-semibold text-gray-700">
+                Téléphone
+                <input
+                  type="tel"
+                  value={telephone}
+                  onChange={(e) => {
+                    setTelephone(e.target.value);
+                    setOk(false);
+                  }}
+                  className={champ}
+                />
+              </label>
+              <label className="text-sm font-semibold text-gray-700">
+                Ville
+                <input
+                  value={ville}
+                  onChange={(e) => {
+                    setVille(e.target.value);
+                    setOk(false);
+                  }}
+                  className={champ}
+                />
+              </label>
             </div>
             <div className="flex items-center gap-3">
-              <button type="submit" className="btn-navy text-sm">Enregistrer les modifications</button>
+              <button type="submit" className="btn-navy text-sm">
+                Enregistrer les modifications
+              </button>
               {ok && <span className="text-sm text-green font-semibold">Enregistré</span>}
             </div>
           </form>
@@ -92,10 +133,16 @@ function Contenu({ user }: { user: User }) {
                   const b = biens.find((x) => x.id === d.bienId);
                   if (!b) return null;
                   return (
-                    <Link key={d.id} href={`/dossiers/${d.id}`} className="flex items-center justify-between gap-3 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 py-2 text-sm">
+                    <Link
+                      key={d.id}
+                      href={`/dossiers/${d.id}`}
+                      className="flex items-center justify-between gap-3 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 py-2 text-sm"
+                    >
                       <span className="min-w-0">
                         <span className="block font-semibold text-gray-800 truncate">{b.titre}</span>
-                        <span className="block text-xs text-gray-400">{new Date(d.dateOuverture).toLocaleDateString("fr-FR")} · {LABELS_ETAPE[d.statut]}</span>
+                        <span className="block text-xs text-gray-400">
+                          {new Date(d.dateOuverture).toLocaleDateString("fr-FR")} · {LABELS_ETAPE[d.statut]}
+                        </span>
                       </span>
                       <span className="font-bold text-navy shrink-0">{formatFCFA(prixRetenu(d, b))}</span>
                     </Link>
@@ -131,7 +178,9 @@ function Contenu({ user }: { user: User }) {
               </label>
             </div>
             {profil?.statutKYC !== "verifie" && profil?.statutKYC !== "en_attente" && (
-              <Link href="/kyc" className="btn-navy text-sm w-full text-center block">Vérifier mon identité</Link>
+              <Link href="/kyc" className="btn-navy text-sm w-full text-center block">
+                Vérifier mon identité
+              </Link>
             )}
           </div>
           <Rattachement email={user.email} role={user.role} />
@@ -139,14 +188,22 @@ function Contenu({ user }: { user: User }) {
             <div className="card p-5 text-sm">
               <h2 className="font-bold text-gray-900 mb-1">Mon abonnement</h2>
               <p className="text-gray-600 mb-2 capitalize">{(profil?.plan ?? (user.role === "agence" ? "gratuit" : "aucun")).replace("_", " ")}</p>
-              <Link href="/tarifs" className="text-blue hover:underline">Changer de plan</Link>
+              <Link href="/tarifs" className="text-blue hover:underline">
+                Changer de plan
+              </Link>
             </div>
           )}
           <div className="card p-5 text-sm flex flex-col gap-2">
             <h2 className="font-bold text-gray-900">Raccourcis</h2>
-            <Link href="/favoris" className="text-blue hover:underline">Mes favoris</Link>
-            <Link href="/notifications" className="text-blue hover:underline">Mes alertes et notifications</Link>
-            <Link href="/calendrier" className="text-blue hover:underline">Mon calendrier</Link>
+            <Link href="/favoris" className="text-blue hover:underline">
+              Mes favoris
+            </Link>
+            <Link href="/notifications" className="text-blue hover:underline">
+              Mes alertes et notifications
+            </Link>
+            <Link href="/calendrier" className="text-blue hover:underline">
+              Mon calendrier
+            </Link>
           </div>
         </aside>
       </div>
