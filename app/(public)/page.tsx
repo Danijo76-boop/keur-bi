@@ -8,6 +8,7 @@ import { listerAnnonces } from "@/lib/serveur/annonces";
 import { log } from "@/lib/serveur/journal";
 import HeroSearch from "@/components/HeroSearch";
 import SectionPersonnalisee from "@/components/SectionPersonnalisee";
+import { GrilleRevelee, HaloSouris, HalosCartes, Inclinaison, MotTournant, Revelation } from "@/components/Dynamique";
 
 // L'accueil lit les annonces en vedette dans la base à chaque visite.
 export const dynamic = "force-dynamic";
@@ -31,25 +32,31 @@ export default async function HomePage() {
         <div className="absolute inset-0 opacity-[0.07]"
           style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "28px 28px" }}
         />
-        <div className="absolute -left-32 -bottom-40 w-[32rem] h-[32rem] rounded-full bg-gold/20 blur-3xl" />
+        <div className="lueur lueur-1 -left-32 -bottom-40 w-[32rem] h-[32rem] bg-gold/25" aria-hidden />
+        <div className="lueur lueur-2 right-[-10rem] top-[-8rem] w-[30rem] h-[30rem] bg-blue/40" aria-hidden />
+        <div className="lueur lueur-3 left-[35%] top-[20%] w-[22rem] h-[22rem] bg-green-light/15" aria-hidden />
+        <HaloSouris />
 
         <div className="relative max-w-7xl mx-auto px-4 pt-16 pb-36 md:pt-20 text-white grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
           <div>
-            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm mb-6 backdrop-blur-sm">
+            <div className="entree inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm mb-6 backdrop-blur-sm">
               <CheckCircle size={14} className="text-green-light" />
               <span>Titres Fonciers vérifiés · Transactions sécurisées</span>
             </div>
-            <h1 className="text-4xl md:text-5xl xl:text-6xl font-extrabold mb-5 leading-[1.08]">
-              L&apos;immobilier au Sénégal,<br />
-              <span className="bg-gradient-to-r from-gold-light to-gold bg-clip-text text-transparent">en toute confiance</span>
+            <h1 className="entree text-4xl md:text-5xl xl:text-6xl font-extrabold mb-5 leading-[1.08]" style={{ "--d": "120ms" } as React.CSSProperties}>
+              <span className="sr-only">L&apos;immobilier au Sénégal en toute confiance : terrains, villas, appartements et bureaux.</span>
+              <span aria-hidden>
+                Votre <MotTournant mots={["villa", "terrain", "appartement", "maison", "bureau"]} /><br />
+                <span className="text-balance">au Sénégal, <span className="text-white/90 whitespace-nowrap">en toute confiance</span></span>
+              </span>
             </h1>
-            <p className="text-white/75 text-lg mb-8 max-w-xl leading-relaxed">
+            <p className="entree text-white/75 text-lg mb-8 max-w-xl leading-relaxed" style={{ "--d": "240ms" } as React.CSSProperties}>
               Achetez et vendez des terrains, villas et appartements avec des Titres Fonciers vérifiés par nos notaires partenaires.
             </p>
 
             {/* Search bar */}
-            <div className="max-w-xl"><HeroSearch /></div>
-            <div className="flex flex-wrap items-center gap-2 mt-5 text-sm max-w-xl">
+            <div className="entree max-w-xl" style={{ "--d": "360ms" } as React.CSSProperties}><HeroSearch /></div>
+            <div className="entree flex flex-wrap items-center gap-2 mt-5 text-sm max-w-xl" style={{ "--d": "480ms" } as React.CSSProperties}>
               <span className="text-white/60">Zones :</span>
               {REGIONS.map((r) => (
                 <Link key={r.nom} href={`/annonces?region=${r.nom}`} className="bg-white/10 hover:bg-white/20 border border-white/20 rounded-full px-3 py-1 transition-colors">{r.nom}</Link>
@@ -60,7 +67,8 @@ export default async function HomePage() {
 
           {/* Visuel : un bien en vedette, avec ses garanties */}
           {vedette && (
-            <Link href={`/annonces/${vedette.id}`} className="relative hidden lg:block group">
+            <Link href={`/annonces/${vedette.id}`} className="entree relative hidden lg:block group" style={{ "--d": "300ms" } as React.CSSProperties}>
+              <Inclinaison className="relative rounded-[2rem]">
               <div className="relative h-[26rem] rounded-[2rem] overflow-hidden ring-1 ring-white/20 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)]">
                 <Image src={vedette.photo.replace("w=600", "w=1200")} alt={vedette.titre} fill priority sizes="560px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/85 via-transparent to-transparent" />
@@ -70,14 +78,15 @@ export default async function HomePage() {
                   <div className="font-display font-extrabold text-2xl text-gold mt-1">{formatPrix(vedette.prix)}</div>
                 </div>
               </div>
-              <div className="absolute -left-8 top-10 bg-white text-gray-800 rounded-2xl px-4 py-3 shadow-[0_20px_40px_-16px_rgba(0,0,0,0.45)] flex items-center gap-3">
+              </Inclinaison>
+              <div className="flotte absolute -left-8 top-10 bg-white text-gray-800 rounded-2xl px-4 py-3 shadow-[0_20px_40px_-16px_rgba(0,0,0,0.45)] flex items-center gap-3">
                 <span className="w-10 h-10 rounded-xl bg-green-light/15 flex items-center justify-center"><Shield size={20} className="text-green-light" /></span>
                 <span>
                   <span className="block text-sm font-bold text-navy-dark">Titre Foncier vérifié</span>
                   <span className="block text-xs text-gray-500">Contrôlé par un notaire</span>
                 </span>
               </div>
-              <div className="absolute -right-4 top-1/2 bg-white text-gray-800 rounded-2xl px-4 py-3 shadow-[0_20px_40px_-16px_rgba(0,0,0,0.45)] flex items-center gap-3">
+              <div className="flotte-decale absolute -right-4 top-1/2 bg-white text-gray-800 rounded-2xl px-4 py-3 shadow-[0_20px_40px_-16px_rgba(0,0,0,0.45)] flex items-center gap-3">
                 <span className="w-10 h-10 rounded-xl bg-gold/15 flex items-center justify-center"><FileCheck size={20} className="text-gold" /></span>
                 <span>
                   <span className="block text-sm font-bold text-navy-dark">Dossier 100 % en ligne</span>
@@ -98,10 +107,12 @@ export default async function HomePage() {
 
       {/* ── POURQUOI KEUR BI ── */}
       <section className="max-w-7xl mx-auto px-4 py-20">
-        <p className="eyebrow block text-center mb-2">Nos garanties</p>
-        <h2 className="section-title mb-2 text-center">Pourquoi choisir KEUR BI ?</h2>
-        <p className="text-gray-500 text-center mb-10">La seule plateforme avec vérification TF en temps réel</p>
-        <div className="grid md:grid-cols-3 gap-6">
+        <Revelation>
+          <p className="eyebrow block text-center mb-2">Nos garanties</p>
+          <h2 className="section-title mb-2 text-center">Pourquoi choisir KEUR BI ?</h2>
+          <p className="text-gray-500 text-center mb-10">La seule plateforme avec vérification TF en temps réel</p>
+        </Revelation>
+        <GrilleRevelee className="grid md:grid-cols-3 gap-6">
           {[
             {
               icon: <Shield className="text-green-light" size={28} />,
@@ -119,13 +130,13 @@ export default async function HomePage() {
               desc: "Accédez aux prix médians par quartier, tendances et comparatifs pour mieux décider.",
             },
           ].map(f => (
-            <div key={f.titre} className="card card-hover p-7 flex flex-col gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-navy/10 to-blue/5 flex items-center justify-center">{f.icon}</div>
+            <div key={f.titre} className="card card-hover carte-halo group p-7 flex flex-col gap-3">
+              <div className="icone-vivante w-14 h-14 rounded-2xl bg-gradient-to-br from-navy/10 to-blue/5 flex items-center justify-center">{f.icon}</div>
               <h3 className="font-bold text-gray-900 text-lg">{f.titre}</h3>
               <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
             </div>
           ))}
-        </div>
+        </GrilleRevelee>
       </section>
 
       {/* ── ANNONCES EN VEDETTE ── */}
@@ -140,19 +151,21 @@ export default async function HomePage() {
             Voir tout <ArrowRight size={16} />
           </Link>
         </div>
-        <div className="grid md:grid-cols-3 gap-6">
+        <GrilleRevelee className="grid md:grid-cols-3 gap-6" pas={130}>
           {featured.map(b => <PropertyCard key={b.id} bien={b} />)}
-        </div>
+        </GrilleRevelee>
       </section>
 
       <SectionPersonnalisee conteneur="max-w-7xl mx-auto px-4 pb-16" />
 
       {/* ── OUTILS ── */}
       <section className="max-w-7xl mx-auto px-4 pb-20">
-        <p className="eyebrow block text-center mb-2">Outils et services</p>
-        <h2 className="section-title mb-2 text-center">Décidez avec les bons chiffres</h2>
-        <p className="text-gray-500 text-center mb-10">Estimez, budgétez et comparez avant de vous engager</p>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <Revelation>
+          <p className="eyebrow block text-center mb-2">Outils et services</p>
+          <h2 className="section-title mb-2 text-center">Décidez avec les bons chiffres</h2>
+          <p className="text-gray-500 text-center mb-10">Estimez, budgétez et comparez avant de vous engager</p>
+        </Revelation>
+        <GrilleRevelee className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5" pas={70}>
           {[
             { href: "/estimer", icone: <Home size={22} />, titre: "Estimer mon bien", desc: "La valeur de votre terrain ou villa, d'après les annonces comparables." },
             { href: "/budget", icone: <Wallet size={22} />, titre: "Calculer mon budget", desc: "Le prix maximum à viser selon vos revenus et votre apport." },
@@ -163,22 +176,24 @@ export default async function HomePage() {
             { href: "/services", icone: <BadgeCheck size={22} />, titre: "Services d'experts", desc: "Rapport de titre, visite accompagnée, photos pro, bornage." },
             { href: "/diaspora", icone: <Globe2 size={22} />, titre: "Acheter depuis l'étranger", desc: "Visite vidéo, procuration et conseiller dédié pour la diaspora." },
           ].map((o) => (
-            <Link key={o.href} href={o.href} className="card card-hover p-6 group flex flex-col">
-              <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-navy to-navy-dark text-gold flex items-center justify-center mb-4">{o.icone}</span>
+            <Link key={o.href} href={o.href} className="card card-hover carte-halo p-6 group flex flex-col">
+              <span className="icone-vivante w-12 h-12 rounded-2xl bg-gradient-to-br from-navy to-navy-dark text-gold flex items-center justify-center mb-4">{o.icone}</span>
               <h3 className="font-bold text-gray-900 mb-1">{o.titre}</h3>
               <p className="text-gray-500 text-sm leading-relaxed flex-1">{o.desc}</p>
               <span className="text-sm text-navy font-semibold mt-4 flex items-center gap-1 group-hover:gap-2 transition-all">Ouvrir <ArrowRight size={15} /></span>
             </Link>
           ))}
-        </div>
+        </GrilleRevelee>
       </section>
 
       {/* ── COMMENT ÇA MARCHE ── */}
       <section className="max-w-7xl mx-auto px-4 pb-20">
-        <p className="eyebrow block text-center mb-2">Le parcours</p>
-        <h2 className="section-title mb-2 text-center">Comment ça marche ?</h2>
-        <p className="text-gray-500 text-center mb-10">En 4 étapes simples, de la recherche à la remise des clés</p>
-        <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <Revelation>
+          <p className="eyebrow block text-center mb-2">Le parcours</p>
+          <h2 className="section-title mb-2 text-center">Comment ça marche ?</h2>
+          <p className="text-gray-500 text-center mb-10">En 4 étapes simples, de la recherche à la remise des clés</p>
+        </Revelation>
+        <GrilleRevelee as="ol" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5" pas={150}>
           {[
             { titre: "Parcourez les annonces", desc: "Filtrez par région, superficie, prix et type. Chaque annonce affiche le badge TF de son statut de vérification." },
             { titre: "Vérifiez le Titre Foncier", desc: "Le résultat de la vérification apparaît directement sur la fiche : vérifié, en cours, non vérifié ou invalide." },
@@ -192,7 +207,7 @@ export default async function HomePage() {
               <p className="text-gray-500 text-sm leading-relaxed">{e.desc}</p>
             </li>
           ))}
-        </ol>
+        </GrilleRevelee>
         <p className="text-center mt-6 text-sm">
           <Link href="/guides" className="text-blue font-medium hover:underline">Lire le guide d&apos;achat complet →</Link>
         </p>
@@ -200,7 +215,8 @@ export default async function HomePage() {
 
       {/* ── BADGE TF ── */}
       <section className="relative overflow-hidden bg-navy-dark text-white py-20">
-        <div className="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-blue/30 blur-3xl" />
+        <div className="lueur lueur-2 -right-24 -top-24 w-96 h-96 bg-blue/30" aria-hidden />
+        <div className="lueur lueur-1 -left-24 -bottom-32 w-80 h-80 bg-gold/15" aria-hidden />
         <div className="relative max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-10 items-center">
           <div>
             <p className="eyebrow mb-2">Sécurité</p>
@@ -209,7 +225,7 @@ export default async function HomePage() {
               Le Titre Foncier est le document qui sécurise une propriété. Avant toute offre, le badge affiché sur chaque annonce vous indique où en est sa vérification : authenticité du titre, hypothèques, concordance du propriétaire et litiges en cours.
             </p>
           </div>
-          <ul className="grid sm:grid-cols-2 gap-3">
+          <GrilleRevelee as="ul" className="grid sm:grid-cols-2 gap-3" pas={120}>
             {[
               { icone: "✅", titre: "TF Vérifié", desc: "Titre authentifié, aucun litige ni hypothèque" },
               { icone: "⏳", titre: "En vérification", desc: "Dossier soumis, réponse sous 3 à 7 jours ouvrés" },
@@ -221,17 +237,19 @@ export default async function HomePage() {
                 <p className="text-white/60 text-xs leading-relaxed">{b.desc}</p>
               </li>
             ))}
-          </ul>
+          </GrilleRevelee>
         </div>
       </section>
 
       {/* ── RÉGIONS ── */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4">
-          <p className="eyebrow block text-center mb-2">Destinations</p>
-          <h2 className="section-title mb-2 text-center">Explorer par région</h2>
-          <p className="text-gray-500 text-center mb-10">Trouvez votre terrain ou villa partout au Sénégal</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+          <Revelation>
+            <p className="eyebrow block text-center mb-2">Destinations</p>
+            <h2 className="section-title mb-2 text-center">Explorer par région</h2>
+            <p className="text-gray-500 text-center mb-10">Trouvez votre terrain ou villa partout au Sénégal</p>
+          </Revelation>
+          <GrilleRevelee className="grid grid-cols-2 md:grid-cols-4 gap-5" pas={100}>
             {REGIONS.map(r => (
               <Link key={r.nom} href={`/annonces?region=${r.nom}`}>
                 <div className="relative h-56 rounded-2xl overflow-hidden group cursor-pointer card-hover bg-gradient-to-br from-navy to-navy-dark shadow-[0_8px_24px_-12px_rgba(27,42,74,0.3)]">
@@ -247,17 +265,17 @@ export default async function HomePage() {
                 </div>
               </Link>
             ))}
-          </div>
+          </GrilleRevelee>
         </div>
       </section>
 
       {/* ── CTA AGENCES ── */}
-      <section className="max-w-7xl mx-auto px-4 pb-20">
+      <Revelation as="section" className="max-w-7xl mx-auto px-4 pb-20">
         <div
           className="relative overflow-hidden rounded-[2rem] p-10 md:p-16 text-white text-center shadow-[0_30px_60px_-30px_rgba(27,42,74,0.6)]"
           style={{ background: "linear-gradient(135deg, #1B2A4A 0%, #1B4F72 55%, #2E86AB 100%)" }}
         >
-          <div className="absolute -right-16 -bottom-24 w-80 h-80 rounded-full bg-gold/25 blur-3xl" />
+          <div className="lueur lueur-3 -right-16 -bottom-24 w-80 h-80 bg-gold/25" aria-hidden />
           <h2 className="relative text-2xl md:text-4xl font-extrabold mb-3">Vous êtes une agence ou un vendeur ?</h2>
           <p className="relative text-white/75 mb-8 max-w-lg mx-auto">
             Publiez vos annonces, gérez vos dossiers et bénéficiez d&apos;une visibilité maximale sur toute la plateforme.
@@ -269,8 +287,9 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
-      </section>
+      </Revelation>
 
+      <HalosCartes />
     </div>
   );
 }
