@@ -60,11 +60,11 @@ export const estCoteVendeur = (role: Role | undefined) => famille(role) === "ven
 export const estNotariat = (role: Role | undefined) => famille(role) === "notariat";
 export const estPlateforme = (role: Role | undefined) => famille(role) === "plateforme";
 
-// Connexion en deux temps : après le mot de passe, le serveur demande un code reçu par WhatsApp.
+// Connexion en deux temps : après le mot de passe, le serveur demande un code reçu par WhatsApp (ou par SMS).
 // « numero » : le compte n'a pas encore de numéro WhatsApp, il faut le saisir. « code » : un code a été envoyé.
 export type EtapeOTP =
   | { etape: "numero"; defi: string }
-  | { etape: "code"; defi: string; numero: string; codeDemo?: string };
+  | { etape: "code"; defi: string; numero: string; canal: "whatsapp" | "sms"; smsPossible: boolean; codeDemo?: string };
 export type ResultatAuth = { ok: true } | { ok: false; erreur: string } | { ok: "otp"; otp: EtapeOTP };
 export type ResultatEnvoiCode = { ok: true; otp: EtapeOTP } | { ok: false; erreur: string; expire?: boolean };
 export type DonneesInscription = { nom: string; email: string; motDePasse: string; role: Role; telephone?: string };
@@ -74,7 +74,7 @@ type AuthContextValue = {
   pret: boolean;
   connexion: (email: string, motDePasse: string) => Promise<ResultatAuth>;
   inscription: (d: DonneesInscription) => Promise<ResultatAuth>;
-  envoyerCode: (defi: string, numero?: string) => Promise<ResultatEnvoiCode>;
+  envoyerCode: (defi: string, numero?: string, canal?: "sms") => Promise<ResultatEnvoiCode>;
   verifierCode: (defi: string, code: string) => Promise<ResultatAuth & { expire?: boolean }>;
   majProfil: (patch: { nom?: string; telephone?: string; ville?: string }) => Promise<ResultatAuth>;
   logout: () => Promise<void>;
@@ -139,8 +139,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const inscription = (d: DonneesInscription) => ouvrir("/api/auth/inscription", d);
   const verifierCode = (defi: string, code: string) => ouvrir("/api/auth/otp/verifier", { defi, code });
 
-  async function envoyerCode(defi: string, numero?: string): Promise<ResultatEnvoiCode> {
-    const { ok, statut, donnees } = await appeler("/api/auth/otp/envoyer", "POST", { defi, numero });
+  async function envoyerCode(defi: string, numero?: string, canal?: "sms"): Promise<ResultatEnvoiCode> {
+    const { ok, statut, donnees } = await appeler("/api/auth/otp/envoyer", "POST", { defi, numero, canal });
     if (ok && donnees.otp) return { ok: true, otp: donnees.otp };
     return { ok: false, erreur: donnees.erreur ?? "Une erreur est survenue. Réessayez.", expire: statut === 410 };
   }
