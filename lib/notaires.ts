@@ -8,6 +8,8 @@ export type Notaire = {
   adresse: string;
   telephone: string;
   agreeDepuis: number;
+  // Note moyenne et nombre d'avis : uniquement ceux laissés par de vrais clients après une transaction
+  // (voir lib/moderation.ts). Aucun avis inventé : 0 tant que personne n'a noté.
   note: number;
   nbAvis: number;
   dossiers: number;
@@ -38,8 +40,8 @@ export const NOTAIRES: Notaire[] = [
     adresse: "22 Av. Léopold Sédar Senghor, Dakar",
     telephone: "+221 33 823 44 10",
     agreeDepuis: 2009,
-    note: 4.9,
-    nbAvis: 127,
+    note: 0,
+    nbAvis: 0,
     dossiers: 148,
     satisfaction: 98,
     delaiTF: "48h",
@@ -47,10 +49,7 @@ export const NOTAIRES: Notaire[] = [
     presentation:
       "Notaire spécialisé dans le droit foncier et les transactions immobilières. Son étude, au cœur du Plateau de Dakar, accompagne acheteurs et vendeurs de la vérification du Titre Foncier à l'enregistrement auprès de la DGID.",
     tarifs: TARIFS,
-    avis: [
-      { auteur: "Daniel B.", date: "Octobre 2026", texte: "Très professionnel, délai de vérification TF respecté, communication claire à chaque étape." },
-      { auteur: "Aminata M.", date: "Août 2026", texte: "D'une grande aide pour sécuriser notre achat. Un problème sur le TF a été détecté avant la signature." },
-    ],
+    avis: [],
     creneaux: [
       { jour: 1, heures: ["09:00", "15:00"] },
       { jour: 4, heures: ["10:00", "14:00", "16:00"] },
@@ -67,8 +66,8 @@ export const NOTAIRES: Notaire[] = [
     adresse: "Route des Almadies, Dakar",
     telephone: "+221 33 820 11 22",
     agreeDepuis: 2014,
-    note: 4.7,
-    nbAvis: 89,
+    note: 0,
+    nbAvis: 0,
     dossiers: 96,
     satisfaction: 95,
     delaiTF: "72h",
@@ -76,7 +75,7 @@ export const NOTAIRES: Notaire[] = [
     presentation:
       "Étude spécialisée dans les transactions résidentielles et commerciales de la presqu'île, avec un accompagnement dédié aux acheteurs de la diaspora via procuration notariée.",
     tarifs: TARIFS,
-    avis: [{ auteur: "Mamadou B.", date: "Septembre 2026", texte: "Suivi à distance impeccable, tout a été expliqué clairement." }],
+    avis: [],
     creneaux: [
       { jour: 2, heures: ["09:30", "11:30", "15:00"] },
       { jour: 3, heures: ["10:00", "16:00"] },
@@ -92,8 +91,8 @@ export const NOTAIRES: Notaire[] = [
     adresse: "Avenue Lamine Guèye, Thiès",
     telephone: "+221 33 951 22 33",
     agreeDepuis: 2011,
-    note: 4.8,
-    nbAvis: 64,
+    note: 0,
+    nbAvis: 0,
     dossiers: 81,
     satisfaction: 96,
     delaiTF: "72h",
@@ -101,7 +100,7 @@ export const NOTAIRES: Notaire[] = [
     presentation:
       "Étude de référence pour les terrains de Thiès et de la Petite-Côte, habituée aux parcelles agricoles et aux opérations de lotissement.",
     tarifs: TARIFS,
-    avis: [{ auteur: "Fatou S.", date: "Juillet 2026", texte: "Dossier traité rapidement, très bonne connaissance de la Conservation de Thiès." }],
+    avis: [],
     creneaux: [
       { jour: 1, heures: ["10:00", "14:30"] },
       { jour: 4, heures: ["09:00", "11:00"] },

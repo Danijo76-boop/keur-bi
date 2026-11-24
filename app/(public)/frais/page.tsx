@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { formatFCFA } from "@/lib/mock-data";
 import { NOTAIRES } from "@/lib/notaires";
+import { texteNote } from "@/lib/moderation";
 import { SimulateurCredit, SimulateurInvestisseur } from "@/components/SimulateursFinancement";
 import { BAREME_HONORAIRES, calculerFrais, commissionVente, tauxCommissionPour, useParametres } from "@/lib/parametres";
 
@@ -155,7 +156,7 @@ function Simulateur() {
                   <div className="w-9 h-9 rounded-full bg-navy/10 text-navy font-bold text-xs flex items-center justify-center shrink-0">{n.initiales}</div>
                   <div>
                     <div className="text-sm font-semibold text-gray-900 group-hover:text-navy">{n.nom}</div>
-                    <div className="text-xs text-gray-400">{n.ville} · ⭐ {n.note} ({n.nbAvis} avis)</div>
+                    <div className="text-xs text-gray-400">{n.ville}{n.nbAvis > 0 && ` · ⭐ ${texteNote(n.note, n.nbAvis)}`}</div>
                   </div>
                 </Link>
               ))}

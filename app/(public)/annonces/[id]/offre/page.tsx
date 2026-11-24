@@ -143,7 +143,7 @@ function Formulaire({ bien, user }: { bien: Bien; user: User }) {
           Notaire pour la transaction
           <select value={notaire} onChange={(e) => setNotaire(e.target.value)} className={`${champ} mt-1 font-normal`}>
             {NOTAIRES.map((n) => (
-              <option key={n.slug} value={n.slug}>{n.nom} · {n.ville} · ⭐ {n.note}</option>
+              <option key={n.slug} value={n.slug}>{n.nom} · {n.ville}{n.nbAvis > 0 ? ` · ⭐ ${n.note.toLocaleString("fr-FR")}` : ""}</option>
             ))}
           </select>
         </label>

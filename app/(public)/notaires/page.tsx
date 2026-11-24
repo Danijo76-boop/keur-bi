@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { MapPin, Star } from "lucide-react";
 import { NOTAIRES } from "@/lib/notaires";
+import { texteNote } from "@/lib/moderation";
 
 const REGIONS = ["Toutes", ...Array.from(new Set(NOTAIRES.map((n) => n.region)))];
 
@@ -30,9 +31,8 @@ export default function NotairesPage() {
               </div>
             </div>
             <div className="flex items-center gap-1 text-sm mb-2">
-              <Star size={14} className="text-gold fill-gold" />
-              <span className="font-semibold">{n.note}</span>
-              <span className="text-gray-400 text-xs">({n.nbAvis} avis) · TF sous {n.delaiTF}</span>
+              {n.nbAvis > 0 && <Star size={14} className="text-gold fill-gold" />}
+              <span className="text-gray-400 text-xs">{texteNote(n.note, n.nbAvis)} · TF sous {n.delaiTF}</span>
             </div>
             <div className="flex flex-wrap gap-1">
               {n.specialites.slice(0, 3).map((s) => <span key={s} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{s}</span>)}
