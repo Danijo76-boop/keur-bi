@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { FileSpreadsheet, FileText } from "lucide-react";
+import { BoutonsExport } from "@/components/BoutonsExport";
 import { ROLE_LABELS } from "@/lib/auth";
 import { useBiens, useMetasAnnonces } from "@/lib/annonces";
 import {
@@ -285,10 +285,7 @@ export default function ReportingPage() {
       <div className="card mb-4">
         <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap print:hidden">
           <h2 className="font-bold text-gray-900">Prévisualisation, 5 premières lignes sur {lignes.length}</h2>
-          <div className="flex gap-2 flex-wrap">
-            <button disabled={exportImpossible} onClick={telechargerPDF} className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50 disabled:opacity-50"><FileText size={15} /> PDF</button>
-            <button disabled={exportImpossible} onClick={telechargerExcel} className="btn-navy text-sm px-3 py-2 flex items-center gap-2 disabled:opacity-50"><FileSpreadsheet size={15} /> Excel (.xlsx)</button>
-          </div>
+          <BoutonsExport onPDF={telechargerPDF} onExcel={telechargerExcel} disabled={exportImpossible} raison={choisies.length === 0 ? "Choisissez au moins une colonne." : "Aucune ligne pour ces filtres."} />
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">

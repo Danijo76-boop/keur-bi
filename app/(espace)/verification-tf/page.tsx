@@ -6,6 +6,7 @@ import { User } from "@/lib/auth";
 import { formatFCFA } from "@/lib/mock-data";
 import { lireDossiers, signalerIncident } from "@/lib/dossiers";
 import { exporterPDF } from "@/lib/export";
+import { BoutonPDF } from "@/components/BoutonsExport";
 import { useParametres } from "@/lib/parametres";
 import { usePeut } from "@/lib/permissions";
 import { useStocke } from "@/lib/stockage";
@@ -200,7 +201,9 @@ function Contenu({ user }: { user: User }) {
                 {active.motif && <p className="mt-3 text-sm font-semibold text-red bg-red/10 rounded-lg px-3 py-2">Motif d&apos;invalidité : {active.motif}</p>}
                 <div className="flex gap-2 flex-wrap mt-3">
                   {active.statut !== "en_verification" && (
-                    <button
+                    <BoutonPDF
+                      taille="petit"
+                      libelle="Rapport en PDF"
                       onClick={() =>
                         exporterPDF(`Rapport_TF_${active.numero}`, {
                           titre: `Rapport de vérification du Titre Foncier ${active.numero}`,
@@ -222,10 +225,7 @@ function Contenu({ user }: { user: User }) {
                           }],
                         })
                       }
-                      className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
-                    >
-                      ↓ Télécharger le rapport
-                    </button>
+                    />
                   )}
                   {peutDecider && active.statut === "invalide" && aSuspendre.length > 0 && (
                     <button

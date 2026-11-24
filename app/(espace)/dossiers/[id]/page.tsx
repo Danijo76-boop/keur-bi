@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { CalendarDays, CreditCard, Download, MessageSquare, PenLine, Upload } from "lucide-react";
+import { CalendarDays, CreditCard, MessageSquare, PenLine, Upload } from "lucide-react";
 import { useAuth, estCoteVendeur, estNotariat } from "@/lib/auth";
 import { useBiens } from "@/lib/annonces";
 import { formatFCFA, formatPrix } from "@/lib/mock-data";
@@ -12,6 +12,7 @@ import { usePeut } from "@/lib/permissions";
 import { obtenirConversation } from "@/lib/messagerie";
 import { useStocke } from "@/lib/stockage";
 import { exporterPDF } from "@/lib/export";
+import { BoutonPDF } from "@/components/BoutonsExport";
 import { useVerificationTF } from "@/lib/tf";
 import {
   ajouterOffre,
@@ -330,7 +331,10 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                     <div className="text-xs text-gray-400">{d.detail}</div>
                   </div>
                   {d.disponible && (
-                    <button
+                    <BoutonPDF
+                      taille="petit"
+                      libelle="PDF"
+                      titre={`Télécharger ${d.nom} en PDF`}
                       onClick={() =>
                         exporterPDF(`${d.nom}_${referenceDossier(dossier)}`, {
                           titre: d.nom,
@@ -351,11 +355,7 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
                           }],
                         })
                       }
-                      aria-label={`Télécharger ${d.nom}`}
-                      className="text-blue hover:text-navy shrink-0"
-                    >
-                      <Download size={16} />
-                    </button>
+                    />
                   )}
                 </div>
               ))}

@@ -4,6 +4,7 @@ import { ShieldCheck } from "lucide-react";
 import Modal from "./Modal";
 import { Bien } from "@/lib/mock-data";
 import { exporterPDF } from "@/lib/export";
+import { BoutonPDF } from "@/components/BoutonsExport";
 
 export default function TFReportLauncher({ bien, children, className }: { bien: Bien; children: ReactNode; className?: string }) {
   const [open, setOpen] = useState(false);
@@ -38,7 +39,8 @@ export default function TFReportLauncher({ bien, children, className }: { bien: 
               </div>
             ))}
           </dl>
-          <button
+          <BoutonPDF
+            libelle="Télécharger le rapport en PDF"
             onClick={() =>
               exporterPDF(`Rapport_TF_${bien.reference}`, {
                 titre: `Rapport Titre Foncier : ${bien.titre}`,
@@ -50,10 +52,7 @@ export default function TFReportLauncher({ bien, children, className }: { bien: 
                 ],
               })
             }
-            className="btn-navy text-sm w-full"
-          >
-            ↓ Télécharger le rapport
-          </button>
+          />
         </Modal>
       )}
     </>

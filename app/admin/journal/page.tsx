@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { FileSpreadsheet, FileText } from "lucide-react";
+import { BoutonsExport } from "@/components/BoutonsExport";
 import { CategorieJournal, journalComplet, LABELS_JOURNAL } from "@/lib/journal";
 import { useStocke } from "@/lib/stockage";
 import { exporterExcel, exporterPDF, type Tableau } from "@/lib/export";
@@ -59,14 +59,7 @@ export default function JournalPage() {
           <h1 className="text-2xl font-bold text-navy mb-1">Journal d&apos;activité</h1>
           <p className="text-gray-500 text-sm">{lignes.length} action(s) · tracées dans ce navigateur (démo)</p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={exporterEnPDF} disabled={lignes.length === 0} className="flex items-center gap-2 border border-gray-200 bg-white rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50 disabled:opacity-40">
-            <FileText size={15} /> PDF
-          </button>
-          <button onClick={exporterEnExcel} disabled={lignes.length === 0} className="btn-navy text-sm flex items-center gap-2 disabled:opacity-40">
-            <FileSpreadsheet size={15} /> Excel (.xlsx)
-          </button>
-        </div>
+        <BoutonsExport onPDF={exporterEnPDF} onExcel={exporterEnExcel} disabled={lignes.length === 0} raison="Aucune action pour ces filtres." />
       </div>
 
       <div className="flex gap-2 flex-wrap mb-4">
