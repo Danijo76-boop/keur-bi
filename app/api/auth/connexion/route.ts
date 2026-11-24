@@ -4,6 +4,7 @@ import {
   adresseClient, memeOrigine, normaliserEmail, ouvrirSession, verifierMotDePasse, versSession,
 } from "@/lib/serveur/auth";
 import { avecJournal, log } from "@/lib/serveur/journal";
+import { otpActif, ouvrirDefi } from "@/lib/serveur/otp";
 import { compterEssai, LIMITES, limiteAtteinte, lireJson, oublierEssais } from "@/lib/serveur/securite";
 
 const refus = (erreur: string, status = 400) => NextResponse.json({ erreur }, { status });
@@ -38,6 +39,13 @@ async function post(requete: Request) {
       return refus("Ce compte est suspendu. Contactez le support KEUR BI.", 403);
     }
     await oublierEssais(cleCompte);
+    // Double vérification : le mot de passe ne suffit pas, un code est envoyé par WhatsApp.
+    if (otpActif()) {
+      const defi = await ouvrirDefi(compte);
+      if (!defi.ok) return refus(defi.erreur, defi.status);
+      log.info("Mot de passe correct, code WhatsApp demandé", { utilisateurId: compte.id, etape: defi.valeur.etape });
+      return NextResponse.json({ otp: defi.valeur });
+    }
     log.info("Connexion réussie", { utilisateurId: compte.id, role: compte.role });
     await ouvrirSession(compte.id);
     return NextResponse.json({ utilisateur: versSession(compte) });
