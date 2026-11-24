@@ -35,7 +35,6 @@ function zipStocke(fichiers: { nom: string; contenu: string }[]): Uint8Array {
 
 function xml(s: string): string {
   return s
-    // eslint-disable-next-line no-control-regex
     .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

@@ -12,7 +12,6 @@ import { usePeut } from "@/lib/permissions";
 import { lireFavoris } from "@/lib/preferences";
 import { useStocke } from "@/lib/stockage";
 import BarresHorizontales from "@/components/BarresHorizontales";
-import BandeauDemo from "@/components/BandeauDemo";
 import Protege from "@/components/Protege";
 import TFBadge from "@/components/TFBadge";
 
