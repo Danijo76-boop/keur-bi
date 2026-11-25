@@ -139,7 +139,7 @@ export default function FinancementPage() {
             ))}
           </div>
           <p className="text-xs text-gray-400 mt-4">
-            Mensualités hors assurance et frais de dossier. KEUR BI peut être rémunéré par la banque lorsqu&apos;une demande lui est transmise ; cela ne change
+            Mensualités hors assurance et frais de dossier. KEUR GUI peut être rémunéré par la banque lorsqu&apos;une demande lui est transmise ; cela ne change
             rien au taux qui vous est proposé.
           </p>
         </div>

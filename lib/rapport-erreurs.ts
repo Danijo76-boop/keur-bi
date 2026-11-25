@@ -21,7 +21,7 @@ export function signalerErreur(erreur: unknown, type = "erreur", code = codeErre
   } catch {
     /* le signalement ne doit jamais provoquer une nouvelle erreur */
   }
-  if (process.env.NODE_ENV !== "production") console.error(`[KEUR BI] Erreur ${code}`, e);
+  if (process.env.NODE_ENV !== "production") console.error(`[KEUR GUI] Erreur ${code}`, e);
   return code;
 }
 

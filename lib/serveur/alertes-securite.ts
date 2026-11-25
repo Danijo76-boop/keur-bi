@@ -62,14 +62,14 @@ export async function alerterSecurite(compte: Utilisateur, evenement: Evenement)
       let parTelephone = false;
       if (numero && alerteWhatsAppConfiguree()) parTelephone = (await envoyerAlerteWhatsApp(numero, LIBELLES[evenement], details)).ok;
       if (numero && !parTelephone && smsConfigure(numero)) {
-        parTelephone = (await envoyerSMS(numero, `KEUR BI : ${LIBELLES[evenement]} ${details}. ${consigne}`, "alerte de sécurité")).ok;
+        parTelephone = (await envoyerSMS(numero, `KEUR GUI : ${LIBELLES[evenement]} ${details}. ${consigne}`, "alerte de sécurité")).ok;
       }
       if (process.env.RESEND_API_KEY) {
         await envoyerEmail({
           a: compte.email,
-          sujet: `KEUR BI : ${LIBELLES[evenement].toLowerCase()}`,
-          texte: `Bonjour ${compte.nom},\n\n${LIBELLES[evenement]} ${details}.\n\nSi c'est vous, il n'y a rien à faire.\n${consigne}\n\nL'équipe KEUR BI`,
-          html: `<p>Bonjour ${echapper(compte.nom)},</p><p><strong>${echapper(LIBELLES[evenement])}</strong> ${echapper(details)}.</p><p>Si c'est vous, il n'y a rien à faire.</p><p>Si ce n'est pas vous, <a href="${lien}">changez immédiatement votre mot de passe</a>.</p><p>L'équipe KEUR BI</p>`,
+          sujet: `KEUR GUI : ${LIBELLES[evenement].toLowerCase()}`,
+          texte: `Bonjour ${compte.nom},\n\n${LIBELLES[evenement]} ${details}.\n\nSi c'est vous, il n'y a rien à faire.\n${consigne}\n\nL'équipe KEUR GUI`,
+          html: `<p>Bonjour ${echapper(compte.nom)},</p><p><strong>${echapper(LIBELLES[evenement])}</strong> ${echapper(details)}.</p><p>Si c'est vous, il n'y a rien à faire.</p><p>Si ce n'est pas vous, <a href="${lien}">changez immédiatement votre mot de passe</a>.</p><p>L'équipe KEUR GUI</p>`,
         });
       }
     } catch (e) {

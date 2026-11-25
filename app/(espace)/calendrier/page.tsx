@@ -112,7 +112,7 @@ function Contenu({ user }: { user: User }) {
   });
   const exporterAgendaPDF = () =>
     exporterPDF("Agenda_KEUR_BI", {
-      titre: "Mon agenda KEUR BI",
+      titre: "Mon agenda KEUR GUI",
       sousTitre: `${user.nom} · ${aVenir.length} évènement${aVenir.length > 1 ? "s" : ""} à venir`,
       paysage: true,
       sections: [{ tableau: tableauAgenda() }],

@@ -4,17 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Mail, Lock, User as UserIcon, Phone, MessageCircle } from "@/components/icones";
 import { suiteSure } from "@/lib/acces";
 import Link from "next/link";
-import {
-  useAuth,
-  ROLE_LABELS,
-  Role,
-  ROLES_INSCRIPTION,
-  ROLE_DESCRIPTIONS,
-  LONGUEUR_MIN_MOT_DE_PASSE,
-  motDePasseConforme,
-  type Canal,
-  type EtapeOTP,
-} from "@/lib/auth";
+import { useAuth, LONGUEUR_MIN_MOT_DE_PASSE, motDePasseConforme, type Canal, type EtapeOTP } from "@/lib/auth";
 import ReglesMotDePasse from "@/components/ReglesMotDePasse";
 
 export default function ConnexionPage() {
@@ -33,7 +23,6 @@ function Formulaire() {
   const [email, setEmail] = useState("");
   const [telephone, setTelephone] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
-  const [role, setRole] = useState<Role>(() => ROLES_INSCRIPTION.find((r) => r === params.get("role")) ?? "acheteur");
   const suite = suiteSure(params.get("suite"));
   const [erreur, setErreur] = useState("");
   const [envoi, setEnvoi] = useState(false);
@@ -60,7 +49,7 @@ function Formulaire() {
     setEnvoi(true);
     const resultat =
       mode === "inscription"
-        ? await inscription({ nom: nom.trim(), email: email.trim(), motDePasse, role, telephone: telephone.trim() || undefined })
+        ? await inscription({ nom: nom.trim(), email: email.trim(), motDePasse, telephone: telephone.trim() || undefined })
         : await connexion(email.trim(), motDePasse);
     setEnvoi(false);
     if (resultat.ok === false) {
@@ -96,7 +85,7 @@ function Formulaire() {
       <div className="card p-8">
         <h1 className="titre-page mb-1 text-center">{mode === "connexion" ? "Connexion" : "Créer un compte"}</h1>
         <p className="text-gray-500 text-sm text-center mb-6">
-          {mode === "connexion" ? "Accédez à votre espace KEUR BI" : "Rejoignez KEUR BI en quelques secondes"}
+          {mode === "connexion" ? "Accédez à votre espace KEUR GUI" : "Rejoignez KEUR GUI en quelques secondes"}
         </p>
 
         {suite && (
@@ -107,26 +96,13 @@ function Formulaire() {
 
         <form onSubmit={soumettre} className="flex flex-col gap-3">
           {mode === "inscription" && (
-            <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-2">Je suis un(e)</label>
-              <div className="grid grid-cols-2 gap-2">
-                {ROLES_INSCRIPTION.map((r) => (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => setRole(r)}
-                    title={ROLE_DESCRIPTIONS[r]}
-                    aria-pressed={r === role}
-                    className={`text-xs px-2 py-2 rounded-lg border font-medium transition-colors ${
-                      r === role ? "bg-navy text-white border-navy" : "bg-white text-gray-600 border-gray-200 hover:border-navy hover:text-navy"
-                    }`}
-                  >
-                    {ROLE_LABELS[r]}
-                  </button>
-                ))}
-              </div>
-              <p className="text-xs text-gray-500 mt-2">{ROLE_DESCRIPTIONS[role]}</p>
-            </div>
+            <p className="text-xs bg-navy/5 text-gray-600 rounded-lg px-3 py-2.5">
+              Vous êtes vendeur, agence, agent ou notaire ? Créez votre compte, puis{" "}
+              <Link href="/contact?sujet=Activer%20mon%20profil%20professionnel" className="text-blue font-semibold hover:underline">
+                demandez l&apos;activation de votre profil
+              </Link>
+              . Un administrateur KEUR GUI le mettra en place.
+            </p>
           )}
           {mode === "inscription" && (
             <>

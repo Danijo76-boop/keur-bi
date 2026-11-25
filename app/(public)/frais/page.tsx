@@ -124,7 +124,7 @@ function Simulateur() {
                 ))}
                 {p.flags.cadastre && (
                   <div className="flex justify-between gap-3">
-                    <dt className="text-gray-600">Vérification TF (KEUR BI)</dt>
+                    <dt className="text-gray-600">Vérification TF (KEUR GUI)</dt>
                     <dd className="font-semibold text-green">Inclus ✓</dd>
                   </div>
                 )}
@@ -148,7 +148,7 @@ function Simulateur() {
                 </div>
                 <div className="flex justify-between gap-3">
                   <dt className="text-gray-600">
-                    Commission KEUR BI ({tauxCommissionPour(prix, p)}%)<span className="block text-xs text-gray-400">Due uniquement si la vente aboutit</span>
+                    Commission KEUR GUI ({tauxCommissionPour(prix, p)}%)<span className="block text-xs text-gray-400">Due uniquement si la vente aboutit</span>
                   </dt>
                   <dd className="font-semibold text-right">−{formatFCFA(commission)}</dd>
                 </div>

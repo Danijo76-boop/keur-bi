@@ -202,7 +202,7 @@ export default function ComparerPage() {
 
         {analyse && (
           <div className="card p-5 mt-6 border-l-4 border-blue">
-            <h2 className="font-bold text-gray-900 mb-1">Analyse KEUR BI</h2>
+            <h2 className="font-bold text-gray-900 mb-1">Analyse KEUR GUI</h2>
             <p className="text-sm text-gray-600 leading-relaxed">{analyse}</p>
             <p className="text-xs text-gray-400 mt-2">
               Calcul automatique à partir des chiffres ci-dessus. Il ne remplace pas une visite ni l&apos;avis d&apos;un notaire.

@@ -91,7 +91,7 @@ function composerEmail(nomPersonne: string, alerte: LigneAlerte, biens: LigneBie
   const lignes = biens.slice(0, 10);
   const html = `<!doctype html><html lang="fr"><body style="margin:0;background:#f5f6f8;font-family:Arial,sans-serif;color:#1b2a4a">
 <div style="max-width:560px;margin:0 auto;padding:24px">
-  <p style="font-size:20px;font-weight:bold;margin:0 0 4px">KEUR BI</p>
+  <p style="font-size:20px;font-weight:bold;margin:0 0 4px">KEUR GUI</p>
   <p style="margin:0 0 20px;color:#555">Bonjour ${echapper(nomPersonne)}, voici ${biens.length > 1 ? "les nouvelles annonces qui correspondent" : "la nouvelle annonce qui correspond"} à votre alerte « ${echapper(alerte.nom)} ».</p>
   ${lignes
     .map(
@@ -106,7 +106,7 @@ function composerEmail(nomPersonne: string, alerte: LigneAlerte, biens: LigneBie
     .join("\n  ")}
   ${biens.length > lignes.length ? `<p style="color:#555">… et ${biens.length - lignes.length} autre(s).</p>` : ""}
   <p style="margin:20px 0"><a href="${urlRecherche(c)}" style="background:#e8a33d;color:#1b2a4a;font-weight:bold;text-decoration:none;padding:10px 18px;border-radius:8px">Voir toutes les annonces</a></p>
-  <p style="font-size:12px;color:#888">Vous recevez cet email car vous avez créé cette alerte sur KEUR BI. <a href="${site}/notifications" style="color:#888">Gérer ou supprimer mes alertes</a>.</p>
+  <p style="font-size:12px;color:#888">Vous recevez cet email car vous avez créé cette alerte sur KEUR GUI. <a href="${site}/notifications" style="color:#888">Gérer ou supprimer mes alertes</a>.</p>
 </div></body></html>`;
   const texte = [
     `Bonjour ${nomPersonne},`,

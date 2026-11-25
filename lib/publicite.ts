@@ -90,7 +90,7 @@ export function revenusPublicite(stats: Record<string, StatsCampagne>): number {
   return CAMPAGNES.reduce((s, c) => s + (stats[c.id]?.clics ?? 0) * c.cpc, 0);
 }
 
-// Formats vendus aux annonceurs (page « Annoncer sur KEUR BI »). Prix indicatifs.
+// Formats vendus aux annonceurs (page « Annoncer sur KEUR GUI »). Prix indicatifs.
 export const FORMATS_PUBLICITE = [
   {
     id: "encart_recherche",

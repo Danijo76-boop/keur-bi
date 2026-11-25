@@ -147,11 +147,11 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ── POURQUOI KEUR BI ── */}
+      {/* ── POURQUOI KEUR GUI ── */}
       <section className="max-w-7xl mx-auto px-4 py-20">
         <Revelation>
           <p className="eyebrow block text-center mb-2">Nos garanties</p>
-          <h2 className="section-title mb-2 text-center">Pourquoi choisir KEUR BI ?</h2>
+          <h2 className="section-title mb-2 text-center">Pourquoi choisir KEUR GUI ?</h2>
           <p className="text-gray-500 text-center mb-10">La seule plateforme avec vérification TF en temps réel</p>
         </Revelation>
         <GrilleRevelee className="grid md:grid-cols-3 gap-6">

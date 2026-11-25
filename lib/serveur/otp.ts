@@ -104,9 +104,9 @@ async function lireDefi(jeton: unknown, but: But) {
 const texteEmail = (code: string, but: But) => {
   const objet = but === "connexion" ? "votre connexion" : "la réinitialisation de votre mot de passe";
   return {
-    sujet: `${code} : votre code de vérification KEUR BI`,
-    texte: `Votre code de vérification pour ${objet} est ${code}.\nIl expire dans 10 minutes.\n\nNe le communiquez à personne, même à un agent KEUR BI.\nSi vous n'êtes pas à l'origine de cette demande, ignorez ce message et changez votre mot de passe.`,
-    html: `<p>Votre code de vérification pour ${echapper(objet)} :</p><p style="font-size:28px;font-weight:bold;letter-spacing:6px">${code}</p><p>Il expire dans 10 minutes.</p><p><strong>Ne le communiquez à personne</strong>, même à un agent KEUR BI.</p><p style="color:#666">Si vous n'êtes pas à l'origine de cette demande, ignorez ce message et changez votre mot de passe.</p>`,
+    sujet: `${code} : votre code de vérification KEUR GUI`,
+    texte: `Votre code de vérification pour ${objet} est ${code}.\nIl expire dans 10 minutes.\n\nNe le communiquez à personne, même à un agent KEUR GUI.\nSi vous n'êtes pas à l'origine de cette demande, ignorez ce message et changez votre mot de passe.`,
+    html: `<p>Votre code de vérification pour ${echapper(objet)} :</p><p style="font-size:28px;font-weight:bold;letter-spacing:6px">${code}</p><p>Il expire dans 10 minutes.</p><p><strong>Ne le communiquez à personne</strong>, même à un agent KEUR GUI.</p><p style="color:#666">Si vous n'êtes pas à l'origine de cette demande, ignorez ce message et changez votre mot de passe.</p>`,
   };
 };
 
@@ -114,7 +114,7 @@ async function envoyer(defiId: string, jeton: string, compte: Utilisateur, numer
   const possibles = canauxPossibles(numero);
   if (canalDemande && !possibles.includes(canalDemande)) return echec("Ce moyen d'envoi n'est pas disponible.");
   const ordre = canalDemande ? [canalDemande] : possibles;
-  if (!ordre.length) return echec("Aucun moyen d'envoyer le code n'est disponible pour le moment. Contactez le support KEUR BI.", 503);
+  if (!ordre.length) return echec("Aucun moyen d'envoyer le code n'est disponible pour le moment. Contactez le support KEUR GUI.", 503);
 
   const destinationCle = ordre[0] === "email" ? compte.email : numero!;
   if (await freiner(`otp-dest:${destinationCle}`, LIMITE_DESTINATION)) return echec("Trop de codes envoyés en peu de temps. Réessayez dans une heure.", 429);

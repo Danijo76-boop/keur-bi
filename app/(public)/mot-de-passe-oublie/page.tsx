@@ -124,7 +124,7 @@ function Formulaire() {
         ) : (
           <form onSubmit={valider} className="flex flex-col gap-3">
             <p className="text-sm bg-blue/5 border border-blue/20 text-gray-700 rounded-lg px-3 py-2.5" role="status">
-              Si un compte KEUR BI existe pour <strong className="break-all">{email.trim()}</strong>, un code à 6 chiffres vient d&apos;être envoyé sur son
+              Si un compte KEUR GUI existe pour <strong className="break-all">{email.trim()}</strong>, un code à 6 chiffres vient d&apos;être envoyé sur son
               numéro WhatsApp vérifié (ou par SMS), sinon par email. Il expire dans 10 minutes.
             </p>
             {codeDemo && (

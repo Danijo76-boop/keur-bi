@@ -1,4 +1,4 @@
-# KEUR BI
+# KEUR GUI
 
 Plateforme immobilière pour le Sénégal (Next.js 14, TypeScript, Tailwind). Version de démonstration : les données sont stockées dans le navigateur, sans serveur ni base de données.
 
@@ -164,7 +164,7 @@ Ne définissez pas `MOT_DE_PASSE_DEMO` en ligne : sans lui, les comptes d'exempl
 | Variable | Rôle |
 |---|---|
 | `RESEND_API_KEY` | Clé du service d'envoi d'emails Resend. Sans elle, les alertes ne partent pas (elles sont seulement journalisées). |
-| `EMAIL_EXPEDITEUR` | Expéditeur des emails, d'un domaine vérifié chez Resend (ex. `KEUR BI <alertes@keurbi.sn>`). |
+| `EMAIL_EXPEDITEUR` | Expéditeur des emails, d'un domaine vérifié chez Resend (ex. `KEUR GUI <alertes@keurgui.sn>`). |
 | `CRON_SECRET` | Secret présenté par la tâche planifiée de Vercel ; sans lui, l'envoi des alertes est refusé. |
 | `APP_URL` | Adresse publique du site, utilisée dans les liens des emails. |
 | `LOG_LEVEL` | Niveau de détail du journal (facultatif). |

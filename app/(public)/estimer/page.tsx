@@ -40,7 +40,7 @@ export default function EstimerPage() {
       <div className="text-center mb-10">
         <p className="eyebrow mb-2">Outil vendeur</p>
         <h1 className="titre-page mb-2">Combien vaut mon bien ?</h1>
-        <p className="text-gray-500 max-w-2xl mx-auto">Une estimation immédiate, calculée à partir des annonces comparables publiées sur KEUR BI.</p>
+        <p className="text-gray-500 max-w-2xl mx-auto">Une estimation immédiate, calculée à partir des annonces comparables publiées sur KEUR GUI.</p>
       </div>
 
       <div className="grid lg:grid-cols-[22rem_1fr] gap-6 items-start">

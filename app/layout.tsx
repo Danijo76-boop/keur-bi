@@ -16,7 +16,7 @@ const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-int
 const display = Plus_Jakarta_Sans({ subsets: ["latin"], display: "swap", variable: "--font-display", weight: ["600", "700", "800"] });
 
 export const metadata: Metadata = {
-  title: "KEUR BI — Immobilier au Sénégal",
+  title: "KEUR GUI — Immobilier au Sénégal",
   description: "Achetez, vendez et vérifiez des biens immobiliers au Sénégal. Titres Fonciers vérifiés, transactions sécurisées.",
 };
 
@@ -42,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between gap-8">
               <div className="max-w-xs">
                 <div className="font-display text-white font-extrabold text-xl mb-2">
-                  KEUR<span className="text-gold">BI</span>
+                  KEUR<span className="text-gold">GUI</span>
                 </div>
                 <p className="text-sm leading-relaxed">
                   La plateforme immobilière de confiance au Sénégal : Titres Fonciers vérifiés, notaires partenaires, transactions suivies de bout en bout.
@@ -118,7 +118,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       Mentions légales
                     </Link>
                     <Link href="/annonceurs" className="hover:text-gold">
-                      Annoncer sur KEUR BI
+                      Annoncer sur KEUR GUI
                     </Link>
                     <Link href="/contact" className="hover:text-gold">
                       Contact
@@ -127,7 +127,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
               </div>
             </div>
-            <div className="max-w-7xl mx-auto px-4 mt-10 pt-5 border-t border-white/10 text-xs">© 2026 KEUR BI · Dakar, Sénégal</div>
+            <div className="max-w-7xl mx-auto px-4 mt-10 pt-5 border-t border-white/10 text-xs">© 2026 KEUR GUI · Dakar, Sénégal</div>
           </footer>
         </AuthProvider>
       </body>

@@ -51,7 +51,7 @@ async function post(requete: Request) {
     }
     if (compte.suspendu) {
       log.info("Connexion refusée : compte suspendu", { utilisateurId: compte.id });
-      return refus("Ce compte est suspendu. Contactez le support KEUR BI.", 403);
+      return refus("Ce compte est suspendu. Contactez le support KEUR GUI.", 403);
     }
     await oublierEssais(cleCompte);
     // Double vérification : le mot de passe ne suffit pas, un code est envoyé par WhatsApp, SMS ou email.

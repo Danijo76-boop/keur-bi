@@ -10,9 +10,6 @@ export type User = { nom: string; email: string; role: Role };
 
 export const ROLES: Role[] = ["acheteur", "vendeur", "agence", "agent", "notaire", "clerc", "moderateur", "admin"];
 
-// Rôles qu'une personne peut choisir elle-même à l'inscription. Modérateur et admin sont attribués par un administrateur.
-export const ROLES_INSCRIPTION: Role[] = ["acheteur", "vendeur", "agence", "agent", "notaire", "clerc"];
-
 export const LONGUEUR_MIN_MOT_DE_PASSE = 10;
 
 // Règles d'un nouveau mot de passe, affichées et cochées pendant la saisie. Le serveur applique les mêmes
@@ -84,7 +81,7 @@ export type EtapeOTP =
   { etape: "numero"; defi: string; autres: Canal[] } | { etape: "code"; defi: string; destination: string; canal: Canal; autres: Canal[]; codeDemo?: string };
 export type ResultatAuth = { ok: true } | { ok: false; erreur: string } | { ok: "otp"; otp: EtapeOTP };
 export type ResultatEnvoiCode = { ok: true; otp: EtapeOTP } | { ok: false; erreur: string; expire?: boolean };
-export type DonneesInscription = { nom: string; email: string; motDePasse: string; role: Role; telephone?: string };
+export type DonneesInscription = { nom: string; email: string; motDePasse: string; telephone?: string };
 
 type AuthContextValue = {
   user: User | null;

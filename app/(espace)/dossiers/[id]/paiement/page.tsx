@@ -69,7 +69,7 @@ export default function PaiementPage() {
             <h1 className="titre-page mb-1">Paiement séquestre · Dossier #{referenceDossier(dossier)}</h1>
             <p className="text-gray-500 text-sm mb-4">Les fonds restent bloqués chez le notaire jusqu&apos;à la signature de l&apos;acte.</p>
             <BandeauDemo>
-              Démonstration : aucun paiement n&apos;est traité par KEUR BI et aucun argent ne circule ici. Vous déclarez un versement, le notaire le confirme.
+              Démonstration : aucun paiement n&apos;est traité par KEUR GUI et aucun argent ne circule ici. Vous déclarez un versement, le notaire le confirme.
             </BandeauDemo>
 
             {!accord ? (

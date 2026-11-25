@@ -19,7 +19,7 @@ function Formulaire() {
 
   function envoyer(e: React.FormEvent) {
     e.preventDefault();
-    ajouterMessage({ type: "message", agence: "Support KEUR BI", nom, contact, message: `${sujet ? `[${sujet}] ` : ""}${message}`, envoyeur: user?.email });
+    ajouterMessage({ type: "message", agence: "Support KEUR GUI", nom, contact, message: `${sujet ? `[${sujet}] ` : ""}${message}`, envoyeur: user?.email });
     setEnvoye(true);
   }
 

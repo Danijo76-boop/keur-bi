@@ -25,7 +25,7 @@ const SECTIONS = [
     titre: "Acheter",
     questions: [
       {
-        q: "Combien coûte KEUR BI pour un acheteur ?",
+        q: "Combien coûte KEUR GUI pour un acheteur ?",
         r: "Consulter les annonces et soumettre des offres est gratuit. Les frais de notaire et les droits restent dus : le simulateur de frais vous donne une estimation.",
       },
       { q: "Peut-on acheter à distance (diaspora) ?", r: "Oui, via une procuration notariée. Le dossier se suit en ligne à chaque étape." },
