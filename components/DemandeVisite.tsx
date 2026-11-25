@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useExigeCompte } from "@/lib/exige-compte";
 import { CalendarCheck } from "@/components/icones";
 import { useAuth } from "@/lib/auth";
 import { useStocke } from "@/lib/stockage";
@@ -12,8 +12,8 @@ const CRENEAUX = ["09:00", "11:00", "15:00", "17:00"];
 const champ = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mt-1 font-normal";
 
 export default function DemandeVisite({ bienId, bienTitre }: { bienId: string; bienTitre: string }) {
-  const router = useRouter();
   const { user } = useAuth();
+  const exigeCompte = useExigeCompte();
   const visites = useStocke(lireVisites, []);
   const [ouvert, setOuvert] = useState(false);
   const [jour, setJour] = useState("");
@@ -37,7 +37,7 @@ export default function DemandeVisite({ bienId, bienTitre }: { bienId: string; b
   }
 
   function ouvrir() {
-    if (!user) return router.push("/connexion");
+    if (!exigeCompte()) return;
     setOuvert(true);
   }
 

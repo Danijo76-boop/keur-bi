@@ -2,13 +2,16 @@
 import { Heart } from "@/components/icones";
 import { basculerFavori, lireFavoris } from "@/lib/preferences";
 import { useStocke } from "@/lib/stockage";
+import { useExigeCompte } from "@/lib/exige-compte";
 
 export default function FavoriButton({ id, className, size = 15 }: { id: string; className?: string; size?: number }) {
   const actif = useStocke(() => lireFavoris().includes(id), false, [id]);
+  const exigeCompte = useExigeCompte();
 
   function toggle(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
+    if (!exigeCompte()) return;
     basculerFavori(id);
   }
 
