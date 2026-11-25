@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Role, ROLE_LABELS, ROLES } from "@/lib/auth";
 import { lireMatrice, Matrice, PERMISSIONS, sauvegarderMatrice } from "@/lib/permissions";
 import { journaliser } from "@/lib/journal";
+import { ChevronDown } from "@/components/icones";
 import { useStocke } from "@/lib/stockage";
 import { ajouterUtilisateur, lireUtilisateurs, StatutKYC, trouverUtilisateur } from "@/lib/utilisateurs";
 
@@ -15,6 +16,7 @@ export default function RolesPage() {
   const utilisateurs = useStocke(lireUtilisateurs, []);
   const [matrice, setMatrice] = useState<Matrice>(enregistree);
   const [ok, setOk] = useState(false);
+  const [ouvert, setOuvert] = useState<Role | null>(ROLES[0]);
 
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
@@ -118,7 +120,7 @@ export default function RolesPage() {
           <div className="p-5 border-b border-gray-100 flex items-start justify-between gap-3 flex-wrap">
             <div>
               <h2 className="font-bold text-gray-900">Matrice des habilitations</h2>
-              <p className="text-xs text-gray-500 xl:hidden">Faites défiler le tableau vers la droite pour voir tous les rôles.</p>
+              <p className="text-xs text-gray-500">Ouvrez un profil pour voir et modifier ses habilitations.</p>
               <p className="text-xs text-gray-500">
                 « Bloquant » : la permission contrôle réellement l&apos;action dans cette démo. Les autres sont indicatives. Une permission
                 d&apos;administration accordée à un autre rôle lui ouvre la section correspondante.
@@ -151,55 +153,74 @@ export default function RolesPage() {
               </button>
             </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[960px]">
-              <thead>
-                <tr className="text-xs text-gray-500 border-b border-gray-100">
-                  <th scope="col" className="p-3 text-left font-semibold sticky left-0 bg-white z-10 w-72">
-                    Permission
-                  </th>
-                  {ROLES.map((r) => (
-                    <th scope="col" key={r} className="p-2 font-semibold text-center normal-case tracking-normal">
-                      {ROLE_LABELS[r]}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              {GROUPES.map((g) => (
-                <tbody key={g}>
-                  <tr>
-                    <th scope="colgroup" colSpan={ROLES.length + 1} className="bg-gray-50 px-3 py-2 text-left text-xs font-bold text-navy uppercase">
-                      {g}
-                    </th>
-                  </tr>
-                  {PERMISSIONS.filter((p) => p.groupe === g).map((p) => (
-                    <tr key={p.id} className="border-b border-gray-50">
-                      <th scope="row" className="p-3 text-left font-normal sticky left-0 bg-white z-10 w-72 shadow-[1px_0_0_rgba(27,42,74,0.08)]">
-                        <span className="font-semibold text-gray-800">{p.label}</span>
-                        {p.appliquee && <span className="ml-2 text-[10px] font-bold uppercase bg-blue/10 text-blue px-1.5 py-0.5 rounded">Bloquant</span>}
-                        <span className="block text-xs text-gray-400">{p.desc}</span>
-                      </th>
-                      {ROLES.map((r) => {
-                        // L'admin garde toujours l'administration, pour éviter de s'enfermer dehors.
-                        const verrou = r === "admin" && p.groupe.startsWith("Administration");
-                        return (
-                          <td key={r} className="p-2 text-center">
-                            <input
-                              type="checkbox"
-                              aria-label={`${p.label} : ${ROLE_LABELS[r]}`}
-                              className="accent-navy w-4 h-4"
-                              checked={(matrice[p.id] ?? []).includes(r)}
-                              disabled={verrou}
-                              onChange={() => basculer(p.id, r)}
-                            />
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              ))}
-            </table>
+          {/* Un accordéon par profil : on ouvre le profil voulu et on coche ses habilitations, sans tableau à faire défiler. */}
+          <div className="divide-y divide-gray-100">
+            {ROLES.map((r) => {
+              const accordees = PERMISSIONS.filter((p) => (matrice[p.id] ?? []).includes(r)).length;
+              const change = PERMISSIONS.some((p) => (matrice[p.id] ?? []).includes(r) !== (enregistree[p.id] ?? []).includes(r));
+              const estOuvert = ouvert === r;
+              return (
+                <section key={r}>
+                  <h3>
+                    <button
+                      type="button"
+                      aria-expanded={estOuvert}
+                      aria-controls={`habilitations-${r}`}
+                      onClick={() => setOuvert(estOuvert ? null : r)}
+                      className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="flex-1 min-w-0">
+                        <span className="block font-semibold text-gray-900">{ROLE_LABELS[r]}</span>
+                        <span className="block text-xs text-gray-500">
+                          {accordees} habilitation{accordees > 1 ? "s" : ""} sur {PERMISSIONS.length}
+                        </span>
+                      </span>
+                      {change && <span className="text-[10px] font-bold uppercase bg-gold/15 text-gold-dark px-2 py-0.5 rounded">Modifié</span>}
+                      <span className="hidden sm:block w-24 h-1.5 rounded-full bg-gray-100 overflow-hidden" aria-hidden>
+                        <span className="block h-full bg-navy" style={{ width: `${(accordees / PERMISSIONS.length) * 100}%` }} />
+                      </span>
+                      <ChevronDown size={18} className={`text-gray-400 transition-transform ${estOuvert ? "rotate-180" : ""}`} />
+                    </button>
+                  </h3>
+                  {estOuvert && (
+                    <div id={`habilitations-${r}`} className="px-5 pb-5">
+                      {GROUPES.map((g) => (
+                        <fieldset key={g} className="mt-3">
+                          <legend className="text-xs font-bold text-navy uppercase mb-1">{g}</legend>
+                          <div className="flex flex-col">
+                            {PERMISSIONS.filter((p) => p.groupe === g).map((p) => {
+                              // L'admin garde toujours l'administration, pour éviter de s'enfermer dehors.
+                              const verrou = r === "admin" && p.groupe.startsWith("Administration");
+                              return (
+                                <label
+                                  key={p.id}
+                                  className={`flex items-start gap-3 rounded-lg px-2 py-2 ${verrou ? "opacity-60" : "cursor-pointer hover:bg-gray-50"}`}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    className="accent-navy w-4 h-4 mt-0.5 shrink-0"
+                                    checked={(matrice[p.id] ?? []).includes(r)}
+                                    disabled={verrou}
+                                    onChange={() => basculer(p.id, r)}
+                                  />
+                                  <span className="min-w-0">
+                                    <span className="font-medium text-sm text-gray-800">{p.label}</span>
+                                    {p.appliquee && (
+                                      <span className="ml-2 text-[10px] font-bold uppercase bg-blue/10 text-blue px-1.5 py-0.5 rounded">Bloquant</span>
+                                    )}
+                                    <span className="block text-xs text-gray-500">{p.desc}</span>
+                                  </span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </fieldset>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              );
+            })}
           </div>
         </div>
       </div>
