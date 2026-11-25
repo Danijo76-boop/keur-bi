@@ -16,6 +16,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Versions mises en ligne avant la création de ce workflow : étiquetées une fois, puis ignorées.
+      - name: Étiqueter les versions précédentes
+        run: |
+          while read -r version commit; do
+            git ls-remote --exit-code --tags origin "refs/tags/$version" >/dev/null && continue
+            git push origin "$commit:refs/tags/$version"
+          done <<'LISTE'
+          v1.0.0 ac4d4cbe634fa0a0c2df8bc6d0555be2e774e002
+          v1.1.0 58c251e760cf233d6bb7d94685a108d0fd691e69
+          v1.2.0 bad693b18c3608f9d6999bbd4bc6ef7edb96d188
+          v1.3.0 2f574e0b75c0782b691a569b928a345bef7adc84
+          v1.4.0 070e6963a66ede025084cc27a2b1bc195a4acb62
+          v1.5.0 341a1f2037b0354886c34c7118967d66fdda7413
+          v1.6.0 ac39097bac986f8dfb4ffa078d04fb4b7c5ebdec
+          v1.7.0 5fc3ff255c9309224a527a0f42e00e9ee83e1b25
+          v1.8.0 fd511a0ce9abc79712cee4e37de2793aea996ee6
+          v1.9.0 83ae1fbd4fb49962b55b4ff663a6e1bd104028f6
+          v1.10.0 1cb853b8e526779c7c53d9fcb77f17d2b240ab6b
+          v1.11.0 758ff758adbd931e169158967bf30e7fd60df0ff
+          v1.12.0 65ac9306d952ce1aee903d28348b32d0a72ac1bb
+          v1.13.0 5badae2e437b638acc119d1915df03845c75ddaf
+          LISTE
 
       - name: Créer l'étiquette et la release
         env:
