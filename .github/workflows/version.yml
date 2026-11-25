@@ -24,7 +24,9 @@ jobs:
         run: |
           while read -r version commit; do
             git ls-remote --exit-code --tags origin "refs/tags/$version" >/dev/null && continue
-            git push origin "$commit:refs/tags/$version"
+            # GitHub refuse à ce workflow les commits dont les fichiers de workflow diffèrent de l'actuel :
+            # l'étiquette est alors à créer à la main (Releases > Draft a new release), sans bloquer la suite.
+            git push origin "$commit:refs/tags/$version" || echo "::warning::$version non créée automatiquement : à créer à la main sur le commit $commit."
           done <<'LISTE'
           v1.0.0 ac4d4cbe634fa0a0c2df8bc6d0555be2e774e002
           v1.1.0 58c251e760cf233d6bb7d94685a108d0fd691e69
