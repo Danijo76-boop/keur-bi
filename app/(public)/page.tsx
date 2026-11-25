@@ -18,15 +18,16 @@ import {
   Circle,
   XCircle,
 } from "@/components/icones";
-import { BIENS, REGIONS, formatPrix } from "@/lib/mock-data";
+import { BIENS, REGIONS } from "@/lib/mock-data";
 import { ChiffresCles, NbAnnoncesRegion } from "@/components/ChiffresAccueil";
 import PropertyCard from "@/components/PropertyCard";
 import { listerAnnonces } from "@/lib/serveur/annonces";
 import { log } from "@/lib/serveur/journal";
 import HeroSearch from "@/components/HeroSearch";
 import SectionPersonnalisee from "@/components/SectionPersonnalisee";
-import { GrilleRevelee, HaloSouris, HalosCartes, Inclinaison, MotTournant, Revelation } from "@/components/Dynamique";
+import { GrilleRevelee, HaloSouris, HalosCartes, MotTournant, Revelation } from "@/components/Dynamique";
 import Pastille from "@/components/Pastille";
+import VitrineAccueil from "@/components/VitrineAccueil";
 
 // L'accueil lit les annonces en vedette dans la base à chaque visite.
 export const dynamic = "force-dynamic";
@@ -37,7 +38,9 @@ export default async function HomePage() {
     return BIENS;
   });
   const featured = biens.filter((b) => b.is_featured).slice(0, 3);
-  const vedette = featured.find((b) => b.type === "villa") ?? featured[0];
+  // Vitrine du haut : les annonces en vedette, complétées par les plus récentes, jusqu'à cinq. Point de départ tiré au hasard à chaque visite.
+  const vitrine = [...biens.filter((b) => b.is_featured), ...biens.filter((b) => !b.is_featured)].filter((b) => b.photo).slice(0, 5);
+  const depart = Math.floor(Math.random() * Math.max(vitrine.length, 1));
 
   return (
     <div>
@@ -95,48 +98,7 @@ export default async function HomePage() {
           </div>
 
           {/* Visuel : un bien en vedette, avec ses garanties */}
-          {vedette && (
-            <Link href={`/annonces/${vedette.id}`} className="entree relative hidden lg:block group" style={{ "--d": "300ms" } as React.CSSProperties}>
-              <Inclinaison className="relative rounded-[2rem]">
-                <div className="relative h-[26rem] rounded-[2rem] overflow-hidden ring-1 ring-white/20 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)]">
-                  <Image
-                    src={vedette.photo.replace("w=600", "w=1200")}
-                    alt={vedette.titre}
-                    fill
-                    priority
-                    sizes="560px"
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/85 via-transparent to-transparent" />
-                  <div className="absolute left-5 right-5 bottom-5">
-                    <div className="text-white/70 text-xs mb-1 flex items-center gap-1">
-                      <MapPin size={12} className="text-gold" /> {vedette.quartier}, {vedette.ville}
-                    </div>
-                    <div className="font-display font-bold text-lg leading-snug">{vedette.titre}</div>
-                    <div className="font-display font-extrabold text-2xl text-gold mt-1">{formatPrix(vedette.prix)}</div>
-                  </div>
-                </div>
-              </Inclinaison>
-              <div className="flotte absolute -left-8 top-10 bg-white text-gray-800 rounded-2xl px-4 py-3 shadow-flottant flex items-center gap-3">
-                <span className="w-10 h-10 rounded-xl bg-green-light/15 flex items-center justify-center">
-                  <Shield size={20} className="text-green-light" />
-                </span>
-                <span>
-                  <span className="block text-sm font-bold text-navy-dark">Titre Foncier vérifié</span>
-                  <span className="block text-xs text-gray-500">Contrôlé par un notaire</span>
-                </span>
-              </div>
-              <div className="flotte-decale absolute -right-4 top-1/2 bg-white text-gray-800 rounded-2xl px-4 py-3 shadow-flottant flex items-center gap-3">
-                <span className="w-10 h-10 rounded-xl bg-gold/15 flex items-center justify-center">
-                  <FileCheck size={20} className="text-gold" />
-                </span>
-                <span>
-                  <span className="block text-sm font-bold text-navy-dark">Dossier 100 % en ligne</span>
-                  <span className="block text-xs text-gray-500">De l&apos;offre à l&apos;acte</span>
-                </span>
-              </div>
-            </Link>
-          )}
+          <VitrineAccueil biens={vitrine} depart={depart} />
         </div>
       </section>
 
