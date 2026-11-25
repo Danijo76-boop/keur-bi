@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import Link from "next/link";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -12,8 +12,18 @@ import Newsletter from "@/components/Newsletter";
 import { SCRIPT_THEME } from "@/lib/theme";
 import { AuthProvider } from "@/lib/auth";
 
-const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
-const display = Plus_Jakarta_Sans({ subsets: ["latin"], display: "swap", variable: "--font-display", weight: ["600", "700", "800"] });
+// Polices incluses dans le projet (app/polices, licence OFL) : la construction du site ne dépend plus de
+// Google Fonts, dont les pannes passagères faisaient échouer les déploiements. Rendu identique.
+const inter = localFont({ src: "./polices/inter-latin-variable.woff2", weight: "100 900", display: "swap", variable: "--font-inter" });
+const display = localFont({
+  src: [
+    { path: "./polices/plus-jakarta-sans-latin-600.woff2", weight: "600" },
+    { path: "./polices/plus-jakarta-sans-latin-700.woff2", weight: "700" },
+    { path: "./polices/plus-jakarta-sans-latin-800.woff2", weight: "800" },
+  ],
+  display: "swap",
+  variable: "--font-display",
+});
 
 export const metadata: Metadata = {
   title: "KEUR GUI — Immobilier au Sénégal",
