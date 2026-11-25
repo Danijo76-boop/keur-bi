@@ -199,7 +199,7 @@ export default function Navbar() {
             <MapPin size={18} className="text-navy-dark" strokeWidth={2.5} />
           </div>
           <span className="font-display text-white font-extrabold text-xl tracking-tight">
-            KEUR<span className="text-gold">BI</span>
+            KEUR<span className="text-gold">GUI</span>
           </span>
         </Link>
 

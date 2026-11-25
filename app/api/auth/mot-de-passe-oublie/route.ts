@@ -18,7 +18,7 @@ async function post(requete: Request) {
   if (!emailValide(email)) return refus("Indiquez l'adresse email de votre compte.");
   if (!reinitialisationPossible()) {
     log.erreur("Mot de passe oublié indisponible : aucun moyen d'envoi des codes configuré");
-    return refus("La réinitialisation du mot de passe n'est pas encore disponible. Contactez le support KEUR BI.", 503);
+    return refus("La réinitialisation du mot de passe n'est pas encore disponible. Contactez le support KEUR GUI.", 503);
   }
   const ip = await adresseClient();
   if ((ip && (await freiner(`oubli-ip:${ip}`, LIMITES.oubliAdresse))) || (await freiner(`oubli:${email}`, LIMITES.oubliCompte))) {

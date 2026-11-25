@@ -21,7 +21,7 @@ export function smsConfigure(numero?: string): boolean {
 }
 
 const texteSMS = (code: string) =>
-  `KEUR BI : votre code de vérification est ${code}. Il expire dans 10 minutes. Ne le communiquez à personne, même à un agent KEUR BI.`;
+  `KEUR GUI : votre code de vérification est ${code}. Il expire dans 10 minutes. Ne le communiquez à personne, même à un agent KEUR GUI.`;
 
 export type ResultatSMS = { ok: true } | { ok: false; raison: string };
 

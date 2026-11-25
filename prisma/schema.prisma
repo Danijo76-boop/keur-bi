@@ -1,4 +1,4 @@
-// Schéma de la base de données KEUR BI (PostgreSQL).
+// Schéma de la base de données KEUR GUI (PostgreSQL).
 // Il reprend les données que l'application gardait jusqu'ici dans le navigateur.
 // Les montants en FCFA sont des BigInt : un Int plafonne à environ 2,1 milliards.
 

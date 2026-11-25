@@ -4,7 +4,7 @@ import { genererXlsx } from "./xlsx";
 
 /* ── Exports du site : PDF et Excel uniquement ──
    Tous les rapports et fichiers téléchargés passent par ici, pour avoir partout la même présentation :
-   en-tête KEUR BI, titre, date de génération, tableaux lisibles, numéros de page.
+   en-tête KEUR GUI, titre, date de génération, tableaux lisibles, numéros de page.
    La bibliothèque PDF (jspdf) n'est chargée qu'au moment du téléchargement : elle n'alourdit pas les pages. */
 
 export type Cellule = string | number;
@@ -80,7 +80,7 @@ export async function exporterPDF(base: string, d: DocumentPDF): Promise<string>
   doc.setFont("helvetica", "bold").setFontSize(16).setTextColor(255, 255, 255);
   doc.text("KEUR", marge, 14);
   doc.setTextColor(...OR);
-  doc.text("BI", marge + doc.getTextWidth("KEUR"), 14);
+  doc.text("GUI", marge + doc.getTextWidth("KEUR"), 14);
   doc.setFont("helvetica", "normal").setFontSize(9).setTextColor(220, 226, 235);
   doc.text(textePDF(`Généré le ${new Date().toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}`), largeur - marge, 14, { align: "right" });
 
@@ -178,7 +178,7 @@ export async function exporterPDF(base: string, d: DocumentPDF): Promise<string>
       .setFont("helvetica", "normal")
       .setFontSize(8)
       .setTextColor(...GRIS);
-    doc.text("KEUR BI - La plateforme immobiliere de confiance au Senegal", marge, hauteur - 8);
+    doc.text("KEUR GUI - La plateforme immobiliere de confiance au Senegal", marge, hauteur - 8);
     doc.text(`Page ${i} / ${pages}`, largeur - marge, hauteur - 8, { align: "right" });
   }
 

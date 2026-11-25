@@ -4,12 +4,12 @@ import { log } from "./journal";
 /* ── Envoi d'emails ──
    Passe par Resend (https://resend.com) si la variable RESEND_API_KEY est définie.
    Sans elle, l'email n'est pas envoyé : il est seulement noté dans le journal, ce qui permet de tester en local.
-   EMAIL_EXPEDITEUR doit être une adresse d'un domaine vérifié chez Resend (ex. « KEUR BI <alertes@keurbi.sn> »). */
+   EMAIL_EXPEDITEUR doit être une adresse d'un domaine vérifié chez Resend (ex. « KEUR GUI <alertes@keurgui.sn> »). */
 
 export type Email = { a: string; sujet: string; html: string; texte: string };
 export type ResultatEmail = { ok: true } | { ok: false; raison: string };
 
-export const adresseSite = () => (process.env.APP_URL || "https://keur-bi.vercel.app").replace(/\/$/, "");
+export const adresseSite = () => (process.env.APP_URL || "https://keur-gui.vercel.app").replace(/\/$/, "");
 
 export function echapper(texte: string): string {
   return texte.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
@@ -26,7 +26,7 @@ export async function envoyerEmail(e: Email): Promise<ResultatEmail> {
       method: "POST",
       headers: { Authorization: `Bearer ${cle}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: process.env.EMAIL_EXPEDITEUR || "KEUR BI <onboarding@resend.dev>",
+        from: process.env.EMAIL_EXPEDITEUR || "KEUR GUI <onboarding@resend.dev>",
         to: [e.a],
         subject: e.sujet,
         html: e.html,

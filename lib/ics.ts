@@ -30,5 +30,5 @@ export function genererIcs(evenements: EvenementIcs[]): string {
     ...(e.detail ? [`DESCRIPTION:${echapper(e.detail)}`] : []),
     "END:VEVENT",
   ]);
-  return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//KEUR BI//Calendrier//FR", ...blocs, "END:VCALENDAR"].map(plier).join("\r\n") + "\r\n";
+  return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//KEUR GUI//Calendrier//FR", ...blocs, "END:VCALENDAR"].map(plier).join("\r\n") + "\r\n";
 }

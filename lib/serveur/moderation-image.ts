@@ -31,7 +31,7 @@ const Verdict = z.object({
   motifs: z.array(z.enum(Object.keys(MOTIFS) as [Motif, ...Motif[]])),
 });
 
-const CONSIGNE = `Tu vérifies les photos envoyées sur KEUR BI, un site d'annonces immobilières au Sénégal, avant leur publication.
+const CONSIGNE = `Tu vérifies les photos envoyées sur KEUR GUI, un site d'annonces immobilières au Sénégal, avant leur publication.
 Une photo est publiée à la vue de tous : elle doit montrer un bien immobilier (intérieur, extérieur, terrain, quartier, plan) sans heurter personne ni exposer quiconque.
 
 Refuse la photo (acceptable = false) et indique chaque motif qui s'applique :

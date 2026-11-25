@@ -3,13 +3,13 @@ import Link from "next/link";
 const ETAPES = [
   {
     titre: "Identifier et visiter le terrain",
-    desc: "Recherchez sur KEUR BI parmi les annonces avec TF vérifié. Visitez physiquement, vérifiez l'accessibilité, les réseaux (eau, électricité) et les servitudes éventuelles.",
+    desc: "Recherchez sur KEUR GUI parmi les annonces avec TF vérifié. Visitez physiquement, vérifiez l'accessibilité, les réseaux (eau, électricité) et les servitudes éventuelles.",
     tag: "~2 sem.",
   },
   {
     titre: "Vérifier le Titre Foncier (TF)",
-    desc: "Consultez la Conservation Foncière ou passez par la vérification KEUR BI. Confirmez l'identité du propriétaire, l'absence d'hypothèques et l'intégrité du TF.",
-    tag: "KEUR BI",
+    desc: "Consultez la Conservation Foncière ou passez par la vérification KEUR GUI. Confirmez l'identité du propriétaire, l'absence d'hypothèques et l'intégrité du TF.",
+    tag: "KEUR GUI",
   },
   {
     titre: "Négocier et signer la promesse de vente",
@@ -29,7 +29,7 @@ const ETAPES = [
   },
   {
     titre: "Enregistrement à la DGID",
-    desc: "Le notaire dépose l'acte à la Direction Générale des Impôts et des Domaines dans les 3 mois et règle les droits d'enregistrement. KEUR BI envoie des alertes J-30 et J-7.",
+    desc: "Le notaire dépose l'acte à la Direction Générale des Impôts et des Domaines dans les 3 mois et règle les droits d'enregistrement. KEUR GUI envoie des alertes J-30 et J-7.",
     tag: "Délai 3 mois",
   },
   {
@@ -39,7 +39,7 @@ const ETAPES = [
   },
   {
     titre: "Réception du nouveau TF",
-    desc: "Vous recevez le Titre Foncier mis à jour à votre nom. Vous êtes officiellement propriétaire et le dossier est clôturé sur KEUR BI.",
+    desc: "Vous recevez le Titre Foncier mis à jour à votre nom. Vous êtes officiellement propriétaire et le dossier est clôturé sur KEUR GUI.",
     tag: "Fin du parcours",
   },
 ];
@@ -57,7 +57,7 @@ const FAQ = [
     q: "Un terrain sans TF est-il achetable ?",
     r: "C'est déconseillé : un terrain sans Titre Foncier expose à de sérieux risques juridiques. Faites-vous conseiller par un notaire avant toute offre.",
   },
-  { q: "Peut-on acheter à distance (diaspora) ?", r: "Oui, via une procuration notariée. KEUR BI permet de suivre le dossier en ligne à chaque étape." },
+  { q: "Peut-on acheter à distance (diaspora) ?", r: "Oui, via une procuration notariée. KEUR GUI permet de suivre le dossier en ligne à chaque étape." },
   {
     q: "Quelle est la durée totale du processus ?",
     r: "En moyenne 2 à 4 mois entre la signature et l'obtention du nouveau TF, selon la diligence du notaire et les délais de la Conservation.",

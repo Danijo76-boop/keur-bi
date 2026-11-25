@@ -1,24 +1,14 @@
 "use client";
-import { Home, KeyRound, Handshake, Landmark } from "@/components/icones";
-import { useState } from "react";
 import Link from "next/link";
 import { useBiens } from "@/lib/annonces";
 import { NOTAIRES } from "@/lib/notaires";
 import { useStocke } from "@/lib/stockage";
 import { lireDemandesTF, lireOverridesTF, statutTF } from "@/lib/tf";
 
-const PROFILS = [
-  { role: "acheteur", icone: Home, titre: "Acheteur", desc: "Je cherche un terrain" },
-  { role: "vendeur", icone: KeyRound, titre: "Vendeur particulier", desc: "Je vends mon propre bien" },
-  { role: "agence", icone: Handshake, titre: "Agence ou promoteur", desc: "Je vends pour des clients" },
-  { role: "notaire", icone: Landmark, titre: "Notaire", desc: "Je gère des dossiers" },
-];
-
 export default function BienvenuePage() {
   const biens = useBiens();
   const overrides = useStocke(lireOverridesTF, []);
   const demandes = useStocke(lireDemandesTF, []);
-  const [role, setRole] = useState("acheteur");
 
   const chiffres = [
     { val: biens.length, label: "Annonces" },
@@ -33,7 +23,7 @@ export default function BienvenuePage() {
     >
       <div className="w-full max-w-md text-white text-center">
         <h1 className="titre-page text-white md:text-4xl">
-          KEUR<span className="text-gold">BI</span>
+          KEUR<span className="text-gold">GUI</span>
         </h1>
         <p className="text-white/70 mb-6">Votre maison, au Sénégal</p>
         <div className="grid grid-cols-3 gap-3 mb-8">
@@ -44,32 +34,21 @@ export default function BienvenuePage() {
             </div>
           ))}
         </div>
-        <h2 className="font-semibold mb-3 text-left">Je suis…</h2>
-        <div className="flex flex-col gap-2 mb-6" role="radiogroup" aria-label="Votre profil">
-          {PROFILS.map((p) => (
-            <button
-              key={p.role}
-              role="radio"
-              aria-checked={role === p.role}
-              onClick={() => setRole(p.role)}
-              className={`flex items-center gap-3 text-left rounded-xl p-4 border-2 transition-colors ${role === p.role ? "bg-white text-navy-dark border-gold" : "bg-white/5 border-white/20 hover:bg-white/10"}`}
-            >
-              <p.icone size={26} aria-hidden className="shrink-0" />
-              <span>
-                <span className="block font-bold">{p.titre}</span>
-                <span className={`block text-sm ${role === p.role ? "text-gray-500" : "text-white/60"}`}>{p.desc}</span>
-              </span>
-            </button>
-          ))}
-        </div>
-        <Link href={`/connexion?mode=inscription&role=${role}`} className="btn-primary block">
-          Commencer →
+        <Link href="/connexion?mode=inscription" className="btn-primary block">
+          Créer mon compte →
         </Link>
-        <p className="text-sm text-white/70 mt-4">
-          Déjà inscrit ?{" "}
-          <Link href={`/connexion?role=${role}`} className="text-gold font-semibold hover:underline">
-            Se connecter
+        <Link
+          href="/connexion"
+          className="block mt-3 rounded-xl border border-white/30 bg-white/10 px-5 py-2.5 font-semibold hover:bg-white/20 transition-colors"
+        >
+          Se connecter
+        </Link>
+        <p className="text-sm text-white/70 mt-6">
+          Vendeur, agence, agent ou notaire ?{" "}
+          <Link href="/contact?sujet=Activer%20mon%20profil%20professionnel" className="text-gold font-semibold hover:underline">
+            Demandez votre profil professionnel
           </Link>
+          , un administrateur le crée pour vous.
         </p>
       </div>
     </div>

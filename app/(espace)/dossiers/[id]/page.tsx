@@ -580,7 +580,7 @@ function Contenu({ dossierId, bien }: { dossierId: string; bien: Bien }) {
               {coteVendeur ? (
                 <>
                   <div className="flex justify-between gap-3">
-                    <dt className="text-gray-500">Commission KEUR BI</dt>
+                    <dt className="text-gray-500">Commission KEUR GUI</dt>
                     <dd className="font-semibold text-right">−{formatFCFA(commission)}</dd>
                   </div>
                   <div className="flex justify-between gap-3 border-t border-gray-100 pt-2">

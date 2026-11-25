@@ -132,7 +132,7 @@ const FAQ = [
   },
   {
     q: "Comment sont perçus les honoraires du notaire ?",
-    r: "Les honoraires du notaire sont distincts de la commission KEUR BI et facturés directement par l'étude. KEUR BI ne prélève aucun pourcentage dessus.",
+    r: "Les honoraires du notaire sont distincts de la commission KEUR GUI et facturés directement par l'étude. KEUR GUI ne prélève aucun pourcentage dessus.",
   },
 ];
 
@@ -149,7 +149,8 @@ function CartePlan({ plan, annuel }: { plan: Plan; annuel: boolean }) {
   const autreRole = !!user && user.role !== plan.role;
 
   function choisir() {
-    if (!user) return router.push(`/connexion?mode=inscription&role=${plan.role}`);
+    // Les profils professionnels sont créés par un administrateur : sans compte, on passe par le formulaire de contact.
+    if (!user) return router.push(`/contact?sujet=${encodeURIComponent(`Abonnement ${plan.nom}`)}`);
     majUtilisateur(user.email, { plan: plan.id });
     popup.succes(`Plan ${plan.nom} activé`, "Démo : aucune facturation.");
   }
@@ -189,7 +190,12 @@ function CartePlan({ plan, annuel }: { plan: Plan; annuel: boolean }) {
       {actuel ? (
         <span className="text-sm font-semibold text-green text-center py-2.5">✓ Votre plan actuel</span>
       ) : autreRole ? (
-        <span className="text-xs text-gray-400 text-center py-2.5">Réservé aux comptes {plan.role === "agence" ? "Agence" : "Notaire"}</span>
+        <Link
+          href={`/contact?sujet=${encodeURIComponent(`Profil ${plan.role === "agence" ? "Agence" : "Notaire"} et abonnement ${plan.nom}`)}`}
+          className="text-xs text-blue font-semibold text-center py-2.5 hover:underline"
+        >
+          Réservé aux comptes {plan.role === "agence" ? "Agence" : "Notaire"} : demander ce profil
+        </Link>
       ) : (
         <button onClick={choisir} className={`${plan.populaire ? "btn-primary" : "btn-navy"} text-sm text-center`}>
           {plan.cta}
@@ -320,7 +326,7 @@ export default function TarifsPage() {
             ))}
           </ul>
           <p className="text-xs text-gray-500">
-            La commission est à la charge du vendeur. L&apos;acheteur ne paie aucun frais KEUR BI, hors services optionnels. Les frais notariaux et droits
+            La commission est à la charge du vendeur. L&apos;acheteur ne paie aucun frais KEUR GUI, hors services optionnels. Les frais notariaux et droits
             restent dus :{" "}
             <Link href="/frais" className="text-blue hover:underline">
               simuler

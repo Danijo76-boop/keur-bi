@@ -259,7 +259,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
                     <Phone size={15} /> Appeler
                   </a>
                   <a
-                    href={`https://wa.me/${bien.telephone.replace(/\D/g, "")}?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par votre annonce KEUR BI : ${bien.titre} (réf. ${bien.reference}).`)}`}
+                    href={`https://wa.me/${bien.telephone.replace(/\D/g, "")}?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par votre annonce KEUR GUI : ${bien.titre} (réf. ${bien.reference}).`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 font-semibold text-sm px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
