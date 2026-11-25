@@ -76,8 +76,8 @@ export default async function HomePage() {
               Achetez et vendez des terrains, villas et appartements avec des Titres Fonciers vérifiés par nos notaires partenaires.
             </p>
 
-            {/* Search bar */}
-            <div className="entree max-w-xl" style={{ "--d": "360ms" } as React.CSSProperties}>
+            {/* Search bar : au-dessus des « Zones » pour que la liste de suggestions ne passe pas dessous */}
+            <div className="entree relative z-30 max-w-xl" style={{ "--d": "360ms" } as React.CSSProperties}>
               <HeroSearch />
             </div>
             <div className="entree flex flex-wrap items-center gap-2 mt-5 text-sm max-w-xl" style={{ "--d": "480ms" } as React.CSSProperties}>
