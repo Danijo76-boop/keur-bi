@@ -9,7 +9,7 @@ import { log } from "./journal";
 export type Email = { a: string; sujet: string; html: string; texte: string };
 export type ResultatEmail = { ok: true } | { ok: false; raison: string };
 
-export const adresseSite = () => (process.env.APP_URL || "https://keur-bi.vercel.app").replace(/\/$/, "");
+export const adresseSite = () => (process.env.APP_URL || "https://keur-gui.vercel.app").replace(/\/$/, "");
 
 export function echapper(texte: string): string {
   return texte.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
