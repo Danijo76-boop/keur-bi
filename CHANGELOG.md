@@ -5,8 +5,12 @@ Chaque version mise en ligne porte une étiquette Git (`v1.14.0`…) et son num�
 Pour une nouvelle version : augmenter `version` dans `package.json` et ajouter sa section en haut de ce fichier, dans la même pull request.
 L'étiquette et la « release » GitHub sont créées automatiquement à la fusion dans `main`.
 
-- Nouvelle fonctionnalité : 1.17.0 → **1.18.0**
-- Simple correctif : 1.17.0 → **1.17.1**
+- Nouvelle fonctionnalité : 1.18.0 → **1.19.0**
+- Simple correctif : 1.18.0 → **1.18.1**
+
+## [1.18.0] — 2026-11-25
+
+- Assistant KEUR GUI : bulle de discussion en bas à droite de chaque page (sauf l'administration). Il conseille des annonces du catalogue avec un lien vers leur fiche, explique les étapes d'un achat et l'usage du site. Réponses au fil de l'eau, limite de 40 questions par heure et par adresse.
 
 ## [1.17.0] — 2026-11-25
 

@@ -19,6 +19,7 @@ export const LIMITES = {
   alerte: { max: 30, fenetreMs: 60 * 60_000 },
   oubliCompte: { max: 5, fenetreMs: 60 * 60_000 },
   oubliAdresse: { max: 20, fenetreMs: 60 * 60_000 },
+  assistant: { max: 40, fenetreMs: 60 * 60_000 },
 } satisfies Record<string, Limite>;
 
 // Vrai si la limite est déjà atteinte (sans compter un nouvel essai).

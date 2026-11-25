@@ -127,7 +127,7 @@ Variables à définir dans le projet Vercel (Settings → Environment Variables)
 | `DATABASE_URL` | Adresse de la base PostgreSQL (fournie automatiquement par l'intégration Neon de Vercel) |
 | `DATABASE_URL_UNPOOLED` | Adresse directe, utilisée pour les migrations (fournie aussi par Neon ; sinon `DATABASE_URL` sert) |
 | `ADMIN_EMAIL`, `ADMIN_MOT_DE_PASSE` | Premier compte administrateur |
-| `ANTHROPIC_API_KEY` | Vérification du contenu des photos envoyées (clé à créer sur console.anthropic.com) |
+| `ANTHROPIC_API_KEY` | Vérification du contenu des photos envoyées et assistant de discussion (clé à créer sur console.anthropic.com) ; sans elle, l'assistant affiche « pas encore activé » |
 | `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` | Envoi des codes de connexion par WhatsApp : jeton d'accès permanent et identifiant du numéro expéditeur (Meta Business → WhatsApp Manager) |
 | `WHATSAPP_MODELE_ALERTE` | Facultatif : modèle « Utilité » approuvé par Meta pour les alertes de connexion, avec deux variables ({{1}} l'évènement, {{2}} la date et l'appareil) |
 | `RESEND_API_KEY`, `EMAIL_EXPEDITEUR` | Emails (alertes de recherche, codes de vérification en secours, alertes de sécurité) |

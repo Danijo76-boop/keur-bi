@@ -9,6 +9,7 @@ import RapportErreurs from "@/components/RapportErreurs";
 import MaintenanceGate from "@/components/MaintenanceGate";
 import GardeVisiteur from "@/components/GardeVisiteur";
 import PopupHost from "@/components/PopupHost";
+import Assistant from "@/components/Assistant";
 import Newsletter from "@/components/Newsletter";
 import { SCRIPT_THEME } from "@/lib/theme";
 import { AuthProvider } from "@/lib/auth";
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </MaintenanceGate>
           </main>
           <PopupHost />
+          <Assistant />
           <footer className="relative bg-navy-dark text-white/60 text-sm pt-12 pb-8 mt-20 print:hidden">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-gold via-gold-light to-blue" />
             <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between gap-8">
