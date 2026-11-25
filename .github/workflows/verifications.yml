@@ -47,6 +47,17 @@ jobs:
           node-version: 22
           cache: npm
 
+      # Chaque pull request doit annoncer une nouvelle version (package.json et CHANGELOG.md).
+      - name: Numéro de version
+        if: github.event_name == 'pull_request'
+        run: |
+          version="v$(node -p "require('./package.json').version")"
+          if git ls-remote --exit-code --tags origin "refs/tags/$version" >/dev/null; then
+            echo "::error::La version $version existe déjà : augmentez « version » dans package.json et ajoutez la section correspondante dans CHANGELOG.md."
+            exit 1
+          fi
+          grep -q "^## \[${version#v}\]" CHANGELOG.md || { echo "::error::CHANGELOG.md n'a pas de section pour ${version#v}."; exit 1; }
+
       - name: Installation
         run: npm ci
 
