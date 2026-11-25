@@ -5,8 +5,13 @@ Chaque version mise en ligne porte une étiquette Git (`v1.14.0`…) et son num�
 Pour une nouvelle version : augmenter `version` dans `package.json` et ajouter sa section en haut de ce fichier, dans la même pull request.
 L'étiquette et la « release » GitHub sont créées automatiquement à la fusion dans `main`.
 
-- Nouvelle fonctionnalité : 1.14.0 → **1.15.0**
-- Simple correctif : 1.14.0 → **1.14.1**
+- Nouvelle fonctionnalité : 1.15.0 → **1.16.0**
+- Simple correctif : 1.15.0 → **1.15.1**
+
+## [1.15.0] — 2026-11-25
+
+- Suggestions pendant la recherche (accueil et page des annonces) : quartiers, villes et régions avec le nombre d'annonces, puis les annonces correspondantes.
+- La recherche ignore les accents et l'ordre des mots (« sacre coeur » trouve « Sacré-Cœur »).
 
 ## [1.14.0] — 2026-11-25
 
