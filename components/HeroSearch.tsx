@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search } from "@/components/icones";
+import ChampRecherche from "@/components/ChampRecherche";
 
 const TYPES = ["Tous types", "Terrain", "Villa", "Appartement", "Bureau"];
 
@@ -11,11 +12,11 @@ export default function HeroSearch() {
   const [transaction, setTransaction] = useState("Acheter");
   const [type, setType] = useState("Tous types");
 
-  function rechercher(e: React.FormEvent) {
-    e.preventDefault();
+  function rechercher(e?: React.FormEvent, saisie = q) {
+    e?.preventDefault();
     const params = new URLSearchParams();
     if (transaction === "Louer") params.set("transaction", "location");
-    if (q.trim()) params.set("q", q.trim());
+    if (saisie.trim()) params.set("q", saisie.trim());
     if (type !== "Tous types") params.set("type", type.toLowerCase());
     const query = params.toString();
     router.push(`/annonces${query ? `?${query}` : ""}`);
@@ -28,12 +29,15 @@ export default function HeroSearch() {
     >
       <div className="flex-1 flex items-center gap-3 px-3">
         <Search size={18} className="text-gray-400 shrink-0" />
-        <input
-          type="text"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
+        <ChampRecherche
+          valeur={q}
+          onChange={setQ}
+          onChoisir={(lieu) => rechercher(undefined, lieu)}
+          transaction={transaction === "Louer" ? "location" : "vente"}
+          ariaLabel="Quartier, ville ou région"
           placeholder="Quartier, ville, région…"
-          className="w-full text-gray-800 text-sm outline-none placeholder-gray-400"
+          conteneur="w-full"
+          className="w-full text-gray-800 text-sm outline-none placeholder-gray-400 py-2"
         />
       </div>
       <select

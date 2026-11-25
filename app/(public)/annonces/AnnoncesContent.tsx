@@ -12,6 +12,8 @@ import { lireOverridesTF, lireDemandesTF, statutTF, StatutTF, LABELS_TF } from "
 import { useBiens } from "@/lib/annonces";
 import { useStocke } from "@/lib/stockage";
 import { useAuth } from "@/lib/auth";
+import ChampRecherche from "@/components/ChampRecherche";
+import { correspond, texteRecherche } from "@/lib/recherche";
 import { useExigeCompte } from "@/lib/exige-compte";
 import { useParametres } from "@/lib/parametres";
 import { creerAlerte, CriteresAlerte, resumeCriteres } from "@/lib/preferences";
@@ -147,7 +149,6 @@ export default function AnnoncesContent() {
   const demandesTF = useStocke(lireDemandesTF, []);
 
   const resultats = useMemo(() => {
-    const q = recherche.trim().toLowerCase();
     let r = biens.filter((b) => {
       if ((b.transaction ?? "vente") !== transaction) return false;
       if (type !== "Tous" && b.type !== type.toLowerCase()) return false;
@@ -160,7 +161,7 @@ export default function AnnoncesContent() {
       if (statutsTF.length > 0 && !statutsTF.includes(statutTF(b, overridesTF, demandesTF))) return false;
       if (featured && !b.is_featured) return false;
       if (baisse && !b.prix_baisser) return false;
-      if (q && !`${b.titre} ${b.ville} ${b.quartier} ${b.region} ${b.agence}`.toLowerCase().includes(q)) return false;
+      if (recherche.trim() && !correspond(texteRecherche(b), recherche)) return false;
       return true;
     });
 
@@ -250,12 +251,13 @@ export default function AnnoncesContent() {
           <p className="text-gray-500 text-sm">{resultats.length} résultats trouvés</p>
         </div>
         <div className="flex gap-2">
-          <input
-            type="text"
-            value={recherche}
-            onChange={(e) => setRecherche(e.target.value)}
+          <ChampRecherche
+            valeur={recherche}
+            onChange={setRecherche}
+            transaction={transaction}
+            ariaLabel="Rechercher une annonce"
             placeholder="Rechercher par ville, quartier…"
-            className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy w-48"
+            className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy w-56"
           />
           {flags.carte && (
             <Link href="/carte" className="flex items-center gap-2 border border-gray-200 bg-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-50">
