@@ -66,7 +66,7 @@ export default function ChampRecherche({
   const premiereAnnonce = liste.findIndex((s) => s.genre === "annonce");
 
   return (
-    <div className={`relative ${conteneur}`}>
+    <div className={`relative ${visible ? "z-40" : ""} ${conteneur}`}>
       <input
         type="search"
         role="combobox"
