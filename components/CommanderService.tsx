@@ -2,6 +2,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import Modal from "./Modal";
 import { useAuth } from "@/lib/auth";
+import { useExigeCompte } from "@/lib/exige-compte";
 import { formatFCFA } from "@/lib/mock-data";
 import { commander, SERVICES } from "@/lib/revenus";
 import { useStocke } from "@/lib/stockage";
@@ -10,6 +11,7 @@ import { trouverUtilisateur } from "@/lib/utilisateurs";
 const champ = "border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-navy";
 
 // Bouton qui ouvre le formulaire de commande d'un service à la carte.
+// Commander un service sur une annonce précise demande d'être connecté ; les offres générales (pack diaspora) restent ouvertes.
 export default function CommanderService({
   serviceId,
   bienId,
@@ -22,6 +24,7 @@ export default function CommanderService({
   children: ReactNode;
 }) {
   const { user } = useAuth();
+  const exigeCompte = useExigeCompte();
   const profil = useStocke(() => (user ? trouverUtilisateur(user.email) : undefined), undefined, [user?.email]);
   const service = SERVICES.find((s) => s.id === serviceId);
   const [ouvert, setOuvert] = useState(false);
@@ -46,7 +49,7 @@ export default function CommanderService({
 
   return (
     <>
-      <button type="button" className={className} onClick={() => setOuvert(true)}>
+      <button type="button" className={className} onClick={() => (!bienId || exigeCompte()) && setOuvert(true)}>
         {children}
       </button>
       {ouvert && (

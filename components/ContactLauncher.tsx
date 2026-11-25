@@ -2,6 +2,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import Modal from "./Modal";
 import { useAuth } from "@/lib/auth";
+import { useExigeCompte } from "@/lib/exige-compte";
 import { ajouterMessage } from "@/lib/messages";
 import { envoyerMessage, obtenirConversation } from "@/lib/messagerie";
 import { IconeStatut } from "@/components/Statut";
@@ -26,6 +27,7 @@ export default function ContactLauncher({
   agence?: string;
 }) {
   const { user } = useAuth();
+  const exigeCompte = useExigeCompte();
   const [open, setOpen] = useState(false);
   const [envoye, setEnvoye] = useState(false);
   const [nom, setNom] = useState("");
@@ -78,7 +80,7 @@ export default function ContactLauncher({
 
   return (
     <>
-      <button type="button" className={className} onClick={() => setOpen(true)}>
+      <button type="button" className={className} onClick={() => exigeCompte() && setOpen(true)}>
         {children}
       </button>
       {open && (

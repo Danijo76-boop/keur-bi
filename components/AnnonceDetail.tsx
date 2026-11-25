@@ -33,6 +33,8 @@ import NoteBien from "@/components/NoteBien";
 import CommanderService from "@/components/CommanderService";
 import PropertyCard from "@/components/PropertyCard";
 import { IconeStatut } from "@/components/Statut";
+import { useExigeCompte } from "@/lib/exige-compte";
+import { versConnexion } from "@/lib/acces";
 
 const CarteLeaflet = dynamic(() => import("@/components/CarteLeaflet"), { ssr: false });
 const sansEffet = () => {};
@@ -41,6 +43,7 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
   const biens = useBiens(true);
   const metas = useMetasAnnonces();
   const { user, pret } = useAuth();
+  const exigeCompte = useExigeCompte();
   const bien = biens.find((b) => b.id === id) ?? initial;
   const dossiers = useStocke(lireDossiers, []);
   const [photoActive, setPhotoActive] = useState(0);
@@ -238,6 +241,24 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
               </div>
             </div>
 
+            {pret && !user && (
+              <div className="bg-gold/10 border border-gold/30 rounded-xl p-3 mb-4 text-sm">
+                <p className="font-semibold text-navy mb-1">Vous êtes intéressé(e) par ce bien ?</p>
+                <p className="text-gray-600 mb-3">
+                  Connectez-vous pour contacter l&apos;annonceur, demander une visite, faire une offre ou l&apos;ajouter à vos favoris. La création d&apos;un
+                  compte est gratuite.
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link href={versConnexion(`/annonces/${bien.id}`)} className="btn-navy text-center text-sm">
+                    Se connecter
+                  </Link>
+                  <Link href={`${versConnexion(`/annonces/${bien.id}`)}&mode=inscription`} className="btn-primary text-center text-sm">
+                    Créer un compte
+                  </Link>
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col gap-3 mb-4">
               <ContactLauncher
                 titre={`Contacter ${bien.agence}`}
@@ -253,13 +274,19 @@ export default function AnnonceDetail({ id, initial }: { id: string; initial?: B
               {bien.telephone && (
                 <div className="grid grid-cols-2 gap-2">
                   <a
-                    href={`tel:${bien.telephone}`}
+                    href={user ? `tel:${bien.telephone}` : "#"}
+                    onClick={(e) => exigeCompte(e)}
                     className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 font-semibold text-sm px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
                   >
                     <Phone size={15} /> Appeler
                   </a>
                   <a
-                    href={`https://wa.me/${bien.telephone.replace(/\D/g, "")}?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par votre annonce KEUR GUI : ${bien.titre} (réf. ${bien.reference}).`)}`}
+                    href={
+                      user
+                        ? `https://wa.me/${bien.telephone.replace(/\D/g, "")}?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par votre annonce KEUR GUI : ${bien.titre} (réf. ${bien.reference}).`)}`
+                        : "#"
+                    }
+                    onClick={(e) => exigeCompte(e)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 font-semibold text-sm px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors"

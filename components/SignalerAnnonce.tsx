@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useExigeCompte } from "@/lib/exige-compte";
 import { Flag } from "@/components/icones";
 import { useAuth } from "@/lib/auth";
 import { lireSignalements, MOTIFS_SIGNALEMENT, signaler } from "@/lib/moderation";
@@ -8,8 +8,8 @@ import { useStocke } from "@/lib/stockage";
 import Modal from "./Modal";
 
 export default function SignalerAnnonce({ bienId }: { bienId: string }) {
-  const router = useRouter();
   const { user } = useAuth();
+  const exigeCompte = useExigeCompte();
   const deja = useStocke(() => lireSignalements().some((s) => s.bienId === bienId && s.auteurEmail === user?.email), false, [bienId, user?.email]);
   const [ouvert, setOuvert] = useState(false);
   const [motif, setMotif] = useState(MOTIFS_SIGNALEMENT[0]);
@@ -21,7 +21,7 @@ export default function SignalerAnnonce({ bienId }: { bienId: string }) {
     <>
       <button
         type="button"
-        onClick={() => (user ? setOuvert(true) : router.push("/connexion"))}
+        onClick={() => exigeCompte() && setOuvert(true)}
         className="flex items-center justify-center gap-1 text-xs text-gray-400 hover:text-red w-full mt-3"
       >
         <Flag size={12} /> Signaler cette annonce

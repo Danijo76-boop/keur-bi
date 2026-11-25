@@ -12,6 +12,7 @@ import { lireOverridesTF, lireDemandesTF, statutTF, StatutTF, LABELS_TF } from "
 import { useBiens } from "@/lib/annonces";
 import { useStocke } from "@/lib/stockage";
 import { useAuth } from "@/lib/auth";
+import { useExigeCompte } from "@/lib/exige-compte";
 import { useParametres } from "@/lib/parametres";
 import { creerAlerte, CriteresAlerte, resumeCriteres } from "@/lib/preferences";
 import { IconeTF } from "@/components/Statut";
@@ -140,6 +141,7 @@ export default function AnnoncesContent() {
   }
   const biens = useBiens();
   const { user } = useAuth();
+  const exigeCompte = useExigeCompte();
   const { flags } = useParametres();
   const overridesTF = useStocke(lireOverridesTF, []);
   const demandesTF = useStocke(lireDemandesTF, []);
@@ -460,9 +462,9 @@ export default function AnnoncesContent() {
                   <BellPlus size={14} /> Enregistrer cette recherche
                 </button>
               ) : (
-                <Link href="/connexion" className="flex items-center gap-1 text-sm text-blue font-medium hover:underline">
+                <button onClick={() => exigeCompte()} className="flex items-center gap-1 text-sm text-blue font-medium hover:underline">
                   <BellPlus size={14} /> Connectez-vous pour créer une alerte
-                </Link>
+                </button>
               )}
               <button onClick={copierLien} className="flex items-center gap-1 text-sm text-blue font-medium hover:underline">
                 <Link2 size={14} /> {lienCopie ? "Lien copié" : "Copier le lien de la recherche"}
