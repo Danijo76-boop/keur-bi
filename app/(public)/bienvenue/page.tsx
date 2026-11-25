@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useBiens } from "@/lib/annonces";
 import { NOTAIRES } from "@/lib/notaires";
@@ -22,6 +23,7 @@ export default function BienvenuePage() {
       style={{ background: "linear-gradient(135deg, #1B2A4A 0%, #1B4F72 60%, #2E86AB 100%)" }}
     >
       <div className="w-full max-w-md text-white text-center">
+        <Image src="/logo.png" alt="" width={96} height={96} priority className="w-24 h-24 mx-auto mb-4 rounded-3xl ring-1 ring-white/20 shadow-flottant" />
         <h1 className="titre-page text-white md:text-4xl">
           KEUR<span className="text-gold">GUI</span>
         </h1>

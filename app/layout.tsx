@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Image from "next/image";
 import Link from "next/link";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -8,6 +9,7 @@ import RapportErreurs from "@/components/RapportErreurs";
 import MaintenanceGate from "@/components/MaintenanceGate";
 import GardeVisiteur from "@/components/GardeVisiteur";
 import PopupHost from "@/components/PopupHost";
+import Assistant from "@/components/Assistant";
 import Newsletter from "@/components/Newsletter";
 import { SCRIPT_THEME } from "@/lib/theme";
 import { AuthProvider } from "@/lib/auth";
@@ -47,12 +49,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </MaintenanceGate>
           </main>
           <PopupHost />
+          <Assistant />
           <footer className="relative bg-navy-dark text-white/60 text-sm pt-12 pb-8 mt-20 print:hidden">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-gold via-gold-light to-blue" />
             <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between gap-8">
               <div className="max-w-xs">
-                <div className="font-display text-white font-extrabold text-xl mb-2">
-                  KEUR<span className="text-gold">GUI</span>
+                <div className="flex items-center gap-2.5 mb-2">
+                  <Image src="/logo.png" alt="" width={40} height={40} className="w-10 h-10 rounded-xl ring-1 ring-white/15" />
+                  <span className="font-display text-white font-extrabold text-xl">
+                    KEUR<span className="text-gold">GUI</span>
+                  </span>
                 </div>
                 <p className="text-sm leading-relaxed">
                   La plateforme immobilière de confiance au Sénégal : Titres Fonciers vérifiés, notaires partenaires, transactions suivies de bout en bout.

@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -20,7 +21,6 @@ import {
   LogOut,
   Mail,
   Map,
-  MapPin,
   MapPinned,
   Menu,
   MessageSquare,
@@ -195,9 +195,14 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <div className="w-9 h-9 bg-gradient-to-br from-gold-light to-gold rounded-xl flex items-center justify-center shadow-[0_4px_12px_-4px_rgba(240,165,0,0.8)]">
-            <MapPin size={18} className="text-navy-dark" strokeWidth={2.5} />
-          </div>
+          <Image
+            src="/logo.png"
+            alt=""
+            width={40}
+            height={40}
+            priority
+            className="w-10 h-10 rounded-xl ring-1 ring-white/15 shadow-[0_4px_12px_-4px_rgba(240,165,0,0.6)]"
+          />
           <span className="font-display text-white font-extrabold text-xl tracking-tight">
             KEUR<span className="text-gold">GUI</span>
           </span>

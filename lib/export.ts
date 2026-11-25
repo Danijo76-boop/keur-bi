@@ -66,6 +66,24 @@ export const nomFichier = (base: string, extension: "pdf" | "xlsx") =>
     .replace(/_+/g, "_")
     .replace(/^_|_$/g, "")}_${dateFichier()}.${extension}`;
 
+// Logo du site pour l'en-tête des PDF (lu une fois). Sans lui (hors navigateur, réseau coupé), l'en-tête garde le nom seul.
+let logoPDF: Promise<string | null> | undefined;
+function lireLogo(): Promise<string | null> {
+  logoPDF ??= fetch("/logo.png")
+    .then((r) => (r.ok ? r.blob() : Promise.reject(new Error(`HTTP ${r.status}`))))
+    .then(
+      (blob) =>
+        new Promise<string>((ok, ko) => {
+          const lecteur = new FileReader();
+          lecteur.onload = () => ok(String(lecteur.result));
+          lecteur.onerror = () => ko(lecteur.error);
+          lecteur.readAsDataURL(blob);
+        }),
+    )
+    .catch(() => null);
+  return logoPDF;
+}
+
 export async function exporterPDF(base: string, d: DocumentPDF): Promise<string> {
   const [{ jsPDF }, { autoTable }] = await Promise.all([import("jspdf"), import("jspdf-autotable")]);
   const doc = new jsPDF({ orientation: d.paysage ? "landscape" : "portrait", unit: "mm", format: "a4" });
@@ -77,10 +95,13 @@ export async function exporterPDF(base: string, d: DocumentPDF): Promise<string>
   // En-tête
   doc.setFillColor(...NAVY);
   doc.rect(0, 0, largeur, 22, "F");
+  const logo = await lireLogo();
+  if (logo) doc.addImage(logo, "PNG", marge, 4, 14, 14);
+  const xNom = logo ? marge + 17 : marge;
   doc.setFont("helvetica", "bold").setFontSize(16).setTextColor(255, 255, 255);
-  doc.text("KEUR", marge, 14);
+  doc.text("KEUR", xNom, 14);
   doc.setTextColor(...OR);
-  doc.text("GUI", marge + doc.getTextWidth("KEUR"), 14);
+  doc.text("GUI", xNom + doc.getTextWidth("KEUR"), 14);
   doc.setFont("helvetica", "normal").setFontSize(9).setTextColor(220, 226, 235);
   doc.text(textePDF(`Généré le ${new Date().toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}`), largeur - marge, 14, { align: "right" });
 
