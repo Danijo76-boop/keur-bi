@@ -49,7 +49,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </MaintenanceGate>
           </main>
           <PopupHost />
-          <Assistant />
+          {/* Assistant affiché seulement quand la clé Anthropic est configurée (sinon il ne pourrait pas répondre). */}
+          {process.env.ANTHROPIC_API_KEY && <Assistant />}
           <footer className="relative bg-navy-dark text-white/60 text-sm pt-12 pb-8 mt-20 print:hidden">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-gold via-gold-light to-blue" />
             <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between gap-8">

@@ -5,8 +5,12 @@ Chaque version mise en ligne porte une étiquette Git (`v1.14.0`…) et son num�
 Pour une nouvelle version : augmenter `version` dans `package.json` et ajouter sa section en haut de ce fichier, dans la même pull request.
 L'étiquette et la « release » GitHub sont créées automatiquement à la fusion dans `main`.
 
-- Nouvelle fonctionnalité : 1.18.0 → **1.19.0**
-- Simple correctif : 1.18.0 → **1.18.1**
+- Nouvelle fonctionnalité : 1.18.1 → **1.19.0**
+- Simple correctif : 1.18.1 → **1.18.2**
+
+## [1.18.1] — 2026-11-25
+
+- L'assistant est masqué tant que la clé `ANTHROPIC_API_KEY` n'est pas configurée ; il réapparaît de lui-même une fois la clé ajoutée et le site remis en ligne.
 
 ## [1.18.0] — 2026-11-25
 
