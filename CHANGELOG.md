@@ -5,8 +5,12 @@ Chaque version mise en ligne porte une étiquette Git (`v1.14.0`…) et son num�
 Pour une nouvelle version : augmenter `version` dans `package.json` et ajouter sa section en haut de ce fichier, dans la même pull request.
 L'étiquette et la « release » GitHub sont créées automatiquement à la fusion dans `main`.
 
-- Nouvelle fonctionnalité : 1.15.1 → **1.16.0**
-- Simple correctif : 1.15.1 → **1.15.2**
+- Nouvelle fonctionnalité : 1.16.0 → **1.17.0**
+- Simple correctif : 1.16.0 → **1.16.1**
+
+## [1.16.0] — 2026-11-25
+
+- Rôles & habilitations : un accordéon par profil (nombre d'habilitations, mention « Modifié »), au lieu d'un grand tableau à faire défiler.
 
 ## [1.15.1] — 2026-11-25
 
