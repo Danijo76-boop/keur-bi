@@ -10,7 +10,7 @@ L'étiquette et la « release » GitHub sont créées automatiquement à la fusi
 
 ## [1.14.0] — 2026-11-25
 
-- Numéro de version affiché en bas de chaque page.
+- Numéro de version et mention « Développé par Danytech » en bas de chaque page.
 - Étiquette Git et release GitHub créées automatiquement à chaque mise en ligne.
 
 ## [1.13.0] — 2026-11-25
