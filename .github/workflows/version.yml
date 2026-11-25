@@ -1,0 +1,30 @@
+# Étiquette de version : à chaque mise à jour de main, la version de package.json est marquée
+# par une étiquette Git (v1.14.0…) et une « release » GitHub reprenant la section du CHANGELOG.
+# Si l'étiquette existe déjà, rien n'est fait.
+name: Version
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  etiquette:
+    name: Étiqueter la version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Créer l'étiquette et la release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="v$(node -p "require('./package.json').version")"
+          if git ls-remote --exit-code --tags origin "refs/tags/$version" >/dev/null; then
+            echo "L'étiquette $version existe déjà."
+            exit 0
+          fi
+          awk -v v="${version#v}" '/^## /{dans = index($0, "[" v "]") > 0; next} dans' CHANGELOG.md > notes.md
+          gh release create "$version" --target "$GITHUB_SHA" --title "$version" --notes-file notes.md

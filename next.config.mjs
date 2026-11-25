@@ -1,5 +1,10 @@
 import { dirname } from "node:path";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+
+// Numéro de version (package.json) et commit déployé, affichés en bas de chaque page.
+const { version } = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
+const commit = (process.env.VERCEL_GIT_COMMIT_SHA || process.env.GITHUB_SHA || "").slice(0, 7);
 
 /** @type {import('next').NextConfig} */
 
@@ -37,6 +42,7 @@ const enTetesSecurite = [
 ];
 
 const nextConfig = {
+  env: { NEXT_PUBLIC_VERSION: version, NEXT_PUBLIC_COMMIT: commit },
   // Dossier de compilation : modifiable pour compiler une version de production sans gêner le serveur de développement.
   distDir: process.env.NEXT_DIST_DIR || ".next",
   // Racine du projet : évite que Next.js confonde ce dossier avec un projet parent.

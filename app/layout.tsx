@@ -137,7 +137,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
               </div>
             </div>
-            <div className="max-w-7xl mx-auto px-4 mt-10 pt-5 border-t border-white/10 text-xs">© 2026 KEUR GUI · Dakar, Sénégal</div>
+            <div className="max-w-7xl mx-auto px-4 mt-10 pt-5 border-t border-white/10 text-xs flex flex-wrap justify-between gap-2">
+              <span>© 2026 KEUR GUI · Dakar, Sénégal</span>
+              <span title={process.env.NEXT_PUBLIC_COMMIT ? `Commit ${process.env.NEXT_PUBLIC_COMMIT}` : undefined}>
+                Version {process.env.NEXT_PUBLIC_VERSION}
+              </span>
+            </div>
           </footer>
         </AuthProvider>
       </body>
