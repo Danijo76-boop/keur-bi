@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/lib/auth";
 import { AVANCEMENTS, type Programme } from "@/lib/programmes";
-import { envoyerPhoto, envoyerPhotosVerifiees, reduirePhoto } from "@/lib/photos";
+import { ACCEPT_PHOTOS, envoyerPhoto, envoyerPhotosVerifiees, reduirePhoto, trierPhotos } from "@/lib/photos";
 import { avecReference } from "@/lib/rapport-erreurs";
 import { popup } from "@/lib/popup";
 import { IconeStatut } from "@/components/Statut";
@@ -65,17 +65,17 @@ export default function PublierProgrammePage() {
   const majLot = (i: number, patch: Partial<Lot>) => setLots((l) => l.map((x, j) => (j === i ? { ...x, ...patch } : x)));
 
   async function ajouterPhotos(e: React.ChangeEvent<HTMLInputElement>) {
-    const fichiers = Array.from(e.target.files ?? []);
+    const { retenues: fichiers, message: refusFormat } = trierPhotos(Array.from(e.target.files ?? []));
     e.target.value = "";
+    setErreur(refusFormat);
     if (!fichiers.length) return;
-    setErreur("");
     setVerification(true);
     try {
       const nouvelles = await Promise.all(fichiers.slice(0, 8 - photos.length).map((f) => reduirePhoto(f)));
       // Chaque photo est vérifiée par le serveur (contenu choquant, données personnelles) dès son ajout.
       const { adresses, message } = await envoyerPhotosVerifiees(nouvelles);
       setPhotos((p) => [...p, ...adresses].slice(0, 8));
-      setErreur(message);
+      setErreur([refusFormat, message].filter(Boolean).join(" "));
     } catch {
       setErreur("Une image n'a pas pu être lue.");
     } finally {
@@ -179,7 +179,7 @@ export default function PublierProgrammePage() {
           <span className={libelle}>Photos * (8 au maximum, la première sert de couverture)</span>
           <input
             type="file"
-            accept="image/*"
+            accept={ACCEPT_PHOTOS}
             multiple
             aria-label="Ajouter des photos"
             onChange={ajouterPhotos}

@@ -5,8 +5,16 @@ Chaque version mise en ligne porte une étiquette Git (`v1.14.0`…) et son num�
 Pour une nouvelle version : augmenter `version` dans `package.json` et ajouter sa section en haut de ce fichier, dans la même pull request.
 L'étiquette et la « release » GitHub sont créées automatiquement à la fusion dans `main`.
 
-- Nouvelle fonctionnalité : 1.18.1 → **1.19.0**
-- Simple correctif : 1.18.1 → **1.18.2**
+- Nouvelle fonctionnalité : 1.19.0 → **1.20.0**
+- Simple correctif : 1.19.0 → **1.19.1**
+
+## [1.19.0] — 2026-11-26
+
+Sécurité :
+- Sécurité par ligne (Row Level Security) activée sur les 38 tables : sans identité d'utilisateur, un accès direct à la base ne voit rien ; chaque utilisateur ne voit que ses propres données.
+- Pages d'administration contrôlées sur le serveur : réservées à l'équipe, et certaines sections aux seuls administrateurs.
+- Connexion : 5 essais par minute et par adresse IP, puis blocage de 15 minutes.
+- Photos : JPG, PNG ou WebP uniquement, 5 Mo au maximum, format vérifié sur le contenu réel du fichier, nom aléatoire donné par le serveur.
 
 ## [1.18.1] — 2026-11-25
 

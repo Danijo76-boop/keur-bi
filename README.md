@@ -152,6 +152,11 @@ Ne définissez pas `MOT_DE_PASSE_DEMO` en ligne : sans lui, les comptes d'exempl
 - Limitation des essais en série gardée en base (connexion, inscription, envois de photos, publications, alertes) : `lib/serveur/securite.ts`.
 - Taille des requêtes plafonnée, requêtes venant d'un autre site refusées, mots de passe trop courants refusés.
 - Actions d'administration tracées (rôles, suspensions, décisions d'identité, retraits d'annonces).
+- Aucune clé ni aucun secret côté navigateur : toutes les clés (Anthropic, WhatsApp, SMS, email, base) ne sont lues que dans `lib/serveur/` (fichiers marqués `server-only`). Seuls le numéro de version et le commit sont publics.
+- Connexion : 5 essais par minute et par adresse IP, puis 15 minutes de blocage (`essaiConnexionParAdresse`), en plus de la limite par compte.
+- Administration : chaque page est contrôlée sur le serveur avant affichage (`app/admin/layout.tsx`, `lib/serveur/acces-pages.ts`) — l'équipe (admin, modérateur) entre ; rôles, paramètres, reporting, revenus et journaux sont réservés aux administrateurs. Chaque route d'API vérifie aussi le rôle.
+- Photos : JPG, PNG ou WebP, 5 Mo au maximum ; le format est reconnu sur le contenu réel du fichier (début et fin), le nom est tiré au hasard par le serveur (`lib/serveur/fichiers.ts`).
+- Sécurité par ligne (Row Level Security) sur toutes les tables (migration `20261126100000_securite_par_ligne`) : un rôle autre que le propriétaire ne voit que les lignes de l'utilisateur indiqué par `set_config('app.utilisateur_id', …)`, et rien sans lui. Le serveur du site, propriétaire des tables, filtre lui-même par compte.
 
 ## Journaux et débogage
 

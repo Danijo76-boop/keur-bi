@@ -10,7 +10,7 @@ import { useParametres } from "@/lib/parametres";
 import { usePeut } from "@/lib/permissions";
 import { useStocke } from "@/lib/stockage";
 import { soumettreDemandeTF } from "@/lib/tf";
-import { envoyerPhotosVerifiees } from "@/lib/photos";
+import { ACCEPT_PHOTOS, envoyerPhotosVerifiees, trierPhotos } from "@/lib/photos";
 import { QUOTA_ANNONCES, QUOTA_PARTICULIER, trouverUtilisateur } from "@/lib/utilisateurs";
 import BandeauDemo from "@/components/BandeauDemo";
 import PositionMarche from "@/components/PositionMarche";
@@ -29,7 +29,7 @@ const PHOTOS_DEFAUT: Record<string, string> = {
   bureau: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80",
 };
 const MIN_PHOTOS = 3;
-const TAILLE_MAX_PHOTO = 1_500_000;
+const TAILLE_MAX_PHOTO = 1_500_000; // photo une fois réduite dans le navigateur
 
 function lireFichier(f: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -116,10 +116,10 @@ function Assistant({ user }: { user: User }) {
   }
 
   async function ajouterPhotos(e: React.ChangeEvent<HTMLInputElement>) {
-    const fichiers = Array.from(e.target.files ?? []);
+    const { retenues: fichiers, message: refusFormat } = trierPhotos(Array.from(e.target.files ?? []));
     e.target.value = "";
+    setErreur(refusFormat);
     if (!fichiers.length) return;
-    setErreur("");
     setVerification(true);
     try {
       const nouvelles = await Promise.all(fichiers.slice(0, 8 - photos.length).map(reduirePhoto));
@@ -127,7 +127,9 @@ function Assistant({ user }: { user: User }) {
       // Chaque photo est vérifiée par le serveur (contenu choquant, données personnelles) dès son ajout.
       const { adresses, message } = await envoyerPhotosVerifiees(retenues);
       setPhotos((a) => [...a, ...adresses].slice(0, 8));
-      setErreur([retenues.length < nouvelles.length ? "Certaines photos sont trop lourdes et ont été ignorées." : "", message].filter(Boolean).join(" "));
+      setErreur(
+        [refusFormat, retenues.length < nouvelles.length ? "Certaines photos sont trop lourdes et ont été ignorées." : "", message].filter(Boolean).join(" "),
+      );
     } catch {
       setErreur("Une image n'a pas pu être lue.");
     } finally {
@@ -387,7 +389,7 @@ function Assistant({ user }: { user: User }) {
               </div>
               <input
                 type="file"
-                accept="image/*"
+                accept={ACCEPT_PHOTOS}
                 multiple
                 aria-label="Ajouter des photos"
                 onChange={ajouterPhotos}

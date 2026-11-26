@@ -4,7 +4,16 @@ import { adresseClient, memeOrigine, normaliserEmail, ouvrirSession, verifierMot
 import { alerterSecurite } from "@/lib/serveur/alertes-securite";
 import { avecJournal, log } from "@/lib/serveur/journal";
 import { otpActif, ouvrirDefi } from "@/lib/serveur/otp";
-import { compterEssai, essaisRestants, LIMITES, limiteAtteinte, lireJson, minutesAvantDeblocage, oublierEssais } from "@/lib/serveur/securite";
+import {
+  compterEssai,
+  essaiConnexionParAdresse,
+  essaisRestants,
+  LIMITES,
+  limiteAtteinte,
+  lireJson,
+  minutesAvantDeblocage,
+  oublierEssais,
+} from "@/lib/serveur/securite";
 
 const refus = (erreur: string, status = 400) => NextResponse.json({ erreur }, { status });
 
@@ -16,9 +25,15 @@ async function post(requete: Request) {
   const motDePasse = typeof corps?.motDePasse === "string" ? corps.motDePasse : "";
   if (!email || !motDePasse) return refus("Indiquez votre adresse email et votre mot de passe.");
 
-  const ip = await adresseClient();
+  // 5 essais par minute et par adresse IP, puis 15 minutes de blocage : vérifié avant même de lire le compte.
+  const bloqueMinutes = await essaiConnexionParAdresse(await adresseClient());
+  if (bloqueMinutes) {
+    return refus(
+      `Trop de tentatives de connexion depuis votre réseau. Par sécurité, la connexion est bloquée pendant ${bloqueMinutes} minute${bloqueMinutes > 1 ? "s" : ""}.`,
+      429,
+    );
+  }
   const cleCompte = `connexion:${email}`;
-  const cleAdresse = ip && `connexion-ip:${ip}`;
   if (await limiteAtteinte(cleCompte, LIMITES.connexionCompte)) {
     const minutes = await minutesAvantDeblocage(cleCompte, LIMITES.connexionCompte);
     log.warn("Connexion bloquée : trop d'essais sur le compte", { email });
@@ -27,17 +42,12 @@ async function post(requete: Request) {
       429,
     );
   }
-  if (cleAdresse && (await limiteAtteinte(cleAdresse, LIMITES.connexionAdresse))) {
-    log.warn("Connexion bloquée : trop d'essais depuis cette adresse", { email });
-    return refus("Trop de tentatives de connexion depuis votre réseau. Réessayez dans quelques minutes.", 429);
-  }
 
   try {
     const compte = await db.utilisateur.findUnique({ where: { email } });
     // Même message que le compte existe ou non : on ne révèle pas quelles adresses sont inscrites.
     if (!(await verifierMotDePasse(motDePasse, compte?.motDePasseHash)) || !compte) {
       await compterEssai(cleCompte, LIMITES.connexionCompte);
-      if (cleAdresse) await compterEssai(cleAdresse, LIMITES.connexionAdresse);
       log.info("Connexion refusée : identifiants incorrects", { email });
       const reste = await essaisRestants(cleCompte, LIMITES.connexionCompte);
       const minutes = Math.round(LIMITES.connexionCompte.fenetreMs / 60_000);
