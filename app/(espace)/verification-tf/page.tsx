@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useBiens } from "@/lib/annonces";
 import { User } from "@/lib/auth";
-import { formatFCFA } from "@/lib/mock-data";
+import { formatFCFA, REGIONS_SENEGAL } from "@/lib/mock-data";
 import { lireDossiers, signalerIncident } from "@/lib/dossiers";
 import { exporterPDF } from "@/lib/export";
 import { BoutonPDF } from "@/components/BoutonsExport";
@@ -18,7 +18,7 @@ import { IconeTF } from "@/components/Statut";
 import { IconeStatut } from "@/components/Statut";
 
 const champ = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mt-1 font-normal";
-const REGIONS = ["Dakar", "Thiès", "Saint-Louis", "Ziguinchor", "Kaolack"];
+const REGIONS = REGIONS_SENEGAL;
 
 const ETAPES = ["Dépôt demande", "Enregistrement DGID", "Instruction dossier", "Décision DGID", "Certificat délivré"];
 

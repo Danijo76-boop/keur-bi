@@ -3,6 +3,7 @@ import { Prisma, type Agence, type Bien as LigneBien, type HistoriquePrix, type 
 import type { Bien } from "@/lib/mock-data";
 import { db } from "./db";
 import { photoAcceptee } from "./fichiers";
+import { CENTRES_REGIONS, REGIONS_SENEGAL } from "@/lib/mock-data";
 
 type LigneComplete = LigneBien & { agence: Agence | null; auteur: { email: string } | null; historiquePrix: HistoriquePrix[] };
 
@@ -77,7 +78,7 @@ const annoncesActives = (auteurId: string) => db.bien.count({ where: { auteurId,
 export type FiltresAnnonces = { transaction?: string; q?: string; type?: string; region?: string; quartier?: string; prixMin?: number; prixMax?: number };
 
 const TYPES = ["terrain", "villa", "appartement", "bureau"] as const;
-export const REGIONS_ACCEPTEES = ["Dakar", "Thiès", "Saint-Louis", "Ziguinchor", "Kaolack"];
+export const REGIONS_ACCEPTEES = REGIONS_SENEGAL;
 
 // Les annonces publiées sont visibles de tous. Les annonces retirées ne le sont que de leur auteur et de la modération.
 export async function listerAnnonces(f: FiltresAnnonces = {}, compte?: Utilisateur | null): Promise<Bien[]> {
@@ -126,13 +127,7 @@ const refus = (erreur: string, status = 400): ResultatAnnonce => ({ ok: false, e
 const texte = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const entier = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? Math.round(v) : NaN);
 
-const CENTRES: Record<string, [number, number]> = {
-  Dakar: [14.7167, -17.4677],
-  Thiès: [14.791, -16.9256],
-  "Saint-Louis": [16.0179, -16.4896],
-  Ziguinchor: [12.5681, -16.2719],
-  Kaolack: [14.1652, -16.0726],
-};
+const CENTRES = CENTRES_REGIONS;
 
 const PRIX_MAX = 1_000_000_000_000;
 

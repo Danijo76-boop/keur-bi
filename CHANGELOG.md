@@ -5,8 +5,15 @@ Chaque version mise en ligne porte une étiquette Git (`v1.14.0`…) et son num�
 Pour une nouvelle version : augmenter `version` dans `package.json` et ajouter sa section en haut de ce fichier, dans la même pull request.
 L'étiquette et la « release » GitHub sont créées automatiquement à la fusion dans `main`.
 
-- Nouvelle fonctionnalité : 1.20.0 → **1.21.0**
-- Simple correctif : 1.20.0 → **1.20.1**
+- Nouvelle fonctionnalité : 1.21.0 → **1.22.0**
+- Simple correctif : 1.21.0 → **1.21.1**
+
+## [1.21.0] — 2026-11-26
+
+- La carte des annonces se consulte sans compte, comme les annonces.
+- Accueil : les boutons « Zones » deviennent une liste déroulante « Région » dans le formulaire de recherche.
+- Les 14 régions du Sénégal sont proposées partout (recherche, filtres, publication, alertes), au lieu de 5.
+- Champ de recherche des annonces : texte d'aide raccourci pour ne plus être coupé.
 
 ## [1.20.0] — 2026-11-26
 

@@ -76,21 +76,11 @@ export default async function HomePage() {
               Achetez et vendez des terrains, villas et appartements avec des Titres Fonciers vérifiés par nos notaires partenaires.
             </p>
 
-            {/* Search bar : au-dessus des « Zones » pour que la liste de suggestions ne passe pas dessous */}
+            {/* Recherche : au premier plan pour que la liste de suggestions ne passe pas sous la suite de la page */}
             <div className="entree relative z-30 max-w-xl" style={{ "--d": "360ms" } as React.CSSProperties}>
               <HeroSearch />
             </div>
             <div className="entree flex flex-wrap items-center gap-2 mt-5 text-sm max-w-xl" style={{ "--d": "480ms" } as React.CSSProperties}>
-              <span className="text-white/60">Zones :</span>
-              {REGIONS.map((r) => (
-                <Link
-                  key={r.nom}
-                  href={`/annonces?region=${r.nom}`}
-                  className="bg-white/10 hover:bg-white/20 border border-white/20 rounded-full px-3 py-1 transition-colors"
-                >
-                  {r.nom}
-                </Link>
-              ))}
               <Link href="/bienvenue" className="text-gold font-semibold hover:underline ml-auto">
                 Nouveau ? Commencer →
               </Link>

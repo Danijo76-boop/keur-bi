@@ -5,6 +5,7 @@ import { AVANCEMENTS } from "@/lib/programmes";
 import { db } from "./db";
 import { photoAcceptee } from "./fichiers";
 import { REGIONS_ACCEPTEES } from "./annonces";
+import { CENTRES_REGIONS } from "@/lib/mock-data";
 
 type Ligne = LigneProgramme & { lots: LigneLot[]; agence: Agence | null; auteur: { email: string } | null };
 const AVEC = { lots: { orderBy: { prix: "asc" } }, agence: true, auteur: { select: { email: true } } } as const;
@@ -73,13 +74,7 @@ function slugDe(nom: string): string {
   return `${base}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
-const CENTRES: Record<string, [number, number]> = {
-  Dakar: [14.7167, -17.4677],
-  Thiès: [14.791, -16.9256],
-  "Saint-Louis": [16.0179, -16.4896],
-  Ziguinchor: [12.5681, -16.2719],
-  Kaolack: [14.1652, -16.0726],
-};
+const CENTRES = CENTRES_REGIONS;
 
 export type ResultatProgramme = { ok: true; programme: Programme } | { ok: false; erreur: string; status: number };
 

@@ -2,10 +2,22 @@
    La présentation du site et les pages d'information sont ouvertes à tous.
    Les annonces (liste et fiche) se consultent aussi sans compte, mais toute action dessus (message, visite, offre,
    appel, favoris, comparateur, signalement, commande de service) demande d'être connecté : voir useExigeCompte.
-   Tout le reste (carte, outils, services, annuaires, espace personnel) demande un compte.
+   La carte des annonces est ouverte aussi. Tout le reste (outils, services, annuaires, espace personnel) demande un compte.
    Ce fichier est lu à la fois par le serveur (middleware.ts) et par le navigateur (GardeVisiteur). */
 
-export const PAGES_PUBLIQUES = ["/", "/connexion", "/mot-de-passe-oublie", "/bienvenue", "/faq", "/guides", "/tarifs", "/contact", "/annonceurs", "/diaspora"];
+export const PAGES_PUBLIQUES = [
+  "/",
+  "/carte",
+  "/connexion",
+  "/mot-de-passe-oublie",
+  "/bienvenue",
+  "/faq",
+  "/guides",
+  "/tarifs",
+  "/contact",
+  "/annonceurs",
+  "/diaspora",
+];
 
 // La liste des annonces et la fiche d'une annonce, mais pas ce qui se trouve sous la fiche (/annonces/x/offre).
 const ANNONCE_CONSULTABLE = /^\/annonces(\/[^/]+)?$/;

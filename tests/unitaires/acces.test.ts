@@ -6,6 +6,7 @@ describe("pages ouvertes aux visiteurs", () => {
     expect(estPagePublique("/annonces")).toBe(true);
     expect(estPagePublique("/annonces/")).toBe(true);
     expect(estPagePublique("/annonces/b1")).toBe(true);
+    expect(estPagePublique("/carte")).toBe(true);
   });
 
   it("garde réservées les actions et l'espace personnel", () => {

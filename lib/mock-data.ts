@@ -53,13 +53,24 @@ export const COORDONNEES: Record<string, [number, number]> = {
   "8": [14.695, -17.46],
 };
 
+// Les 14 régions du Sénégal et la position de leur chef-lieu (centre de carte par défaut).
 export const CENTRES_REGIONS: Record<string, [number, number]> = {
   Dakar: [14.7167, -17.4677],
-  Thiès: [14.791, -16.9256],
-  "Saint-Louis": [16.0179, -16.4896],
-  Ziguinchor: [12.5681, -16.2719],
+  Diourbel: [14.655, -16.2314],
+  Fatick: [14.339, -16.4111],
+  Kaffrine: [14.1059, -15.5508],
   Kaolack: [14.1652, -16.0726],
+  Kédougou: [12.557, -12.1747],
+  Kolda: [12.8939, -14.9408],
+  Louga: [15.6142, -16.224],
+  Matam: [15.6559, -13.2554],
+  "Saint-Louis": [16.0179, -16.4896],
+  Sédhiou: [12.7081, -15.5569],
+  Tambacounda: [13.7707, -13.6673],
+  Thiès: [14.791, -16.9256],
+  Ziguinchor: [12.5681, -16.2719],
 };
+export const REGIONS_SENEGAL = Object.keys(CENTRES_REGIONS);
 
 export const BIENS: Bien[] = [
   {

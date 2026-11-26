@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { SlidersHorizontal, Map, BellPlus, Link2, ChevronDown, Columns2 } from "@/components/icones";
-import { Bien } from "@/lib/mock-data";
+import { Bien, REGIONS_SENEGAL } from "@/lib/mock-data";
 import PropertyCard from "@/components/PropertyCard";
 import EncartSponsorise from "@/components/EncartSponsorise";
 import { lireOverridesTF, lireDemandesTF, statutTF, StatutTF, LABELS_TF } from "@/lib/tf";
@@ -27,7 +27,7 @@ const CarteLeaflet = dynamic(() => import("@/components/CarteLeaflet"), {
 });
 
 const TYPES = ["Tous", "Terrain", "Villa", "Appartement", "Bureau"];
-const REGIONS_OPTIONS = ["Toutes les régions", "Dakar", "Thiès", "Saint-Louis", "Ziguinchor", "Kaolack"];
+const REGIONS_OPTIONS = ["Toutes les régions", ...REGIONS_SENEGAL];
 const TRIS = [
   { value: "recent", label: "Trier : Plus récents" },
   { value: "prix-asc", label: "Prix croissant" },
@@ -256,7 +256,7 @@ export default function AnnoncesContent() {
             onChange={setRecherche}
             transaction={transaction}
             ariaLabel="Rechercher une annonce"
-            placeholder="Rechercher par ville, quartier…"
+            placeholder="Ville, quartier…"
             className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy w-56"
           />
           {flags.carte && (

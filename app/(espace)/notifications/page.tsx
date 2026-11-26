@@ -9,6 +9,7 @@ import { useStocke } from "@/lib/stockage";
 import { trouverUtilisateur } from "@/lib/utilisateurs";
 import BandeauDemo from "@/components/BandeauDemo";
 import Protege from "@/components/Protege";
+import { REGIONS_SENEGAL } from "@/lib/mock-data";
 
 const ONGLETS: { id: CategorieNotif | "tout"; label: string }[] = [
   { id: "tout", label: "Tout" },
@@ -18,7 +19,7 @@ const ONGLETS: { id: CategorieNotif | "tout"; label: string }[] = [
   { id: "message", label: "Messages" },
 ];
 
-const REGIONS = ["Dakar", "Thiès", "Saint-Louis", "Ziguinchor", "Kaolack"];
+const REGIONS = REGIONS_SENEGAL;
 
 function Contenu({ user }: { user: User }) {
   const notifs = useNotifications(user);

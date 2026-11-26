@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle, Circle } from "@/components/icones";
 import { User, estCoteVendeur } from "@/lib/auth";
-import { Bien, formatFCFA } from "@/lib/mock-data";
+import { Bien, formatFCFA, REGIONS_SENEGAL } from "@/lib/mock-data";
 import { publierAnnonce, tousLesBiens } from "@/lib/annonces";
 import { useParametres } from "@/lib/parametres";
 import { usePeut } from "@/lib/permissions";
@@ -20,7 +20,7 @@ import { IconeStatut } from "@/components/Statut";
 const champ = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mt-1 font-normal";
 const libelle = "text-sm font-semibold text-gray-700";
 const ETAPES = ["Informations", "Titre Foncier", "Photos & documents", "Vérification & publication"];
-const REGIONS = ["Dakar", "Thiès", "Saint-Louis", "Ziguinchor", "Kaolack"];
+const REGIONS = REGIONS_SENEGAL;
 const CONSERVATIONS = ["Dakar-Plateau", "Pikine", "Rufisque", "Thiès", "Thiès-Mbour", "Saint-Louis", "Ziguinchor", "Kaolack"];
 const PHOTOS_DEFAUT: Record<string, string> = {
   terrain: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80",

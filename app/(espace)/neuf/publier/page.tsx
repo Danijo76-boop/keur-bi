@@ -8,8 +8,9 @@ import { ACCEPT_PHOTOS, envoyerPhoto, envoyerPhotosVerifiees, reduirePhoto, trie
 import { avecReference } from "@/lib/rapport-erreurs";
 import { popup } from "@/lib/popup";
 import { IconeStatut } from "@/components/Statut";
+import { REGIONS_SENEGAL } from "@/lib/mock-data";
 
-const REGIONS = ["Dakar", "Thiès", "Saint-Louis", "Ziguinchor", "Kaolack"];
+const REGIONS = REGIONS_SENEGAL;
 const champ = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-navy mt-1 font-normal bg-white";
 const libelle = "text-sm font-semibold text-gray-700";
 
