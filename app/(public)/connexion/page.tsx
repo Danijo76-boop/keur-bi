@@ -6,6 +6,7 @@ import { suiteSure } from "@/lib/acces";
 import Link from "next/link";
 import { useAuth, LONGUEUR_MIN_MOT_DE_PASSE, motDePasseConforme, type Canal, type EtapeOTP } from "@/lib/auth";
 import ReglesMotDePasse from "@/components/ReglesMotDePasse";
+import { PROFILS, PROFILS_DEMANDABLES, verifierInfosProfil, type ProfilDemandable } from "@/lib/profils";
 
 export default function ConnexionPage() {
   return (
@@ -23,6 +24,9 @@ function Formulaire() {
   const [email, setEmail] = useState("");
   const [telephone, setTelephone] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
+  const [profil, setProfil] = useState<ProfilDemandable>("acheteur");
+  const [infosProfil, setInfosProfil] = useState<Record<string, string>>({});
+  const [erreursChamps, setErreursChamps] = useState<Record<string, string>>({});
   const suite = suiteSure(params.get("suite"));
   const [erreur, setErreur] = useState("");
   const [envoi, setEnvoi] = useState(false);
@@ -41,6 +45,14 @@ function Formulaire() {
       setErreur("Merci de remplir tous les champs.");
       return;
     }
+    if (mode === "inscription") {
+      const { erreurs } = verifierInfosProfil(profil, infosProfil);
+      setErreursChamps(erreurs);
+      if (Object.keys(erreurs).length) {
+        setErreur(`Complétez les champs obligatoires du profil « ${PROFILS[profil].libelle} ».`);
+        return;
+      }
+    }
     if (mode === "inscription" && !motDePasseConforme(motDePasse, email.trim())) {
       setErreur("Le mot de passe ne respecte pas encore toutes les règles indiquées sous le champ.");
       return;
@@ -49,7 +61,7 @@ function Formulaire() {
     setEnvoi(true);
     const resultat =
       mode === "inscription"
-        ? await inscription({ nom: nom.trim(), email: email.trim(), motDePasse, telephone: telephone.trim() || undefined })
+        ? await inscription({ nom: nom.trim(), email: email.trim(), motDePasse, telephone: telephone.trim() || undefined, profil, infosProfil })
         : await connexion(email.trim(), motDePasse);
     setEnvoi(false);
     if (resultat.ok === false) {
@@ -96,13 +108,19 @@ function Formulaire() {
 
         <form onSubmit={soumettre} className="flex flex-col gap-3">
           {mode === "inscription" && (
-            <p className="text-xs bg-navy/5 text-gray-600 rounded-lg px-3 py-2.5">
-              Vous êtes vendeur, agence, agent ou notaire ? Créez votre compte, puis{" "}
-              <Link href="/contact?sujet=Activer%20mon%20profil%20professionnel" className="text-blue font-semibold hover:underline">
-                demandez l&apos;activation de votre profil
-              </Link>
-              . Un administrateur KEUR GUI le mettra en place.
-            </p>
+            <ChoixProfil
+              profil={profil}
+              onProfil={(p) => {
+                setProfil(p);
+                setErreursChamps({});
+              }}
+              infos={infosProfil}
+              onInfo={(cle, v) => {
+                setInfosProfil((i) => ({ ...i, [cle]: v }));
+                setErreursChamps((e) => ({ ...e, [cle]: "" }));
+              }}
+              erreurs={erreursChamps}
+            />
           )}
           {mode === "inscription" && (
             <>
@@ -410,6 +428,65 @@ function EtapeCode({
           </button>
         </p>
       </div>
+    </div>
+  );
+}
+
+// Choix du profil à l'inscription, avec les champs obligatoires du profil choisi.
+function ChoixProfil({
+  profil,
+  onProfil,
+  infos,
+  onInfo,
+  erreurs,
+}: {
+  profil: ProfilDemandable;
+  onProfil: (p: ProfilDemandable) => void;
+  infos: Record<string, string>;
+  onInfo: (cle: string, valeur: string) => void;
+  erreurs: Record<string, string>;
+}) {
+  const choisi = PROFILS[profil];
+  return (
+    <div className="flex flex-col gap-3">
+      <label className="text-sm font-semibold text-gray-700">
+        Je m&apos;inscris en tant que *
+        <select
+          value={profil}
+          onChange={(e) => onProfil(e.target.value as ProfilDemandable)}
+          className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-normal outline-none focus:border-navy bg-white"
+        >
+          {PROFILS_DEMANDABLES.map((p) => (
+            <option key={p} value={p}>
+              {PROFILS[p].libelle}
+            </option>
+          ))}
+        </select>
+        <span className="block text-xs font-normal text-gray-500 mt-1">{choisi.description}</span>
+      </label>
+      {choisi.champs.length > 0 && (
+        <fieldset className="flex flex-col gap-3 bg-navy/5 rounded-lg p-3">
+          <legend className="sr-only">Informations obligatoires du profil {choisi.libelle}</legend>
+          <p className="text-xs text-gray-600">
+            Informations obligatoires pour ce profil. Votre compte est créé tout de suite ; le profil <strong>{choisi.libelle}</strong> est activé après
+            vérification par l&apos;équipe KEUR GUI.
+          </p>
+          {choisi.champs.map((c) => (
+            <label key={c.cle} className="text-sm font-semibold text-gray-700">
+              {c.libelle} *
+              <input
+                value={infos[c.cle] ?? ""}
+                onChange={(e) => onInfo(c.cle, e.target.value)}
+                placeholder={`Ex. ${c.exemple}`}
+                aria-invalid={!!erreurs[c.cle]}
+                className={`mt-1 w-full border rounded-lg px-3 py-2 text-sm font-normal outline-none bg-white ${erreurs[c.cle] ? "border-red" : "border-gray-200 focus:border-navy"}`}
+              />
+              {c.aide && !erreurs[c.cle] && <span className="block text-xs font-normal text-gray-500 mt-0.5">{c.aide}</span>}
+              {erreurs[c.cle] && <span className="block text-xs font-normal text-red mt-0.5">{erreurs[c.cle]}</span>}
+            </label>
+          ))}
+        </fieldset>
+      )}
     </div>
   );
 }

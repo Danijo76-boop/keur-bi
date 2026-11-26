@@ -5,8 +5,13 @@ Chaque version mise en ligne porte une étiquette Git (`v1.14.0`…) et son num�
 Pour une nouvelle version : augmenter `version` dans `package.json` et ajouter sa section en haut de ce fichier, dans la même pull request.
 L'étiquette et la « release » GitHub sont créées automatiquement à la fusion dans `main`.
 
-- Nouvelle fonctionnalité : 1.19.0 → **1.20.0**
-- Simple correctif : 1.19.0 → **1.19.1**
+- Nouvelle fonctionnalité : 1.20.0 → **1.21.0**
+- Simple correctif : 1.20.0 → **1.20.1**
+
+## [1.20.0] — 2026-11-26
+
+- Inscription : choix du profil (acheteur, vendeur particulier, agence, agent, notaire, clerc) avec ses champs obligatoires — par exemple NINEA, RCCM et adresse pour une agence, n° d'inscription à la Chambre des notaires pour un notaire. Vérifiés dans le navigateur et sur le serveur.
+- Le compte démarre en acheteur ; l'administrateur accepte ou refuse la demande (avec motif) dans Utilisateurs & KYC. La personne voit où en est sa demande sur son tableau de bord.
 
 ## [1.19.0] — 2026-11-26
 

@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
+import DemandesProfil from "@/components/DemandesProfil";
 import { Role, ROLE_LABELS, useAuth, ROLES } from "@/lib/auth";
 import { lireDossiers } from "@/lib/dossiers";
 import { journaliser } from "@/lib/journal";
@@ -42,6 +43,7 @@ export default function UtilisateursPage() {
   return (
     <div>
       <h1 className="titre-page mb-4">Utilisateurs & KYC</h1>
+      {user?.role === "admin" && <DemandesProfil />}
       <div className="flex gap-2 flex-wrap mb-4">
         <input
           aria-label="Rechercher un utilisateur"

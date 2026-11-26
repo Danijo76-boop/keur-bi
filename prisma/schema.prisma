@@ -60,6 +60,7 @@ model Utilisateur {
   derniereConnexion DateTime?
 
   kyc               DossierKYC?
+  demandeProfil     DemandeProfil?
   biens             Bien[]
   programmes        Programme[]
   favoris           Favori[]
@@ -135,6 +136,28 @@ model DossierKYC {
 
 // Fichiers envoyés par les utilisateurs (photos des annonces). Gardés dans la base en attendant un stockage dédié ;
 // le code passe par lib/serveur/fichiers.ts, seul endroit à changer le jour où ils déménagent.
+enum StatutDemandeProfil {
+  en_attente
+  acceptee
+  refusee
+}
+
+// Profil professionnel demandé à l'inscription (vendeur, agence, agent, notaire, clerc), avec les informations
+// obligatoires de ce profil. Le compte reste acheteur tant qu'un administrateur n'a pas accepté la demande.
+model DemandeProfil {
+  id            String              @id @default(cuid())
+  utilisateurId String              @unique
+  utilisateur   Utilisateur         @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  role          Role
+  infos         Json
+  statut        StatutDemandeProfil @default(en_attente)
+  motifRefus    String?
+  creeLe        DateTime            @default(now())
+  traiteLe      DateTime?
+
+  @@index([statut])
+}
+
 model Fichier {
   id       String   @id @default(cuid())
   type     String

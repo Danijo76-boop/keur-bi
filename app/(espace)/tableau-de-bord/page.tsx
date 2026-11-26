@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import BandeauDemandeProfil from "@/components/BandeauDemandeProfil";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth, ROLE_LABELS, estCoteVendeur, estNotariat, estPlateforme } from "@/lib/auth";
@@ -37,6 +38,7 @@ export default function TableauDeBordPage() {
         <h1 className="titre-page">Bonjour, {user.nom}</h1>
         <p className="text-gray-500 text-sm">Espace {ROLE_LABELS[user.role]}</p>
       </div>
+      <BandeauDemandeProfil />
       {mdpChange && (
         <p role="status" className="text-sm bg-green-50 border border-green-200 text-green-900 rounded-lg px-4 py-3 mb-6">
           Votre mot de passe a bien été changé. Par sécurité, vos autres appareils ont été déconnectés.

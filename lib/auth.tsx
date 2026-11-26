@@ -81,7 +81,14 @@ export type EtapeOTP =
   { etape: "numero"; defi: string; autres: Canal[] } | { etape: "code"; defi: string; destination: string; canal: Canal; autres: Canal[]; codeDemo?: string };
 export type ResultatAuth = { ok: true } | { ok: false; erreur: string } | { ok: "otp"; otp: EtapeOTP };
 export type ResultatEnvoiCode = { ok: true; otp: EtapeOTP } | { ok: false; erreur: string; expire?: boolean };
-export type DonneesInscription = { nom: string; email: string; motDePasse: string; telephone?: string };
+export type DonneesInscription = {
+  nom: string;
+  email: string;
+  motDePasse: string;
+  telephone?: string;
+  profil?: string;
+  infosProfil?: Record<string, string>;
+};
 
 type AuthContextValue = {
   user: User | null;

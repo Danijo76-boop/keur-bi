@@ -3,15 +3,17 @@ import { Prisma } from "@prisma/client";
 import { db } from "@/lib/serveur/db";
 import { adresseClient, emailValide, hacherMotDePasse, memeOrigine, normaliserEmail, ouvrirSession, PROFIL_INSCRIPTION, versSession } from "@/lib/serveur/auth";
 import { avecJournal, log } from "@/lib/serveur/journal";
+import { estProfilDemandable, verifierInfosProfil } from "@/lib/profils";
 import { otpActif, ouvrirDefi } from "@/lib/serveur/otp";
 import { normaliserNumero } from "@/lib/serveur/whatsapp";
 import { freiner, LIMITES, lireJson, refusMotDePasse } from "@/lib/serveur/securite";
 
 const refus = (erreur: string, status = 400) => NextResponse.json({ erreur }, { status });
 
-// POST /api/auth/inscription  { nom, email, motDePasse, telephone }
-// Le compte est toujours créé en « acheteur » : seul un administrateur attribue les autres profils
-// (vendeur, agence, agent, notaire, clerc, modérateur, admin), depuis l'administration.
+// POST /api/auth/inscription  { nom, email, motDePasse, telephone, profil, infosProfil }
+// Le compte est toujours créé en « acheteur ». Si la personne demande un autre profil (vendeur, agence, agent,
+// notaire, clerc), les champs obligatoires de ce profil sont vérifiés ici, puis la demande attend qu'un
+// administrateur la valide (lib/profils.ts).
 // Avec la double vérification active, le téléphone est le numéro WhatsApp : le compte ne s'ouvre qu'une fois le code saisi.
 async function post(requete: Request) {
   if (!(await memeOrigine())) return refus("Requête refusée.", 403);
@@ -29,6 +31,9 @@ async function post(requete: Request) {
   const numero = saisie ? normaliserNumero(saisie) : null;
   const telephone = numero ?? saisie;
   const role = PROFIL_INSCRIPTION;
+  const profil = corps?.profil === undefined ? "acheteur" : corps.profil;
+  if (!estProfilDemandable(profil)) return refus("Profil inconnu.");
+  const { erreurs, infos } = verifierInfosProfil(profil, corps?.infosProfil);
 
   if (nom.length < 2 || nom.length > 100) return refus("Indiquez votre nom complet.");
   if (!emailValide(email)) return refus("Adresse email invalide.");
@@ -40,12 +45,21 @@ async function post(requete: Request) {
     );
   const faiblesse = refusMotDePasse(motDePasse, email);
   if (faiblesse) return refus(faiblesse);
+  if (Object.keys(erreurs).length) return NextResponse.json({ erreur: Object.values(erreurs).join(" "), champs: erreurs }, { status: 400 });
 
   try {
     const compte = await db.utilisateur.create({
-      data: { nom, email, role, telephone: telephone || null, motDePasseHash: await hacherMotDePasse(motDePasse) },
+      data: {
+        nom,
+        email,
+        role,
+        telephone: telephone || null,
+        ville: infos.ville ?? null,
+        motDePasseHash: await hacherMotDePasse(motDePasse),
+        ...(profil !== "acheteur" && { demandeProfil: { create: { role: profil, infos } } }),
+      },
     });
-    log.info("Compte créé", { utilisateurId: compte.id, role });
+    log.info("Compte créé", { utilisateurId: compte.id, role, profilDemande: profil });
     if (avecOTP && numero) {
       const defi = await ouvrirDefi(compte, "connexion", numero);
       if (!defi.ok) return refus(defi.erreur, defi.status);
