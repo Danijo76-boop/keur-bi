@@ -18,7 +18,8 @@ async function post(requete: Request) {
     if (!moi) return refus("Connexion requise.", 401);
     if (!peutPublier(moi.role)) return refus("L'envoi de photos est réservé aux vendeurs.", 403);
     if (await freiner(`fichier:${moi.id}`, LIMITES.fichier)) return refus("Trop d'envois en peu de temps. Réessayez plus tard.", 429);
-    const corps = await lireJson(requete, 3_000_000);
+    // 5 Mo d'image, encodés en base64 (un tiers de plus) dans du JSON.
+    const corps = await lireJson(requete, 7_000_000);
     if (typeof corps?.dataUrl !== "string") return refus("Image manquante.", 400);
     const resultat = await enregistrerImage(corps.dataUrl, moi.id);
     if (!resultat.ok) {

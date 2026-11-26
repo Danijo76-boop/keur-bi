@@ -100,5 +100,6 @@ export async function memeOrigine(): Promise<boolean> {
 // sinon tous les visiteurs partageraient le même compteur.
 export async function adresseClient(): Promise<string | undefined> {
   const h = await headers();
-  return h.get("x-forwarded-for")?.split(",")[0].trim() || h.get("x-real-ip") || undefined;
+  // En-têtes posés par Vercel lui-même d'abord : un visiteur ne peut pas les falsifier pour contourner les limites.
+  return h.get("x-vercel-forwarded-for")?.split(",")[0].trim() || h.get("x-real-ip") || h.get("x-forwarded-for")?.split(",")[0].trim() || undefined;
 }

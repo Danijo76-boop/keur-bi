@@ -1,5 +1,5 @@
 import { afterAll, describe, expect, it } from "vitest";
-import { compterEssai, essaisRestants, freiner, limiteAtteinte, minutesAvantDeblocage, oublierEssais } from "@/lib/serveur/securite";
+import { compterEssai, essaiConnexionParAdresse, essaisRestants, freiner, limiteAtteinte, minutesAvantDeblocage, oublierEssais } from "@/lib/serveur/securite";
 import { baseDisponible, nettoyer } from "../outils/base";
 
 describe.skipIf(!baseDisponible)("limitation des essais en série (connexions, envois…)", () => {
@@ -35,5 +35,14 @@ describe.skipIf(!baseDisponible)("limitation des essais en série (connexions, e
       false,
       true,
     ]);
+  });
+
+  it("connexion : 5 essais par minute et par adresse IP, puis 15 minutes de blocage", async () => {
+    const ip = `test-ip-${Date.now()}`;
+    for (let i = 0; i < 5; i++) expect(await essaiConnexionParAdresse(ip)).toBe(0);
+    expect(await essaiConnexionParAdresse(ip)).toBe(15); // 6e essai de la minute : bloqué
+    expect(await essaiConnexionParAdresse(ip)).toBeGreaterThanOrEqual(14); // et le reste, même plus tard dans la minute
+    expect(await essaiConnexionParAdresse(`${ip}-autre`)).toBe(0); // une autre adresse n'est pas touchée
+    expect(await essaiConnexionParAdresse(undefined)).toBe(0); // sans adresse (local) : pas de limite par IP
   });
 });

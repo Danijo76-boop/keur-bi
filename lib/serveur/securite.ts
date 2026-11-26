@@ -11,7 +11,9 @@ export type Limite = { max: number; fenetreMs: number };
 
 export const LIMITES = {
   connexionCompte: { max: 8, fenetreMs: 15 * 60_000 },
-  connexionAdresse: { max: 40, fenetreMs: 15 * 60_000 },
+  // Par adresse IP : 5 essais de connexion par minute ; au-delà, l'adresse est bloquée 15 minutes.
+  connexionAdresse: { max: 5, fenetreMs: 60_000 },
+  blocageConnexionAdresse: { max: 1, fenetreMs: 15 * 60_000 },
   inscription: { max: 10, fenetreMs: 60 * 60_000 },
   fichier: { max: 60, fenetreMs: 60 * 60_000 },
   publication: { max: 20, fenetreMs: 24 * 60 * 60_000 },
@@ -60,6 +62,24 @@ export async function freiner(cle: string, limite: Limite): Promise<boolean> {
   if (await limiteAtteinte(cle, limite)) return true;
   await compterEssai(cle, limite);
   return false;
+}
+
+/* ── Connexion : 5 essais par minute et par adresse IP, puis blocage temporaire ──
+   Chaque essai compte, réussi ou non : un robot qui teste des mots de passe est arrêté au 6e essai de la minute,
+   et l'adresse reste bloquée 15 minutes, même s'il ralentit ensuite. Renvoie les minutes restantes, ou 0 si l'essai est permis. */
+export async function essaiConnexionParAdresse(ip: string | undefined): Promise<number> {
+  if (!ip) return 0; // en local, pas d'adresse transmise : seule la limite par compte s'applique
+  const cleBlocage = `connexion-ip-bloquee:${ip}`;
+  if (await limiteAtteinte(cleBlocage, LIMITES.blocageConnexionAdresse)) return minutesAvantDeblocage(cleBlocage, LIMITES.blocageConnexionAdresse);
+  const cle = `connexion-ip:${ip}`;
+  if (await limiteAtteinte(cle, LIMITES.connexionAdresse)) {
+    await oublierEssais(cleBlocage);
+    await compterEssai(cleBlocage, LIMITES.blocageConnexionAdresse);
+    log.warn("Connexion : adresse IP bloquée 15 minutes", { essaisParMinute: LIMITES.connexionAdresse.max });
+    return Math.round(LIMITES.blocageConnexionAdresse.fenetreMs / 60_000);
+  }
+  await compterEssai(cle, LIMITES.connexionAdresse);
+  return 0;
 }
 
 /* ── Lecture du corps des requêtes ──

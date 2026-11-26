@@ -5,7 +5,7 @@ import { avecJournal, log } from "@/lib/serveur/journal";
 async function get(_requete: Request, ctx: { params: Promise<{ id: string }> }) {
   const params = await ctx.params;
   try {
-    const fichier = /^[a-z0-9]+$/.test(params.id) ? await lireFichier(params.id) : null;
+    const fichier = /^[a-z0-9]+(\.(jpg|png|webp))?$/.test(params.id) ? await lireFichier(params.id) : null;
     if (!fichier) return new Response("Fichier introuvable.", { status: 404 });
     return new Response(Buffer.from(fichier.donnees), {
       headers: {
@@ -13,6 +13,8 @@ async function get(_requete: Request, ctx: { params: Promise<{ id: string }> }) 
         // Un fichier ne change jamais une fois enregistré : le navigateur peut le garder indéfiniment.
         "Cache-Control": "public, max-age=31536000, immutable",
         "X-Content-Type-Options": "nosniff",
+        // Une image ne doit jamais pouvoir exécuter quoi que ce soit, même ouverte seule dans un onglet.
+        "Content-Security-Policy": "default-src 'none'; img-src 'self'; sandbox",
       },
     });
   } catch (e) {

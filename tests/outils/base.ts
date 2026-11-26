@@ -26,5 +26,7 @@ export async function nettoyer() {
   const ids = comptes.map((c) => c.id);
   await db.bien.deleteMany({ where: { auteurId: { in: ids } } });
   await db.utilisateur.deleteMany({ where: { id: { in: ids } } });
-  await db.tentative.deleteMany({ where: { OR: [{ cle: { contains: DOMAINE } }, { cle: { startsWith: "test:" } }, { cle: { startsWith: "otp-" } }] } });
+  await db.tentative.deleteMany({
+    where: { OR: [{ cle: { contains: DOMAINE } }, { cle: { startsWith: "test:" } }, { cle: { startsWith: "otp-" } }, { cle: { contains: ":test-ip-" } }] },
+  });
 }
